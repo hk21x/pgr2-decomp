@@ -3,15 +3,76 @@
 Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Status
-- Milestone: 1 - XDK libraries identified, `sdk/xdk/5659/` seeded from 5849, config written; nothing fixed yet
-- XDK build of default.xbe: **5659** (all libraries)
-- xbe_symbols: 135 of 238 functions, 8 of 12 data found; 103 functions + 4 data missing (trapping stubs if hit)
-- `sdk/xdk/5659/layout.toml`: still the 5849 values, unverified (one known wrong, see log)
-- Push buffers: no `RunPushBuffer`/`CreatePushBuffer` found; 4 game functions write vertex shader constants
-  straight into the D3D push buffer, which the runtime's `Walk` currently ignores (see log)
-- Trapping stubs remaining: unknown until the first harness run
+- Milestone: 2 - boots to its first presented frame in the harness: the dirty disc error screen
+- XDK build of default.xbe: **5659** (all libraries); `sdk/xdk/5659/` layout re-derived from PGR2, signatures signed
+- xbe_symbols: **180 of 239 functions, 12 of 12 data**. D3D complete (17 D3D names are not linked into PGR2).
+  Still 0: 25 DSOUND, 7 CRT math, 6 Winsock, 4 Bink (no Bink in PGR2)
+- Push buffers: no `RunPushBuffer`/`CreatePushBuffer`; the 4 game functions that push vertex shader constants
+  themselves are now decoded by the runtime's `Walk` (not yet exercised: boot does not reach them)
+- Next blocker: `InitialiseFileCache - !XFormatUtilityDrive` (formatting the Z: cache partition fails)
+- SDK work is on the sdk branch `pgr2-xdk5659`, **not pushed**: the fork hk21x/XboxXBE-Recomp does not exist yet
 
 ## Log
+
+### 2026-10-17 - 5659 SDK bring-up, first presented frame
+
+**Housekeeping.** Scaffold committed to `main` (d47ce51), `main` fast-forwarded over `xdk-5659-survey`, branch-per-task
+rule added to CLAUDE.md. `sdk` submodule URL set to https://github.com/hk21x/XboxXBE-Recomp.git (`.gitmodules` and the
+sdk's `origin`, with an SSH push URL because HTTPS has no credentials here). **The push of `pgr2-xdk5659` fails:
+GitHub answers "Repository not found" for hk21x/XboxXBE-Recomp** (SSH authenticates as hk21x). The SDK commits stay
+local until the fork exists; this branch's gitlink points at them.
+
+**Weak matches (all 7 correct).** SelectVertexShader 0x1C0100 writes 0x1EA0 with the address; LineWidth 0x1C1320
+writes 0x380 and render state 0x9D; TexCoordIndex 0x1C1670 writes texgen 0x3C0 + stage * 0x10; InitDefaultState
+0x1C9280 loops SetTransform/SetRenderStateNotInline/SetTextureStageStateNotInline; SetVertexShader 0x1C03F0 stores
+the shader at device + 0x790; SetTexture 0x1C3FE0 stores [stage] at + 0xF78; SetPixelShader 0x1C25C0 copies the
+shader's 0x39 render states to D3D__RenderState 0x1D0740.
+
+**D3D misses: 43 of 60 found** (my earlier "63" counted wrong; it was 60 functions + 4 data). Found by what each
+writes to the push buffer, the device fields it touches and its ret size, e.g. Swap 0x1C55D0 (returns +0x2468),
+Clear 0x1C2C50 (0x1D98/0x1D8C, ret 0x18), SetRenderTarget 0x1C3980, SetViewport 0x1C3DB0, SetTransform 0x1C34A0,
+MakeSpace 0x1C6140, D3D_MakeRequestedSpace 0x1C6000, D3D_SetFence 0x1C5DE0, D3D_BlockOnTime 0x1C5E90,
+CDevice_KickOff 0x1C5CC0 (fastcall), the render states by the D3D__RenderState index each stores (ZEnable 0x8F ...
+DoNotCullUncompressed 0xA5). The other **17 are not in the image**: no caller in game code, nothing in the D3D
+section's undefined gaps (the only sizeable one, 0x1C47C0, is the state query): BeginPush, EndPush, CopyRects,
+DeletePixelShader, DeleteVertexShader, EnableOverlay, FlushVertexCache, GetVertexShaderFunction, IsFencePending,
+LightEnable, PersistDisplay, D3DDevice_Release, SetLight, SetMaterial, SetPalette, SetTile, SetVertexShaderConstant4.
+Data: D3D_DirtyFlags 0x1D0538, D3D_IndexData 0x1D0534, D3D_DeferredTextureState 0x1D0540, D3D_RenderState 0x1D0740.
+Also IDirectSound_DownloadEffectsImage 0x1EBA16 (calls CDirectSound::DownloadEffectsImage 0x1EB7DC).
+
+**layout.toml re-derived**, every value cited to a PGR2 instruction; "unverified" header removed. The CDevice tail
+moved -0x10 from 5849 (miniport at +0x1C18, so the vertical blank and gamma fields too), ZScale and SuperSample
+moved -4, the front fields -4 (PixelShader 0x780, VertexShader 0x790, IndexBuffer 0x79C). DSOUND and XPP offsets are
+unchanged from 5849 (constructor 0x1EDE60, effects image reader 0x1EFA36, XGetDevices 0x26E033).
+
+**Signatures.** `xbe_symbols --sign config/game.toml --out sdk/xdk/5659/signatures.toml`, then a fresh
+`xbe_symbols` run reproduces the hand-filled config exactly. Two things needed for that: `[functions]` names the
+CDirectSoundStream constructor so the two stream vtables get separate anchors (otherwise both anchor 0x1EC26F and
+the scan drops both), and that `[functions]` line is the one thing the scan does not write back. **Note: a scan
+run rewrites the whole config, so `[[hook]]`/`[[function]]` entries added later are lost if xbe_symbols runs again.**
+
+**Walk.** `sdk/runtime/xdk/d3d8.cpp` `Walk` and `EndPush` now load vertex shader constants: 0x1EA4 sets the load
+slot, 0x0B80-0x0BFC write dwords from it, each method group moves the slot on by its constants (the XDK's own
+SetVertexShaderConstantNotInlineFast 0x1BFEF0 sends one load and several 16 dword groups, which needs exactly this).
+
+**First boot.** Crashed at once in guest D3D code 0x1CB2C1: the game calls D3DDevice_Reset 0x1C38D0 (from
+0x177BF0), the library's own Reset rebuilds the frame buffers through display hardware the host never set up.
+Added a host `D3DDevice_Reset` (name added to the 5849 and 5659 signatures): frame buffers for the parameters
+(kept when unchanged), set as the target with the device references moved, cleared. With that the game runs: CPU
+threads up, ~3,100 presents a second in the harness, 0 draws. `captures/1017-2235-ref_00060.png` shows the Xbox
+**dirty disc error** ("There's a problem with the disc you're using..."). A breakpoint on the error routine
+0x1388F0 (called from 0x13DD77 in 0x13DCE0) gives the message `InitialiseFileCache - !XFormatUtilityDrive`: with
+no `Z:\Version.12` the game formats its cache partition and XFormatUtilityDrive returns FALSE. No trapping stubs
+were hit. Boot log also warns that kernel imports 76 IoQueryVolumeInformation, 232 NtUserIoApcDispatcher and
+343 XcPKGetKeyLen are unimplemented.
+
+**Tooling notes.** `sdk/harness/*.sh` are mode 644 upstream, so `scripts/harness.sh` runs them through `bash`.
+No gdb on the VM and no sudo: `.local/tools/gdb.sh` is gdb 15.1 extracted from the Ubuntu packages. REF=60 at
+3,100 frames a second wrote 5.6 GB of TGAs in 120 s; use a much larger REF (or `snap`) until frames are paced.
+
+**Next.** Find why XFormatUtilityDrive fails (it is guest XAPI code: trace its kernel calls, starting with the
+unimplemented IoQueryVolumeInformation), or give the harness hard disk a formatted cache partition. Then the boot
+sequence onward to the menu.
 
 ### 2026-10-17 - XDK survey, 5659 seed, push buffer check
 
@@ -35,7 +96,7 @@ Sections: `.text 11000-1BF7FC`, `D3D 1BF800-1D2EDC`, `D3DX`, `XGRPH`, `DSOUND`, 
 
 Misses (left at 0 in `config/game.toml`):
 - Not applicable (no Bink in this game): BinkDoFrame BinkGetSummary BinkNextFrame BinkWait
-- D3D (63): CDevice_KickOff D3D_BlockOnResource D3D_BlockOnTime D3D_KickOffAndWaitForIdle D3D_MakeRequestedSpace D3D_SetFence
+- D3D (60, first counted as 63 by mistake): CDevice_KickOff D3D_BlockOnResource D3D_BlockOnTime D3D_KickOffAndWaitForIdle D3D_MakeRequestedSpace D3D_SetFence
   D3DDevice_BeginPush BlockOnFence BlockUntilVerticalBlank Clear CopyRects DeletePixelShader DeleteVertexShader DrawVerticesUP
   EnableOverlay End EndPush FlushVertexCache GetBackBuffer2 GetDepthStencilSurface2 GetRenderTarget2 GetVertexShaderFunction
   InsertFence IsFencePending LightEnable LoadVertexShader MakeSpace PersistDisplay Release SetFlickerFilter SetGammaRamp
