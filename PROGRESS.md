@@ -3,16 +3,72 @@
 Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Status
-- Milestone: 2 - boots to its first presented frame in the harness: the dirty disc error screen
-- XDK build of default.xbe: **5659** (all libraries); `sdk/xdk/5659/` layout re-derived from PGR2, signatures signed
-- xbe_symbols: **180 of 239 functions, 12 of 12 data**. D3D complete (17 D3D names are not linked into PGR2).
-  Still 0: 25 DSOUND, 7 CRT math, 6 Winsock, 4 Bink (no Bink in PGR2)
-- Push buffers: no `RunPushBuffer`/`CreatePushBuffer`; the 4 game functions that push vertex shader constants
-  themselves are now decoded by the runtime's `Walk` (not yet exercised: boot does not reach them)
-- Next blocker: `InitialiseFileCache - !XFormatUtilityDrive` (formatting the Z: cache partition fails)
-- SDK work is on the sdk branch `pgr2-xdk5659`, **not pushed**: the fork hk21x/XboxXBE-Recomp does not exist yet
+- Milestone: 3 - **title screen** in the harness, first boot (cache format and copy) and normal boot both
+- XDK 5659: 183 of 242 functions, 12 of 12 data (D3D complete; 25 DSOUND, 7 CRT, 6 Winsock still 0)
+- SDK fork: hk21x/XboxXBERecomp branch `pgr2-xdk5659`, pushed; `main` here points at it
+- Config: hand entries in `config/pgr2.toml`, `config/game.toml` is xbe_symbols output only
+- Known: pressing START during Intro2 (a movie with audio) hangs the movie player; car bodies missing in the
+  attract demo; the CPU reference renderer shows dotted textures and white bands (not checked on D3D12)
+- Next: the menu after the title, then a race; see the newest log entry
 
 ## Log
+
+### 2026-10-17 - fork, config split, cache partition, first real drawing: attract demo and title screen
+
+**Housekeeping.** Submodule URL fixed to git@github.com:hk21x/XboxXBERecomp.git (`.gitmodules` and the sdk's own
+remote), `pgr2-xdk5659` pushed, a fresh clone of `xdk-5659-bringup` builds both tools and its scan reproduces
+the config, `main` fast-forwarded. gdb is system wide now; `.local/tools` removed.
+
+**Config split.** The build, `--sign` and xbe2pe read `config/pgr2.toml`, which includes `config/game.toml`
+(xbe_symbols output, never edited) and holds every hand entry. A rescan reproduces game.toml byte for byte.
+Documented in CLAUDE.md.
+
+**Cache partition (SDK kernel, generic).**
+- `InitialiseFileCache - !XFormatUtilityDrive`: XAPI's formatter (0x193A83) asks IOCTL_DISK_GET_PARTITION_INFO,
+  which returned zeros, so the size check failed before any write. It does not call IoQueryVolumeInformation.
+  Now a partition opened whole (`\Device\Harddisk0\PartitionN`) is a raw volume: the retail partition layout
+  (Z: 750 MB), raw reads give zeros, raw writes are accepted, and a FATX header written at offset 0 empties the
+  partition's host folder (`files: partition 5 formatted`).
+- IoQueryVolumeInformation (76) implemented anyway: its caller is XGetFilePhysicalSortKey (0x18C31F), which the
+  cache copy (0x13B770) uses to sort files. File objects get a FILE_OBJECT body with a zeroed FsContext.
+- The cache copy then found nothing: FindFirstFile (0x191139) sends `*.*` as an empty name, which the runtime
+  matched against nothing. An empty name now matches everything. `D:\Cache\Resource\*.*` is copied to Z:.
+- NtUserIoApcDispatcher (232) trapped: the APC routine of ReadFileEx; it now calls the completion routine.
+- `KEEP_HDD=1 scripts/harness.sh ...` keeps the hard disk between runs. Both paths tested: first boot formats Z:
+  and copies the cache, a kept disk boots straight through; both reach the title screen.
+
+**Movies (XMV).** Intro1 (audio), Intro2 (3 audio tracks), English (no audio, paced by the vertical blank count
+via GetDisplayFieldStatus 0x1C4350), Intro3, then the attract demo. They play through without presses (about
+100 s headless). **START during Intro2 hangs the player** (0x13C810 polls XMVDecoder_GetNextFrame 0x2113E8,
+which keeps returning "no frame"); not root-caused, `scripts/pad/boot.txt` waits until the attract demo.
+No skip hook was needed because nothing stalls unless a movie is skipped.
+The movies themselves render black in the reference captures (YUY2 640x480 texture, format 0x24).
+
+**Crashes fixed on the way (SDK, generic):**
+- D3DDevice_SetDepthClipPlanes (0x1C2050, flags 3) ran library code over host-less device state and crashed in
+  0x1C19D0: now a host function that accepts it (the renderer keeps the viewport depth range).
+- IDirectSoundBuffer_PlayEx (0x1ECCD9) and IDirectSoundBuffer_Pause (0x1ECD15, switch 0/1/2 in 0x1F39F8) started
+  or paused hardware voices in library code: now host functions.
+- Headless only: the game polls GetVisibilityTestResult (0x1C3610) until the GPU report is written; the null
+  backend never wrote reports. It now writes them at once with 0 pixels. D3D12 already delivered them.
+
+**Title screen.** The frontend draws with Begin/End and FVF 0x144 (XYZRHW, diffuse, one texture). EndPrimitive
+turned FVF handles into an empty program ("pretransformed immediate mode vertices are not supported"). It now packs
+the slots in the FVF's layout and draws through the fixed pipeline. Captures:
+- `captures/1017-2339-ref_06600.png`, `1017-2339-ref_07800.png`, `1017-2346-ref_12000.png`,
+  `1017-2346-ref_72000.png`: attract demo races (Hong Kong and a European city); car bodies partly missing.
+- `captures/1017-2355-ref_24000.png` (kept disk) and `captures/1017-2358-ref_24000.png` (first boot): the
+  Project Gotham Racing 2 title screen.
+- `captures/1017-2355-ref_40000.png`: the screen after pressing A on the title (blurred city, button glyphs).
+The reference renderer shows dotted textures and white bands across UI panels; not checked against D3D12 here.
+
+**Signatures:** 183 of 242 functions (D3DDevice_SetDepthClipPlanes, IDirectSoundBuffer_PlayEx and _Pause added;
+5849 knows the names without signatures). Fallback ids: Reset FFFFFE04, SetDepthClipPlanes FFFFFE05, PlayEx
+FFFFFF0D, Pause FFFFFF0E.
+
+**Next.** The menu after the title (what the A press leads to), then a race. Look at the missing car bodies
+(possibly the game's own vertex shader constant uploads, 0x1852D0 and friends, now decoded but unverified), the
+START-in-Intro2 hang, and the reference renderer's YUY2 and dotted textures.
 
 ### 2026-10-17 - 5659 SDK bring-up, first presented frame
 

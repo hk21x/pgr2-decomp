@@ -1,0 +1,1 @@
+# no presses: let the boot sequence run by itself

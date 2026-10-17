@@ -24,6 +24,10 @@ Read `sdk/README.md`, `sdk/harness/README.md` and `PROGRESS.md` at the start of 
 - `scripts/harness.sh [secs] [pad] [ENV=..]`   build + run headless; e.g. `scripts/harness.sh 120 scripts/pad/boot.txt REF=600`
      `REF=N` draws every Nth frame on the CPU into PNGs in `captures/` (view them with Read),
      `CAP=N` writes each Nth frame's draw list, `snap` file in the run folder grabs the next two frames.
+     `KEEP_HDD=1 scripts/harness.sh ...` keeps the emulated hard disk from the last run (a normal boot); without it
+     every run is a first boot that formats the cache partition and copies the cache (about 100 s of movies first).
+     Pad scripts: `boot.txt` reaches the title screen, `none.txt` presses nothing. Frames are unpaced headless
+     (hundreds a second), so use REF of 2000 or more, or `snap`.
 - Debugging: `gdb` (/usr/bin/gdb). Recompiled functions are `__imp__sub_XXXXXXXX(X86Context& ctx /*rdi*/, base)`;
      guest memory is at 0x100000000, guest esp is the dword at ctx+16.
 - Ghidra: `python3 sdk/tools/symbols/xbe2pe.py config/pgr2.toml .local/game.exe`, then
