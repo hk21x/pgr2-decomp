@@ -11,7 +11,6 @@ code_sections = [".text", "D3D", "D3DX", "XGRPH", "DSOUND", "WMADEC", "XMV", "XO
 
 # extra entry points
 [functions]
-0x1EDE60 = "CDirectSoundStream_Constructor"  # stores both stream vtables (0x1EDE72, 0x1EDE79); named so --sign anchors the vtables on it
 
 # functions the host replaces or calls by name, 0 where the image has none
 [symbols]

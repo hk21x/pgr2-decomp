@@ -13,13 +13,20 @@ Read `sdk/README.md`, `sdk/harness/README.md` and `PROGRESS.md` at the start of 
 ## Commands
 - `scripts/linux-tools.sh`   configure for Linux + build `xbe_symbols` and `xbe_recomp`
 - `build/linux/xbe_symbols assets/default.xbe sdk/xdk --out config/game.toml`
-     prints the XBE's XDK library versions, matches XDK functions, writes the config.
+     prints the XBE's XDK library versions, matches XDK functions, rewrites config/game.toml completely.
      Stops if `sdk/xdk/<build>/` has no signatures.toml.
+- Config: `config/game.toml` is xbe_symbols output only, never edit it. `config/pgr2.toml` is the file the build reads:
+     it includes game.toml and holds every hand entry ([[hook]], [[function]], [[switch]], [functions], [xbe] data_ranges
+     and trace). A symbol found by hand goes into the signatures instead:
+     add it to game.toml, `build/linux/xbe_symbols --sign config/pgr2.toml --out sdk/xdk/5659/signatures.toml`,
+     then rescan; the rescan must reproduce game.toml.
 - `scripts/recompile.sh`      regenerate `generated/game`
-- `scripts/harness.sh [secs] [pad] [ENV=..]`   build + run headless; e.g. `scripts/harness.sh 120 scripts/pad/boot.txt REF=60`
+- `scripts/harness.sh [secs] [pad] [ENV=..]`   build + run headless; e.g. `scripts/harness.sh 120 scripts/pad/boot.txt REF=600`
      `REF=N` draws every Nth frame on the CPU into PNGs in `captures/` (view them with Read),
      `CAP=N` writes each Nth frame's draw list, `snap` file in the run folder grabs the next two frames.
-- Ghidra: `python3 sdk/tools/symbols/xbe2pe.py config/game.toml .local/game.exe`, then
+- Debugging: `gdb` (/usr/bin/gdb). Recompiled functions are `__imp__sub_XXXXXXXX(X86Context& ctx /*rdi*/, base)`;
+     guest memory is at 0x100000000, guest esp is the dword at ctx+16.
+- Ghidra: `python3 sdk/tools/symbols/xbe2pe.py config/pgr2.toml .local/game.exe`, then
   `/opt/ghidra/support/analyzeHeadless ~/ghidra-projects pgr2 -import .local/game.exe` (add `-process`/scripts as needed).
 
 ## Plan
@@ -34,7 +41,7 @@ Read `sdk/README.md`, `sdk/harness/README.md` and `PROGRESS.md` at the start of 
 ## Working rules
 - One problem at a time. After each meaningful step, add a dated entry at the top of PROGRESS.md's log
   (what changed, evidence, next step), update its Status block, and commit.
-- Game-specific fixes go in `src/game` (X86_FUNC overrides, config [[hook]]/[[function]]/[[switch]]), not in
+- Game-specific fixes go in `src/game` (X86_FUNC overrides, [[hook]]/[[function]]/[[switch]] in config/pgr2.toml), not in
   generated code. SDK changes (new XDK data, runtime fixes) go in the `sdk/` submodule as separate commits.
 - If the same problem survives 3 genuinely different attempts, stop: write up what you tried and what you
   think is happening in PROGRESS.md, commit, and tell Harry.

@@ -36,4 +36,5 @@ if(NOT GAME_PARTITIONS)
 endif()
 
 # target name = GAME_EXE in build.bat, xbe = GAME_XBE
-add_xbe_image(Game default.xbe game.toml ${GAME_PARTITIONS} game)
+# config/pgr2.toml holds the hand-kept entries and includes the generated config/game.toml
+add_xbe_image(Game default.xbe pgr2.toml ${GAME_PARTITIONS} game)
