@@ -1,0 +1,6 @@
+# frame buttons [frames held]   (frames are presented frames; one line per press)
+# Starter guess: press through logos / attract screens towards the main menu.
+600 START
+900 A
+1200 START
+1500 A
