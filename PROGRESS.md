@@ -15,9 +15,31 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   cube fixed; brown polygons and stripes not reproduced, see 2026-10-18 D3D12 entry for the list to check on Windows
 - Sound headless: not silent, no clipping, 48 kHz, menu music, engine pitch follows the throttle; DSP effects and
   reverb are accepted but not applied
-- Next: saves, more modes, soak; F3 captures when Harry is back
+- Saves: profile and settings persist across a reboot (`scripts/savetest.sh`); a lap record needs steering
+- Next: more modes, soak; F3 captures when Harry is back
 
 ## Log
+
+### 2026-10-18 - saves
+
+PGR2 saves profiles with XCreateSaveGame: E:\UDATA\4d53004b\<12 hex digits>\Profile.Sav (30100 bytes) and
+SaveMeta.xbx; TitleMeta/TitleImage/SaveImage.xbx at the title's folder. A profile is saved when made, when leaving
+Options, and when a race is quit (statistics and career fields). The first 20 bytes are a signature.
+- Interactive (cmd presses and snaps), on one disk: Create New Profile (name, plate, plate text, helmet, all
+  defaults) -> saved. Options > General > Game Options: Speedometer MPH -> KM/H; saved on backing out of Options;
+  byte 0x844 of Profile.Sav is that option (1 MPH, 0 KM/H). Time Attack (Edinburgh, Princes Street East, MINI):
+  started, quit, profile saved again. Kudos World Series: Compact Sports Series, Street Race Florence Duomo 2,
+  Novice: started, quit; saved again (career fields at 0x8DC and 0xFEC..0x1002). Rebooted on the same disk: the
+  title offers "Start Player's Game", Game Options shows KM/H, the race HUD shows KM/H.
+- `scripts/savetest.sh` (pad scripts save1.txt, save2.txt, about 8 minutes): a first boot makes the profile and
+  sets KM/H, checks the byte; a normal boot of that disk opens Game Options, checks the game read Profile.Sav and
+  the byte is still KM/H, and snaps the screen (KM/H). Passes.
+- Not done: a record. Every record PGR2 keeps (fastest lap, best Kudos) needs a finished lap, which needs
+  steering; a fixed pad script drives blind, and steering by snapshots took a minute a step (a lap would take an
+  hour). Time Attack laps start rolling on Princes Street; holding throttle hits the barrier at its end.
+  The Time Attack attempt and the career start do save and reload.
+- Headless only: licence plate pictures are garbled and some full screen blurs are dotted in the reference
+  renderer; worth a look on Windows (plate select screen).
 
 ### 2026-10-18 - sound, checked headless
 
