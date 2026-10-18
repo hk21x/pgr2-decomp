@@ -21,9 +21,19 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - System link: two harness instances find each other and exchange the join, then the session stalls (open)
 - Windows round 2: boots, movies, audio, saves OK; player car body black, stripes on some walls (captures in
   .local/win, see 2026-10-18 car bodies entry); environment map cube faces fixed (SetRenderTargetFast)
-- Next: Harry's XBE_VSC run for the black car; a per-draw capture for the stripes
+- Car body: fixed (pushed constants applied in order), headless matches the console; Windows to confirm
+- Next: Windows checks (pacing, car body, white walls without a capture, stripes); system link waits for Harry
+  (three attempts used)
 
 ## Log
+
+### 2026-10-18 - checked: does a capture leave state that could whiten walls?
+
+Read the D3D12 capture path: a capture's saves blit and then Flush (Submit + wait, command list reset, Begin).
+Begin re-sets heaps and root signature and forgets the bound targets; every draw allocates its own descriptor
+table and upload space and sets topology, blend factor and stencil ref, so nothing cached survives the reset.
+No state leak found: the white walls Harry saw are probably not a capture artefact. To settle it on Windows:
+look at the same spot with no XBE_CAPTURE_DIR set and no capture taken.
 
 ### 2026-10-18 - option: races at 60 frames a second (experimental, off)
 
