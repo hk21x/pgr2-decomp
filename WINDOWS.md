@@ -45,7 +45,9 @@ Files the exe writes beside itself, in `out\build\release`:
 Useful while testing:
 - **F3** writes every game thread's stack to the log. With the environment variable `XBE_CAPTURE_DIR` set to a
   folder (`set XBE_CAPTURE_DIR=C:\pgr2cap` before starting the exe from the same prompt) it also captures the
-  next frame there.
+  next frame there. The log says `F3: thread stacks, the next frame captured` when the key arrives and
+  `d3d12: capturing a frame into ...` when it starts. Without the key: create an empty file named `capture` beside
+  `PGR2.exe` (`type nul > out\build\release\capture` from a second prompt) and the next frame is captured.
 - `XBE_PERF=1` logs frame timing; `XBE_D3D12_DEBUG=1` turns on the Direct3D 12 debug layer (slow).
 - `XBE_VSC=56 54` logs who writes those vertex shader constants and the values (the first 200 writes); used to
   find why the player's car body is black (`set XBE_VSC=56 54` before starting the exe).
