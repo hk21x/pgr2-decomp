@@ -136,6 +136,7 @@ D3DDevice_SetRenderState_YuvEnable                   = 0x1C2280
 D3DDevice_SetRenderState_ZEnable                     = 0x1C20F0
 D3DDevice_SetRenderStateNotInline                    = 0x1C0E30
 D3DDevice_SetRenderTarget                            = 0x1C3980
+D3DDevice_SetRenderTargetFast                        = 0x1C3C00
 D3DDevice_SetScissors                                = 0x1C4470
 D3DDevice_SetScreenSpaceOffset                       = 0x1C4770
 D3DDevice_SetShaderConstantMode                      = 0x1C01A0

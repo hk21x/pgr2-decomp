@@ -18,9 +18,45 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Saves: profile and settings persist across a reboot (`scripts/savetest.sh`); a lap record needs steering
 - Coverage: pad scripts for Time Attack, Kudos World Series, Arcade, replay; 60 minute soak clean
 - System link: two harness instances find each other and exchange the join, then the session stalls (open)
-- Next (when Harry is back): Windows checklist, F3 captures; then the presentation interval (menus 60, races 30)
+- Windows round 2: boots, movies, audio, saves OK; player car body black, stripes on some walls (captures in
+  .local/win, see 2026-10-18 car bodies entry); environment map cube faces fixed (SetRenderTargetFast)
+- Next: Harry's XBE_VSC run for the black car; a per-draw capture for the stripes
 
 ## Log
+
+### 2026-10-18 - car bodies, environment map, Windows captures
+
+Harry's Windows test: boots, movies, audio and saves (KM/H and Time Attack across a restart) work; the licence plate
+screen is right on Windows (garbled headless only). The player's car in Instant Action is a black body with wheels
+(other cars fine), and some walls show green/magenta stripes. F3 captures copied to .local/win (6 frames).
+
+Environment map. PGR2 draws its car reflection cube's six faces with D3DDevice_SetRenderTargetFast (0x1C3C00),
+which ran the library's code: it writes the surfaces to the hardware directly, so the host never switched targets
+and all six faces were drawn into whatever was bound before (the Windows capture shows face 0 drawn six times).
+Now on the host (sdk f6f4edd), signed into 5659 (187 of 246). Headless all six faces fill (AUDIT shows +0 to +A0000
+drawn) and the dumped cube shows the street. With the D3D12 cube copy from the earlier entry, reflections should
+now work on Windows.
+
+Black player car, what is known:
+- The car body's vertex shader (B01019E1) gives diffuse = c56 x (N.L - c1.w^2) x paint (c51/c52) and specular from
+  c54. In Harry's capture (160442, the Camaro) paint is white but c56 is 0 and c54 is (0, 0, 0, 0.4): no light,
+  so black. Headless the same constants are c56 0.8, c54 0.557 (set by SetVertexShaderConstant1Fast from 0x1F080
+  and 0x1F15C, FUN_0001ef90).
+- FUN_0001ef90 scales the sun colour (0x49EEA8) by the car's brightness (+0x150C); both zeros on Windows mean the
+  brightness or the sun colour is 0 there. The brightness is 0.25 x the wheels whose ground query (FUN_00024de0 ->
+  FUN_000c74d0, track collision) says the surface is not flagged (bit 7 of its surface byte): all four flagged
+  gives a black car. Pure CPU code; why it differs on Windows is open. Visibility query counts do not matter
+  (headless with a forced count: same picture).
+- Headless also had a black body for another reason: the reference renderer ignored polygon offset, so the car's
+  self-shadow map (drawn with offset 128, slope 24) shadowed the car itself. Fixed (sdk b5993fc); the MINI shows
+  its paint now (dark green, c51 = 0 0.04 0).
+- `XBE_VSC=56 54` (new) logs every write to those constants with the caller: one Windows run with it answers
+  whether 0x1F080/0x1F15C write zeros there.
+
+Stripes (capture 085551, car reversing into a wall): every 2D texture the frame bound decodes cleanly (montage of
+397); the brown in that frame is the clear colour of the 256x256 reflection target 834CA000, which most of the
+scene samples at stage 3; the striped wall uses bump-mapped reflection shaders (dot product reflect, normal map
+82501200). Needs a capture of the target after each draw near the wall to go further.
 
 ### 2026-10-18 - coverage, soak, system link
 

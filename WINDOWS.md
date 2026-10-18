@@ -47,6 +47,8 @@ Useful while testing:
   folder (`set XBE_CAPTURE_DIR=C:\pgr2cap` before starting the exe from the same prompt) it also captures the
   next frame there.
 - `XBE_PERF=1` logs frame timing; `XBE_D3D12_DEBUG=1` turns on the Direct3D 12 debug layer (slow).
+- `XBE_VSC=56 54` logs who writes those vertex shader constants and the values (the first 200 writes); used to
+  find why the player's car body is black (`set XBE_VSC=56 54` before starting the exe).
 
 `release.bat` zips `PGR2.exe` with an empty `assets` folder; not needed yet.
 
