@@ -163,6 +163,7 @@ DirectSoundCreate                                    = 0x1EEA54
 DirectSoundCreateBuffer                              = 0x1EEA9B
 DirectSoundCreateStream                              = 0x1EEAF2
 DirectSoundDoWork                                    = 0x1ECDBA
+DirectSoundGetSampleTime                             = 0x1EB88B
 DirectSoundUseFullHRTF                               = 0
 DirectSoundUseLightHRTF                              = 0
 getsockname                                          = 0

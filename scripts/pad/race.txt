@@ -1,0 +1,7 @@
+# frame buttons [frames held]   (60 frames a second)
+# Title -> Instant Action (third item of the title menu) -> a single race, then accelerate for 60 seconds.
+7300 START 30
+8400 RIGHT 10
+8500 RIGHT 10
+8600 A 10
+10500 RT 3600
