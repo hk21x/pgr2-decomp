@@ -24,6 +24,15 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - Windows capture of the black car
+
+Captures work from Harry's PC (PowerShell's `set` had not set the variables). Capture 192449 (Florence grid,
+black car): the six environment faces now go to six targets on Windows (SetRenderTargetFast fix confirmed).
+The body's constants were not listed (only small draws listed them) and the shadow pass's depth was not saved:
+both now captured. XBE_VSC used its 200 lines on frontend writes (0x118BFA, 0x118CA2) before the race; it now logs
+each distinct register, value and caller once (headless race: c56 from 0x1F036, the sun colour times the car's
+brightness, c54 from 0x1F15C).
+
 ### 2026-10-18 - Windows: reflections confirmed, release logs
 
 Harry confirms reflections on car paint and glass now work on Windows (SetRenderTargetFast plus the D3D12 cube

@@ -49,8 +49,10 @@ Useful while testing:
   `d3d12: capturing a frame into ...` when it starts. Without the key: create an empty file named `capture` beside
   `PGR2.exe` (`type nul > out\build\release\capture` from a second prompt) and the next frame is captured.
 - `XBE_PERF=1` logs frame timing; `XBE_D3D12_DEBUG=1` turns on the Direct3D 12 debug layer (slow).
-- `XBE_VSC=56 54` logs who writes those vertex shader constants and the values (the first 200 writes); used to
-  find why the player's car body is black (`set XBE_VSC=56 54` before starting the exe).
+- `XBE_VSC=56 54` logs who writes those vertex shader constants and the values (each distinct one once); used to
+  find why the player's car body is black.
+- Setting these: in Command Prompt `set XBE_VSC=56 54`; in PowerShell `$env:XBE_VSC = "56 54"` (PowerShell's
+  `set` does not set an environment variable). Start `PGR2.exe` from that same window.
 
 `release.bat` zips `PGR2.exe` with an empty `assets` folder; not needed yet.
 
