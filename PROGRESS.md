@@ -24,6 +24,26 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - black car: what the shade flag does, and an experiment switch
+
+Harry's reference (a YouTube video of a 07-11-03 pre-release build, Instant Action in Florence): on the grid the
+player car sits in building shade with its paint clearly visible (dimmer, reflection heavy); moving in sun it is
+bright. Ours in shade shows no paint at all.
+- The wheel flag means shade: FUN_00023620 gives a wheel's light as the triangle's baked colour when set, the sun
+  colour times it when clear (used for the tyre smoke colour, FUN_00023670).
+- Brightness eases (0.9/0.1) to 0.25 per unflagged wheel; c56 = sun x brightness; the paint (c51/c52) reaches the
+  body only through c56, so at brightness 0 the body shows just its environment reflection (looks transparent:
+  the street behind it is reflected) plus a tiny pc0 (the road's baked colour times a body tint).
+- Headless A/B at the same frame (Florence Timed Run, Tamora): normal = no body visible; PGR2_LIGHT_CLEAR=1 (every
+  wheel's flag forced 0) = body in its teal paint. The draw lists are identical; only the constants differ.
+- Checked and ruled out: the track data (inflated by the game's zlib, 66% of triangles near the track flagged), the
+  query's height (right triangle), the flag test sense, threads (one thread queries), 0x49E110 (race running).
+So in the console's shade the sun term cannot be 0 the way it is here; where the difference comes from is open
+(which triangle wins when several overlap, x87 precision in the hit test 0xC19F0/0xC11D0, or data per time of day).
+PGR2_LIGHT_CLEAR=1 is an experiment switch only (src/game/hooks.cpp), not a fix.
+Also: capture 194603 shows white walls and no body; 192449 (an earlier build, same spot) did not: needs a plain
+screenshot to tell whether the capture changes (depth target saved mid-frame) affect that frame.
+
 ### 2026-10-18 - black car: the shade flag is real track data
 
 Harry: on the original Xbox the car is lit (a normal car from the selection). Checked headless with more probes

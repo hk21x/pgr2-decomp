@@ -77,7 +77,17 @@ X86_FUNC(sub_00020690) {
 X86_EXTERN_FUNC(__imp__sub_000C6210);
 X86_FUNC(sub_000C6210) {
     static const bool on = std::getenv("PGR2_LIGHT") != nullptr;
-    if (on) {
+    if (!on) return __imp__sub_000C6210(ctx, base);
+    // which threads query, and whether two are inside at once
+    static std::atomic<int> inside{0}, overlaps{0};
+    {
+        static std::mutex tm;
+        static std::unordered_map<uint32_t, uint32_t> threads;  // guest stack page: calls
+        std::lock_guard lock(tm);
+        if (threads[ctx.esp >> 16]++ == 0) LOGR("pgr2 light: query from a new thread, stack %08X", ctx.esp);
+    }
+    if (inside++ > 0 && overlaps++ < 20) LOGR("pgr2 light: two ground queries at once (stack %08X)", ctx.esp);
+    {
         static std::mutex m;
         static std::unordered_map<uint32_t, uint8_t> seen;
         static uint32_t calls = 0, hist[256] = {};
@@ -86,12 +96,7 @@ X86_FUNC(sub_000C6210) {
         for (uint32_t i = 0; i < n && i < 4096; i++) {
             uint32_t e = cell + 0x18 + i * 0x10;
             uint8_t f = kernel::G<uint8_t>(e + 0xB);
-            if (seen.emplace(e, f).second) {
-                hist[f]++;
-                if (seen.size() % 1500 == 1)
-                    LOGR("pgr2 light: triangle at %08X: %08X %08X %08X %08X", e, kernel::R32(e), kernel::R32(e + 4),
-                         kernel::R32(e + 8), kernel::R32(e + 12));
-            }
+            if (seen.emplace(e, f).second) hist[f]++;
         }
         if (++calls % 2000 == 0) {
             uint32_t bit7 = 0;
@@ -104,6 +109,7 @@ X86_FUNC(sub_000C6210) {
         }
     }
     __imp__sub_000C6210(ctx, base);
+    inside--;
 }
 
 // PGR2_LIGHT: each wheel's ground query (0x24DE0, ecx the wheel): its position (+0x40), the height found (+4), the
@@ -112,6 +118,8 @@ X86_EXTERN_FUNC(__imp__sub_00024DE0);
 X86_FUNC(sub_00024DE0) {
     uint32_t w = ctx.ecx;
     __imp__sub_00024DE0(ctx, base);
+    static const bool clear = std::getenv("PGR2_LIGHT_CLEAR") != nullptr;  // experiment: every wheel sunlit
+    if (clear) kernel::G<uint8_t>(w + 0xD8) = 0;
     static const bool on = std::getenv("PGR2_LIGHT") != nullptr;
     static std::atomic<int> n{0};
     if (on && n++ < 200)
