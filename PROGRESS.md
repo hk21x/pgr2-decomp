@@ -24,6 +24,20 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - player car body fixed: pushed constants applied out of order
+
+The missing body (only wheels, driver and plate) reproduced headless with the car standing on the grid (earlier
+headless frames had the car moving). The reference renderer's per draw counts showed the body draws' triangles
+cover no pixel: off screen. An event trace before the first body draw: the game pushes c14-c25 as raw commands
+(SET_TRANSFORM_CONSTANT_LOAD 110 and 118, the world view-projection), then sets the car's own matrices with
+SetVertexShaderConstantNotInlineFast(110, 16). The HLE wrote those at once, the pushed packets were read by Walk at
+the next draw and overwrote them: every body draw used the world matrix with object space vertices.
+Fix (sdk 9688e51): the constant setters and SetVertexShader read pending pushed commands first, so order is as on
+the console. The grid frame now shows the TVR Tamora in its dark teal paint, as Harry's console screenshot does,
+without PGR2_LIGHT_CLEAR. The wheel shade logic was right; PGR2_LIGHT_CLEAR is no longer needed (kept as an
+experiment switch).
+Harness: RAW=1, RT_THREAD=1, GEN_OPT=-O2 build like the Windows exe (none of them reproduced it on their own).
+
 ### 2026-10-18 - car body on Windows: the body draws write no pixels
 
 Capture 213135 (XBE_CAPTURE_DRAWS=vs:B01019E1, PGR2_LIGHT_CLEAR on): the 16 body draws (962-977, up to 5722
