@@ -1,0 +1,25 @@
+# Time Attack: Circuit Challenge, Edinburgh, Princes Street East, Compact Sports, MINI Cooper S, Auto; a rolling
+# start, then accelerate for 60 seconds (straight down Princes Street into the barrier).
+# from a first boot: make the profile "Player" with every default (as save1.txt)
+3650 START 15
+3800 A 5
+3950 A 5
+4100 A 5
+4250 A 5
+4400 A 5
+# main menu: Single Player
+4650 A 5
+# Single Player: Kudos World Series . Arcade Racing . Time Attack
+4850 RIGHT 5
+4900 RIGHT 5
+4950 A 5
+# Circuit Challenge, city (Edinburgh), circuit (Princes Street East), class (Compact Sports), car (MINI), Auto
+5100 A 5
+5250 A 5
+5400 A 5
+5550 A 5
+5700 A 5
+5850 A 5
+# pre-race: Start Race, then the city loads
+6050 A 5
+6900 RT 1800
