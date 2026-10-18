@@ -52,7 +52,8 @@ Useful while testing:
 - `XBE_VSC=56 54` logs who writes those vertex shader constants and the values (each distinct one once); used to
   find why the player's car body is black.
 - `XBE_CAPTURE_DRAWS=1580-1660` makes a capture also save the image after each draw in that range (the numbers in
-  the capture's frame.txt).
+  the capture's frame.txt); `XBE_CAPTURE_DRAWS=vs:B01019E1` after every draw with that vertex shader (the car body),
+  plus once before the first.
 - Setting these: in Command Prompt `set XBE_VSC=56 54`; in PowerShell `$env:XBE_VSC = "56 54"` (PowerShell's
   `set` does not set an environment variable). Start `PGR2.exe` from that same window.
 
