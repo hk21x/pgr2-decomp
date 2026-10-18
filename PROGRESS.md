@@ -11,9 +11,55 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Speed: right at 30 fps (PGR2 default); Windows shows flat brown polygons and striped textures
 - Smoke test: `scripts/smoke.sh` (title -> Instant Action -> race, no traps), run before every fast-forward of main
 - Upstream: draft PR description for TGP482/XboxXBE-Recomp in `.local/upstream-pr.md`, not sent
-- Next: F3 captures (with XBE_CAPTURE_DIR set) of the brown polygons and striped textures, and playtest notes
+- D3D12 groundwork (no capture): raw vertex path proven against the CPU path, all race shaders compile (DXC), env map
+  cube fixed; brown polygons and stripes not reproduced, see 2026-10-18 D3D12 entry for the list to check on Windows
+- Next: sound (WAV capture), saves, more modes, soak; F3 captures when Harry is back
 
 ## Log
+
+### 2026-10-18 - D3D12 groundwork without a capture
+
+Tools (headless, nothing needs a GPU):
+- `AUDIT=N` (sdk harness/audit.cpp): every Nth frame's draws as the D3D12 backend would get them. Writes each
+  generated shader to `cap/hlsl/`, assembles each draw both ways (raw guest vertices as D3D12 reads them, and the
+  CPU conversion the harness and reference renderer use, `XBE_RAW_VERTICES=0` in the harness build) and compares
+  every corner, lists sampled textures with their mip levels checked against their parents, and the targets drawn
+  to (`cap/textures.txt`, `cap/vertices.txt`). `AUDIT_TEX=<addr>` saves a texture as its guest memory decodes, which
+  is what D3D12 reads (the null backend never draws into guest memory between REF frames).
+- `scripts/shadercheck.sh`: compiles `cap/hlsl` with DXC (fetched into .local/dxc), HLSL 2018 rules as FXC.
+- `scripts/wincheck.sh`: syntax-checks d3d12.cpp and xaudio2.cpp with clang against mingw-w64 headers (unpacked into
+  .local/mingw, no root). D3D12 changes are now at least compiled before Harry gets them.
+
+What the D3D12 path draws when something fails (read, d3d12.cpp): a shader that fails to compile logs
+`d3d12: vs_5_0 compile failed` plus the source and the draw is skipped; a failed pipeline logs and skips; a missing
+or uncreatable texture is a null view (samples 0, black); an unknown texture format decodes its first byte as grey.
+No fallback is a flat colour, and Harry's logs have no compile or pipeline errors.
+
+Findings, race (Instant Action, every 10th frame) and the menus plus attract races (every frame, 1.3M draws):
+- Shaders: 77 vertex/pixel shaders in a race, 75 in menus and attract; all compile with DXC.
+- Textures used: DXT5 (787), DXT1 (108), A8R8G8B8, YUY2 (movies), L8/AL8/LIN_L8, R5G6B5 cube, LIN_X8R8G8B8, LIN_D16.
+  DXT goes to the GPU as BC1/BC3 unchanged; every mip level of every texture is within 0.04 of its parent shrunk
+  (only 2x2 and 1x1 DXT levels differ more), so level offsets are right. Same decode code as the reference.
+- Vertices: 334,600 raw draws, 11,646 differed from the CPU path. Cause: declarations longer than the stream stride
+  (a 24 byte FLOAT3 D3DCOLOR NORMSHORT2 NORMPACKED3 layout on a 20 byte stride, decals and a second texture coordinate):
+  the console reads the next vertex's bytes, D3D12 read zeros at the last vertex. Fixed (sdk a867407): the raw buffer
+  includes the overhang. Now 0 of 1,303,670 differ. The two shaders involved never read the bad element, so this
+  was not visible.
+- Environment map: the game draws ~800 draws a frame into face 0 of a 256x256 R5G6B5 cube (0x83458000) and three
+  pixel shaders add it as specular (t3.rgb * v1). D3D12 always read cubes from guest memory, which is all zeros
+  (AUDIT_TEX dump): reflections were black on Windows. Fixed (sdk 8770388): faces drawn on the GPU are copied into
+  the cube once a frame.
+- An 8 bit L8 target (0x83AA5000, 256x256, 3 draws a frame) sampled at stage 3: the console's B8 surface keeps the
+  blue byte, D3D12 keeps BGRA (alpha 0 from the clear). Now read as its blue byte. The shaders that read it use only
+  rgb of grey content, so not visible. The reference renderer wrote 16 bit 565 texels into it (fixed).
+- Sync/late copies wrote 32 bit linear rows over any surface: over the L8 or swizzled targets that would run past
+  them. Only 32 bit linear surfaces are written back now.
+
+Not found, needs Windows: the brown polygons and the green/magenta stripes. Every input D3D12 gets (vertices,
+textures, mips, shaders) now matches the reference path headless, so what is left is the HLSL itself versus the
+reference interpreter (same rules, separately written; only a GPU runs HLSL), the D3D12 state mapping (blend,
+depth, stencil, samplers), upscaling, and timing (render thread). Wanted from Windows: an F3 capture with
+`XBE_CAPTURE_DIR` while the fault is on screen; and whether reflections on cars and wet roads look right now.
 
 ### 2026-10-18 - smoke test, upstream draft
 
