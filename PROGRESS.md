@@ -24,6 +24,14 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - car body on Windows: the body draws write no pixels
+
+Capture 213135 (XBE_CAPTURE_DRAWS=vs:B01019E1, PGR2_LIGHT_CLEAR on): the 16 body draws (962-977, up to 5722
+vertices) change no pixel of the target; the tyre draws right after (same vertex and pixel shaders) do. The body
+texture's alpha (tex_81629000) looks right, the light constants are right. So on D3D12 the body is dropped by alpha
+kill, culling or the depth test (headless it is drawn). XBE_DRAW_TEST=B01019E1:alphakill|cull|depth switches each
+off for that shader to find which. The walls were white again in this capture.
+
 ### 2026-10-18 - car body: a second, Windows-only cause
 
 With PGR2_LIGHT_CLEAR on Windows (capture 211350): the body's constants are right (c56 1 1 1 1, c54 0.698, paint

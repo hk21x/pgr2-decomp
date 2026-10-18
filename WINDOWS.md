@@ -54,6 +54,8 @@ Useful while testing:
 - `XBE_CAPTURE_DRAWS=1580-1660` makes a capture also save the image after each draw in that range (the numbers in
   the capture's frame.txt); `XBE_CAPTURE_DRAWS=vs:B01019E1` after every draw with that vertex shader (the car body),
   plus once before the first.
+- `XBE_DRAW_TEST=B01019E1:alphakill` (or `:cull`, `:depth`, several joined by commas): an experiment, draws with that
+  vertex shader without that test.
 - Setting these: in Command Prompt `set XBE_VSC=56 54`; in PowerShell `$env:XBE_VSC = "56 54"` (PowerShell's
   `set` does not set an environment variable). Start `PGR2.exe` from that same window.
 
