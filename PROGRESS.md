@@ -24,6 +24,23 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - black player car: the game's own shadow logic, the same headless
+
+Windows run with XBE_VSC and capture 194603 (Florence grid): c56 is written only as 0 0 0 0 by 0x1F036 and c54 as
+0 0 0 0.4 by 0x1F15C, so the body has ambient light only (pc0 0.188); the car's shadow map renders properly
+(1441_8327A000_z). The cause is the game's own state, not the renderer:
+- 0x1F036 writes the sun colour (0x49EEA8, FFFFFFFF) scaled by the car's brightness (+0x150C).
+- Each frame (0x20690) the brightness eases (x0.9 + 0.1 x target) to 0.25 x the wheels whose flag is 0
+  (TEST/JNZ at 0x207CC: flag 1 = in shadow).
+- A wheel's flag is bit 7 of the flag byte of the track triangle under it (FUN_00024de0 -> 0xC74D0 -> 0xC6210,
+  byte +0xB of the 16 byte triangle record), and its baked colour comes back too.
+- `PGR2_LIGHT=1` (src/game/hooks.cpp, game only) logs each car's flags, colours, brightness and the sun colour
+  when they change. Headless, the Instant Action car's wheels are flagged most of the time as well, its brightness
+  near 0, the same as Windows; early headless frames showed race cars as "wheels and driver" from the start.
+Both renderers draw what the game asks for. Open: whether the console shows the same (the flag may mean shaded by
+buildings, in which case a dark car in a shaded street is right), or a bit 7 the runtime gets wrong. Next:
+compare with the console or xemu at the same spot (Florence, Duomo grid; Chicago).
+
 ### 2026-10-18 - Windows capture of the black car
 
 Captures work from Harry's PC (PowerShell's `set` had not set the variables). Capture 192449 (Florence grid,
