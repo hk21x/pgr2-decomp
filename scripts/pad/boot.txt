@@ -1,6 +1,4 @@
-# frame buttons [frames held]   (frames are presented frames; one line per press)
-# Boot to the title screen. No presses during the intro movies: START during Intro2 (a movie with audio) hangs the
-# movie player (see PROGRESS.md). Headless frames are unpaced, the attract demo runs by about frame 8000.
-12000 START 20
-20000 START 20
-30000 A 20
+# frame buttons [frames held]   (frames are presented frames, 60 a second; one line per press)
+# Boot to the title screen. The intro movies end by frame ~6100 (do not press START during Intro2: it hangs the
+# movie player, see PROGRESS.md); START in the attract demo goes to the title.
+7300 START 30

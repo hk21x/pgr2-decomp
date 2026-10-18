@@ -235,6 +235,7 @@ WSARecvFrom                                          = 0
 WSASend                                              = 0x25A3B8
 WSASendTo                                            = 0x25A3D6
 WSAStartup                                           = 0x25A6E4
+XapiVerifyMediaInDrive                               = 0x19372C
 XAudioDownloadEffectsImage                           = 0x1ECDE3
 XInitDevices                                         = 0x26D108
 XInputClose                                          = 0x26D8D6
