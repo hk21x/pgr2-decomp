@@ -5,10 +5,10 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 ## Status
 - Milestone: 4 - **a race runs under pad control** in the harness (title -> Instant Action -> Yokohama race)
 - Windows: Harry's first build boots and takes input; white quad and solid-colour movies fixed in shared code since
-- XDK 5659: 185 of 244 functions, 12 of 12 data
+- XDK 5659: 187 of 246 functions, 13 of 13 data
 - Known: car bodies partly missing; a stale band under the HUD seen once at a race start; reference renderer
   shows dotted textures (waiting for the Windows report)
-- Speed: right at 30 fps (PGR2 default); Windows shows flat brown polygons and striped textures
+- Speed: paced by the game's own present interval (menus 60, races 30, as on the console); fps_cap 60 default
 - Smoke test: `scripts/smoke.sh` (title -> Instant Action -> race, no traps), run before every fast-forward of main
 - Upstream: draft PR description for TGP482/XboxXBE-Recomp in `.local/upstream-pr.md`, not sent
 - D3D12 groundwork (no capture): raw vertex path proven against the CPU path, all race shaders compile (DXC), env map
@@ -23,6 +23,23 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Next: Harry's XBE_VSC run for the black car; a per-draw capture for the stripes
 
 ## Log
+
+### 2026-10-18 - frame pacing by the game's present interval
+
+The runtime now paces each Swap by the presentation interval the game set: 60 / vblanks a second, within fps_cap.
+PGR2 asks for one vblank (0x80000001) in the movies and menus and two (0x80000002) in races, so menus run at 60 and
+races at 30, as on the console, and the forced fps_cap 30 default is gone (game_info.cpp has no init any more).
+- sdk 3889abd: data key D3D_PresentInterval (5659 0x1D093C; the swap helper 0x1C5290 reads it at 0x1C534A),
+  signed on an anchor; round trip reproduces game.toml. fps_cap 0 now means "only the interval". The log has
+  `d3d: present interval XXXXXXXX` at each change.
+- Harness pad scripts count vertical blanks (each presented frame adds the vblanks it asked for), not frames.
+  All pad scripts remapped: unchanged before the movies (the first boot presents at most 30 a second there by
+  itself, also unpaced), doubled after. The title now needs START twice (attract -> PRESS START -> menu); a second
+  START 150 vblanks after the first. smoke.sh, savetest.sh and soak.sh read the vblank count.
+- Evidence: smoke OK (menu 11 draws a frame, race 2009); savetest OK; race clock 18.7 s of lap time in 20.1 s wall
+  with two snaps (0.93x, the snap cost, as 0.91x before). Not re-run: arcade, kws, timeattack, replay, soak.
+- Windows: if pgr2.toml has `fps_cap = 30`, set it to 60 (or delete the line) or the menus stay at 30.
+Next: an option for races at 60 (the interval clamped to 1; see the research entry for what to check).
 
 ### 2026-10-18 - player car body fixed: pushed constants applied out of order
 

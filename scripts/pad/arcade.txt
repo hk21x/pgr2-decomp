@@ -1,21 +1,22 @@
 # Arcade Racing: Timed Run 1 (Stockholm, Gamla Stan Loop, Vauxhall VX220), Novice; a rolling start, then
 # accelerate for 60 seconds.
 # from a first boot: make the profile "Player" with every default (as save1.txt)
-3650 START 15
-3800 A 5
-3950 A 5
-4100 A 5
-4250 A 5
-4400 A 5
+4760 START 30
+4910 START 20
+5060 A 10
+5360 A 10
+5660 A 10
+5960 A 10
+6260 A 10
 # main menu: Single Player
-4650 A 5
+6760 A 10
 # Single Player: Arcade Racing, then Street Race . Timed Run . Cone Challenge: Timed Run
-4800 RIGHT 5
-4850 A 5
-5000 RIGHT 5
-5050 A 5
+7060 RIGHT 10
+7160 A 10
+7460 RIGHT 10
+7560 A 10
 # event (Timed Run 1), difficulty (Novice), pre-race Start Race, the city loads
-5200 A 5
-5350 A 5
-5500 A 5
-6300 RT 1800
+7860 A 10
+8160 A 10
+8460 A 10
+10060 RT 3600

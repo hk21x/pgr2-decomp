@@ -267,6 +267,7 @@ D3D_Device                  = 0x1D09E0
 D3D_DirtyFlags              = 0x1D0538
 D3D_IndexData               = 0x1D0534
 D3D_pDevice                 = 0x1D09D8
+D3D_PresentInterval         = 0x1D093C
 D3D_RenderState             = 0x1D0740
 D3D_SimpleRenderStateEncode = 0x2759D0
 D3D_Streams                 = 0x1CF630

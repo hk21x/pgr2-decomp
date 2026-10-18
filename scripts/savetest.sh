@@ -23,10 +23,10 @@ sum1=$(md5sum < "$p")
 
 rm -f $LOG  # run 1's frames would end the wait below at once
 KEEP_HDD=1 scripts/harness.sh 200 scripts/pad/save2.txt > .local/savetest2.out 2>&1 &
-# the options screen is up from about frame 4550
+# the options screen is up from about vertical blank 6560
 for i in $(seq 150); do
-  f=$(grep -o "renderer: frame [0-9]*" $LOG 2>/dev/null | tail -1 | awk '{print $3}')
-  [ "${f:-0}" -ge 4620 ] && break
+  f=$(grep -o "vblank [0-9]*" $LOG 2>/dev/null | tail -1 | awk '{print $2}')
+  [ "${f:-0}" -ge 6700 ] && break
   timeout 2 tail -f /dev/null
 done
 rm -f $R/snap_1.tga $R/snap_2.tga

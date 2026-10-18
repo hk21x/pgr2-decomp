@@ -1,9 +1,10 @@
 # Saves, run 2 (KEEP_HDD=1 after save1.txt): the title offers "Start Player's Game"; open Options > General >
-# Game Options, where Speedometer must read KM/H (snap from frame 4600 on).
-3650 START 15
-3800 A 5
-4000 RIGHT 5
-4050 RIGHT 5
-4100 A 5
-4250 A 5
-4400 A 5
+# Game Options, where Speedometer must read KM/H (snap from about 6660 on).
+4760 START 30
+4910 START 20
+5060 A 10
+5460 RIGHT 10
+5560 RIGHT 10
+5660 A 10
+5960 A 10
+6260 A 10

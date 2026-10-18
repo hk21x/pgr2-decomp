@@ -1,7 +1,8 @@
-# frame buttons [frames held]   (30 frames a second)
+# vblank buttons [vblanks held]   (see boot.txt)
 # Title -> Instant Action (third item of the title menu) -> a single race, then accelerate for 60 seconds.
-3650 START 15
-4200 RIGHT 5
-4250 RIGHT 5
-4300 A 5
-5250 RT 1800
+4760 START 30
+4910 START 20
+5860 RIGHT 10
+5960 RIGHT 10
+6060 A 10
+7960 RT 3600

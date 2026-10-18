@@ -1,22 +1,7 @@
-#include <fstream>
-#include <string>
-
 #include "app/app.h"
 
-namespace {
-// PGR2 steps its races by a fixed time each frame and showed 30 frames a second on the console (it presents on
-// the next vertical blank and took more than one), so at 60 it runs twice as fast. 30 unless the settings file
-// sets fps_cap.
-constexpr uint32_t kConsoleFps = 30;
-void Init() {
-    std::ifstream f(app::ExeDir() / app::kGame.settings);
-    for (std::string line; std::getline(f, line);) {
-        size_t key = line.find_first_not_of(" \t");
-        if (key != std::string::npos && line.compare(key, 7, "fps_cap") == 0) return;
-    }
-    app::Get().fps_cap = kConsoleFps;
-}
-}  // namespace
+// PGR2 asks for one vertical blank a frame in its menus and two in its races (D3D_PresentInterval), and steps its
+// races by a fixed 1/30 s a frame; the runtime paces by that, so the default fps_cap of 60 runs both at console speed.
 
 // what the runtime asks of the game; strings must be set, hooks may stay null
 const app::GameInfo app::kGame = {
@@ -31,7 +16,7 @@ const app::GameInfo app::kGame = {
     .options = {},                        // game settings kept in the settings file
     .load = nullptr,                      // reads more from the settings file's toml::table
     .save = nullptr,                      // writes more into it
-    .init = Init,                         // after the settings load, before the window and boot
+    .init = nullptr,                      // after the settings load, before the window and boot
     .loaded = nullptr,                    // image in memory, before its entry point runs
     .window = nullptr,                    // the game window is up
     .message = nullptr,                   // window messages first; true takes one

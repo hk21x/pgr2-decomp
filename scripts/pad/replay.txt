@@ -1,22 +1,23 @@
 # Watching a replay: Arcade Timed Run 1 left to run out of time (2:45), then on the result screen
 # (Retry . Continue . View or Save Replay) the replay, watched for 60 seconds.
 # from a first boot: make the profile "Player" with every default (as save1.txt)
-3650 START 15
-3800 A 5
-3950 A 5
-4100 A 5
-4250 A 5
-4400 A 5
+4760 START 30
+4910 START 20
+5060 A 10
+5360 A 10
+5660 A 10
+5960 A 10
+6260 A 10
 # main menu: Single Player
-4650 A 5
-4800 RIGHT 5
-4850 A 5
-5000 RIGHT 5
-5050 A 5
-5200 A 5
-5350 A 5
-5500 A 5
-# the race rolls from about frame 6200; 2:45 is 4950 frames, the result screen follows
-11700 RIGHT 5
-11750 RIGHT 5
-11800 A 5
+6760 A 10
+7060 RIGHT 10
+7160 A 10
+7460 RIGHT 10
+7560 A 10
+7860 A 10
+8160 A 10
+8460 A 10
+# the race rolls from about 9860; 2:45 is 9900, the result screen follows
+20860 RIGHT 10
+20960 RIGHT 10
+21060 A 10

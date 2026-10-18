@@ -1,3 +1,6 @@
-# frame buttons [frames held]   (frames are presented frames, 30 a second as PGR2 runs; one line per press)
-# Boot to the title screen: the intro movies end by frame ~3050, START in the attract demo goes to the title.
-3650 START 15
+# vblank buttons [vblanks held]   (the vertical blanks presented frames asked for: 60 a second in the menus
+# and races, 30 a second while the first boot copies its cache; one line per press)
+# Boot to the title menu: the intro movies end by about 3560, START in the attract demo goes to the title, and
+# START there to its menu.
+4760 START 30
+4910 START 20

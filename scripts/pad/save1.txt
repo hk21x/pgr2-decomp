@@ -1,23 +1,24 @@
 # Saves, run 1 (a first boot): create the profile "Player" with every default, then Options > General >
 # Game Options: Speedometer MPH -> KM/H, Continue, back out to the main menu (the profile is saved there).
 # Then scripts/pad/save2.txt with KEEP_HDD=1 checks it. scripts/savetest.sh runs both.
-3650 START 15
-3800 A 5
+4760 START 30
+4910 START 20
+5060 A 10
 # name "Player": DONE
-3950 A 5
+5360 A 10
 # licence plate, plate text DONE, helmet
-4100 A 5
-4250 A 5
-4400 A 5
+5660 A 10
+5960 A 10
+6260 A 10
 # main menu: Single Player . Multiplayer . Options
-4650 RIGHT 5
-4700 RIGHT 5
-4750 A 5
+6760 RIGHT 10
+6860 RIGHT 10
+6960 A 10
 # Options: General Options, then Game Options
-4900 A 5
-5050 A 5
+7260 A 10
+7560 A 10
 # Speedometer: KM/H, Continue, back to Options select, back to the main menu (saves)
-5200 RIGHT 5
-5300 A 5
-5450 B 5
-5600 B 5
+7860 RIGHT 10
+8060 A 10
+8360 B 10
+8660 B 10
