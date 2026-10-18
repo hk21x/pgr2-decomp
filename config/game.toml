@@ -32,6 +32,7 @@ CDirectSoundStream_GetStatus                         = 0x1EC441
 CDirectSoundStream_Pause                             = 0x1EC509
 CDirectSoundStream_Process                           = 0x1EC492
 CDirectSoundStream_Release                           = 0x1EC2F4
+CDirectSoundStream_SetDopplerFactor                  = 0x1ED954
 CDirectSoundStream_SetFilter                         = 0x1ECA8E
 CDirectSoundStream_SetFormat                         = 0
 CDirectSoundStream_SetFrequency                      = 0x1ED791

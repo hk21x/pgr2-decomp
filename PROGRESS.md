@@ -13,9 +13,41 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Upstream: draft PR description for TGP482/XboxXBE-Recomp in `.local/upstream-pr.md`, not sent
 - D3D12 groundwork (no capture): raw vertex path proven against the CPU path, all race shaders compile (DXC), env map
   cube fixed; brown polygons and stripes not reproduced, see 2026-10-18 D3D12 entry for the list to check on Windows
-- Next: sound (WAV capture), saves, more modes, soak; F3 captures when Harry is back
+- Sound headless: not silent, no clipping, 48 kHz, menu music, engine pitch follows the throttle; DSP effects and
+  reverb are accepted but not applied
+- Next: saves, more modes, soak; F3 captures when Harry is back
 
 ## Log
+
+### 2026-10-18 - sound, checked headless
+
+- sdk harness: `WAV=file` writes the mixed output (48 kHz 16 bit stereo, header kept current, the log's
+  `audio: output started` is its first sample). The headless mixer is now pulled on a fixed 10 ms schedule (it
+  slept 10 ms after each pull, so it ran slow). `scripts/wavstats.py` prints RMS, peak, clipped samples and the
+  strongest frequency per interval.
+- Race run (race.txt, 240 s, `.local/run/1/race.wav`): movies -18 to -25 dB RMS with silent gaps between logos;
+  attract and title music -27 dB RMS, peak -17.8 dB; race -19 to -24 dB RMS, peaks to -2 dB. Clipped samples 0.
+  Sample rate 48 kHz out; voices at 44.1 and 22.05 kHz resampled by their SetFrequency.
+- Music in the menus: the title's music is a 44.1 kHz stream at gain 0.13 (-17.7 dB: stream headroom -6 dB and the
+  game's volume); it fades to 0 once Instant Action is chosen and the race loads.
+- Engine: a temporary per-voice trace (not committed) showed the engine buffer (44.1 kHz) driven by SetFrequency
+  48 kHz -> 73 kHz -> 76 kHz under throttle, dropping at each gear change (to 55k, 47k, 44k) and climbing again.
+  Eleven 8 kHz streams sit queued at full gain with silence (voice chat style); harmless.
+- DirectSound exports still running the library's code (the runtime's .XTLID audit), named from their export ids
+  (alphabetical within each interface) and Ghidra:
+  - B003E IDirectSound_GetCaps (0x1ECB84): reads the library's never-initialised counters, reports 0 free voices;
+    PGR2 calls it at audio init and never reads the result.
+  - B00A3 XAudioCalculatePitch, B00A5 XAudioCreatePcmFormat: pure arithmetic.
+  - B00AB (0x1ECFE5): a file media object for data/audio (XWaveFile style), plain file reads.
+  - B0080 FlushEx, B0093 SetMaxDistance, B0094 SetMinDistance, B009A SetPosition, B008B SetDopplerFactor: the
+    IDirectSoundStream thunks, each calling the CDirectSoundStream method.
+  - CDirectSoundStream_SetDopplerFactor (0x1ED954) was unmatched and wrote through a null voice pointer near guest
+    address 0 on each 3D stream update: now on the host (accepted), signed into 5659 (186 of 245).
+- Called but only accepted, no effect in the mixer: DownloadEffectsImage and SetEffectData (PGR2 loads
+  6WayDistortion.bin, 15 DSP effects), SetI3DL2Listener/Source (reverb), SetFilter (buffers and streams),
+  SetVelocity and SetDopplerFactor (Doppler), SetMixBinHeadroom, EnableHeadphones. Sound is dry: no distortion,
+  reverb, filters or Doppler. Not linked by PGR2: the other 26 DSOUND names the scan lists as missing.
+- Needs Windows: whether it sounds right (XAudio2 path, same mixer), the music volume in menus, and the engine.
 
 ### 2026-10-18 - D3D12 groundwork without a capture
 
