@@ -24,6 +24,13 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - Windows: reflections confirmed, release logs
+
+Harry confirms reflections on car paint and glass now work on Windows (SetRenderTargetFast plus the D3D12 cube
+copy). F3 "did nothing": his log shows the F3 stack dump at 7 s of a 19 s run (during the movies), but release
+builds keep only error and report lines, so XBE_VSC, the F3 note and the capture lines were never written. Those
+are reports now. The release log is logs\pgr2.log, overwritten each start (WINDOWS.md said pgr2_*.log).
+
 ### 2026-10-18 - car bodies, environment map, Windows captures
 
 Harry's Windows test: boots, movies, audio and saves (KM/H and Time Attack across a restart) work; the licence plate

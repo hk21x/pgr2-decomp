@@ -37,7 +37,7 @@ The first Windows build. Everything below runs on your PC; nothing here touches 
    `out\build\release\hdd`.
 
 Files the exe writes beside itself, in `out\build\release`:
-- `logs\pgr2_*.log` the log of each run (send me the newest one with any report)
+- `logs\pgr2.log` the log of the last run (overwritten each start; send it with any report)
 - `pgr2.toml` settings (window, vsync, graphics options)
 - `hdd\` the emulated hard disk (E: saves, X/Y/Z: caches)
 - `CrashDumps\` a minidump when it crashes
