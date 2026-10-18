@@ -24,6 +24,23 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - black car: the shade flag is real track data
+
+Harry: on the original Xbox the car is lit (a normal car from the selection). Checked headless with more probes
+(PGR2_LIGHT, src/game/hooks.cpp):
+- Of 9633 distinct track triangles the ground query looked at in a Florence race, 6316 have bit 7 of the flag
+  byte; the flag bytes are a small set of values (0..52 and 128..180).
+- The triangle records are not stored raw in Florence.pak_*: a watchpoint on one shows it written once at load by
+  0x1DC533, zlib's inflate window copy (D3DX section) with the final value; every other file goes through it too.
+- The query finds the right triangle: a wheel at y 1.93 gets ground 1.59 (a wheel radius below) and that triangle's
+  flag and baked colour.
+- 0x24DE0 stores bit 7 of the hit byte as the wheel flag; 0x207CC skips the 0.25 for a set flag.
+So data, query and test agree: in Florence the player's wheels mostly sit on flagged triangles, brightness eases to
+0, c56 (sun) is 0 and the body keeps only pc0, which for the body draw is tiny (0, 0.02, 0.027): no paint shows. In
+Edinburgh (Time Attack) the car takes the other branch (+0x19C8 == 5, c56 = +0x1520, 0.8) and is lit.
+Next: what the console shows in a shaded Florence street (paint visible, how dark), and what the flag bit means;
+whether pc0 for the body (paint times an ambient level) should be larger.
+
 ### 2026-10-18 - black player car: the game's own shadow logic, the same headless
 
 Windows run with XBE_VSC and capture 194603 (Florence grid): c56 is written only as 0 0 0 0 by 0x1F036 and c54 as

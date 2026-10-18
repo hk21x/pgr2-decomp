@@ -6,7 +6,9 @@
 // X86_FUNC(sub_00012345) {
 //     __imp__sub_00012345(ctx, base);  // the original
 // }
+#include <atomic>
 #include <mutex>
+#include <string>
 #include <unordered_map>
 #include <cstdlib>
 #include <cstring>
@@ -68,4 +70,51 @@ X86_FUNC(sub_00020690) {
     uint32_t car = ctx.ecx;
     __imp__sub_00020690(ctx, base);
     LogCarLight("frame", car);
+}
+
+// PGR2_LIGHT also tallies the flag byte (+0xB) of every distinct track triangle the ground query (0xC6210, ecx the
+// grid cell: +8 count, records of 16 bytes from +0x18) looks at, logged every 2000 queries
+X86_EXTERN_FUNC(__imp__sub_000C6210);
+X86_FUNC(sub_000C6210) {
+    static const bool on = std::getenv("PGR2_LIGHT") != nullptr;
+    if (on) {
+        static std::mutex m;
+        static std::unordered_map<uint32_t, uint8_t> seen;
+        static uint32_t calls = 0, hist[256] = {};
+        uint32_t cell = ctx.ecx, n = kernel::R32(cell + 8);
+        std::lock_guard lock(m);
+        for (uint32_t i = 0; i < n && i < 4096; i++) {
+            uint32_t e = cell + 0x18 + i * 0x10;
+            uint8_t f = kernel::G<uint8_t>(e + 0xB);
+            if (seen.emplace(e, f).second) {
+                hist[f]++;
+                if (seen.size() % 1500 == 1)
+                    LOGR("pgr2 light: triangle at %08X: %08X %08X %08X %08X", e, kernel::R32(e), kernel::R32(e + 4),
+                         kernel::R32(e + 8), kernel::R32(e + 12));
+            }
+        }
+        if (++calls % 2000 == 0) {
+            uint32_t bit7 = 0;
+            std::string top;
+            for (int b = 0; b < 256; b++) {
+                if (b & 0x80) bit7 += hist[b];
+                if (hist[b]) top += " " + std::to_string(b) + ":" + std::to_string(hist[b]);
+            }
+            LOGR("pgr2 light: %zu triangles queried, %u with bit 7; flag bytes%s", seen.size(), bit7, top.c_str());
+        }
+    }
+    __imp__sub_000C6210(ctx, base);
+}
+
+// PGR2_LIGHT: each wheel's ground query (0x24DE0, ecx the wheel): its position (+0x40), the height found (+4), the
+// flag (+0xD8) and colour (+0xDC), the first 200
+X86_EXTERN_FUNC(__imp__sub_00024DE0);
+X86_FUNC(sub_00024DE0) {
+    uint32_t w = ctx.ecx;
+    __imp__sub_00024DE0(ctx, base);
+    static const bool on = std::getenv("PGR2_LIGHT") != nullptr;
+    static std::atomic<int> n{0};
+    if (on && n++ < 200)
+        LOGR("pgr2 wheel %08X at %g %g %g ground %g flag %u colour %08X", w, F(w + 0x40), F(w + 0x44), F(w + 0x48), F(w + 4),
+             kernel::G<uint8_t>(w + 0xD8), kernel::R32(w + 0xDC));
 }
