@@ -51,6 +51,8 @@ Useful while testing:
 - `XBE_PERF=1` logs frame timing; `XBE_D3D12_DEBUG=1` turns on the Direct3D 12 debug layer (slow).
 - `XBE_VSC=56 54` logs who writes those vertex shader constants and the values (each distinct one once); used to
   find why the player's car body is black.
+- `XBE_CAPTURE_DRAWS=1580-1660` makes a capture also save the image after each draw in that range (the numbers in
+  the capture's frame.txt).
 - Setting these: in Command Prompt `set XBE_VSC=56 54`; in PowerShell `$env:XBE_VSC = "56 54"` (PowerShell's
   `set` does not set an environment variable). Start `PGR2.exe` from that same window.
 

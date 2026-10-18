@@ -24,6 +24,15 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-18 - car body: a second, Windows-only cause
+
+With PGR2_LIGHT_CLEAR on Windows (capture 211350): the body's constants are right (c56 1 1 1 1, c54 0.698, paint
+c51/c52 set, pc0 0.188) yet the body still does not appear; headless the same switch shows the body in its paint.
+Back buffer snapshots: before the car draws (1572) the road, after (1902) wheels, driver and the white shadow quad
+under the car, no body. The body draws are 1610-1617 (vs B01019E1, ps B0101D10, t1 the 1024 D16 shadow map,
+t3 the environment cube). New: XBE_CAPTURE_DRAWS=a-b saves the colour target after each draw in that range, to see
+whether the body draws land and what covers them.
+
 ### 2026-10-18 - black car: what the shade flag does, and an experiment switch
 
 Harry's reference (a YouTube video of a 07-11-03 pre-release build, Instant Action in Florence): on the grid the
