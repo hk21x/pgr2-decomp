@@ -1,6 +1,6 @@
-# Game Title - XBE Recomp
+# Project Gotham Racing 2 - XBE Recomp
 
-An unofficial native PC port of the original Xbox version of Game Title, with extended graphics options and other enhancements.
+An unofficial native PC port of the original Xbox version of Project Gotham Racing 2, with extended graphics options and other enhancements.
 
 This port was created using the [Xbox XBE Recomp](https://github.com/TGP482/XboxXBE-Recomp) tool.
 
@@ -10,8 +10,8 @@ This port was created using the [Xbox XBE Recomp](https://github.com/TGP482/Xbox
 ## Installation
 
 - Put your game files in the `assets` folder. This can be an ISO, or the extracted data files.
-- Run `Game.exe`.
-- Recomp settings can be adjusted in `settings.toml` beside the exe.
+- Run `PGR2.exe`.
+- Recomp settings can be adjusted in `pgr2.toml` beside the exe.
 
 ## Features
 

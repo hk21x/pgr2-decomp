@@ -2,14 +2,14 @@
 
 // what the runtime asks of the game; strings must be set, hooks may stay null
 const app::GameInfo app::kGame = {
-    .title = L"Game Title",               // window and splash
-    .short_title = L"Game",               // message boxes
-    .name = L"Game",                      // window classes, crash dumps, handover event
-    .log = "game",                        // log file prefix
-    .settings = "settings.toml",          // settings file beside the exe
+    .title = L"Project Gotham Racing 2",  // window and splash
+    .short_title = L"PGR2",               // message boxes
+    .name = L"PGR2",                      // window classes, crash dumps, handover event
+    .log = "pgr2",                        // log file prefix
+    .settings = "pgr2.toml",              // settings file beside the exe
     .splash = L"splash",                  // optional splash.png or splash.bmp beside the exe
     .missing = L"Put the game in the assets folder: its disc image (.iso), or default.xbe with its folders beside it.",
-    .images = {{"default.xbe", "Game"}},  // each recompiled xbe and its exe, for title launches
+    .images = {{"default.xbe", "PGR2"}},  // each recompiled xbe and its exe, for title launches
     .options = {},                        // game settings kept in the settings file
     .load = nullptr,                      // reads more from the settings file's toml::table
     .save = nullptr,                      // writes more into it

@@ -1,5 +1,5 @@
 @echo off
-set "GAME_EXE=Game"
+set "GAME_EXE=PGR2"
 cd /d "%~dp0"
 set "OUT=out\build\release"
 if not exist "%OUT%\%GAME_EXE%.exe" call build.bat || exit /b 1

@@ -1,4 +1,4 @@
-# Game Title (original Xbox), statically recompiled
+# Project Gotham Racing 2 (original Xbox), statically recompiled
 
 cmake_minimum_required(VERSION 3.25)
 project(game LANGUAGES C CXX)
@@ -37,4 +37,4 @@ endif()
 
 # target name = GAME_EXE in build.bat, xbe = GAME_XBE
 # config/pgr2.toml holds the hand-kept entries and includes the generated config/game.toml
-add_xbe_image(Game default.xbe pgr2.toml ${GAME_PARTITIONS} game)
+add_xbe_image(PGR2 default.xbe pgr2.toml ${GAME_PARTITIONS} game)
