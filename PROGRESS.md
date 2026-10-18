@@ -9,9 +9,25 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Known: car bodies partly missing; a stale band under the HUD seen once at a race start; reference renderer
   shows dotted textures (waiting for the Windows report)
 - Speed: right at 30 fps (PGR2 default); Windows shows flat brown polygons and striped textures
-- Next: F3 captures of the brown polygons and striped textures from Windows
+- Smoke test: `scripts/smoke.sh` (title -> Instant Action -> race, no traps), run before every fast-forward of main
+- Upstream: draft PR description for TGP482/XboxXBE-Recomp in `.local/upstream-pr.md`, not sent
+- Next: F3 captures (with XBE_CAPTURE_DIR set) of the brown polygons and striped textures, and playtest notes
 
 ## Log
+
+### 2026-10-18 - smoke test, upstream draft
+
+- `scripts/smoke.sh`: runs `scripts/pad/race.txt` headless (240 s) and fails on any trap, unimplemented export or
+  guest trap in the log, when the title menu is not up before the menu choice (frames 3900-4200 under 100 draws a
+  frame), when the last 300 frames average 100 draws a frame or fewer, or when frames stop. First boot: menu 11,
+  race 1586 draws a frame; KEEP_HDD=1: race 2810; `PAD=scripts/pad/none.txt` fails as it should (11 draws a frame).
+  CLAUDE.md: run it before every fast-forward of main.
+- sdk: comments no longer name PGR2; harness README documents FPS. The branch (40e9c35..) is generic.
+  `.local/upstream-pr.md` drafts the upstream PR; Harry decides when to send it.
+- Rendering (brown polygons, green/magenta stripes): not started. `.local/win` has only pgr2.log, with F3 stack
+  dumps and no capture: XBE_CAPTURE_DIR was not set, or its folder not copied. Every texture format used in a race
+  (0x0, 0x1, 0x6, 0xC, 0xF, 0x1E, 0x24, 0x30) decodes in the headless renderer, so the fault is likely D3D12 only.
+- Playtest: no notes and no CrashDumps folder; the log ends with Exit (0).
 
 ### 2026-10-18 - game speed: 30 frames a second
 

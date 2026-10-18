@@ -49,6 +49,8 @@ Read `sdk/README.md`, `sdk/harness/README.md` and `PROGRESS.md` at the start of 
   generated code. SDK changes (new XDK data, runtime fixes) go in the `sdk/` submodule as separate commits.
 - If the same problem survives 3 genuinely different attempts, stop: write up what you tried and what you
   think is happening in PROGRESS.md, commit, and tell Harry.
+- Run `scripts/smoke.sh` (headless: title -> Instant Action -> race, about 4 minutes) before every fast-forward of
+  `main`; it must print SMOKE OK. It fails on traps, on missing the race, or on frames stopping.
 - Work on one branch per task. When the task ends and everything builds, fast-forward `main` to it
   (`git merge --ff-only`) and push both. SDK work goes on a branch of the fork (hk21x/XboxXBE-Recomp).
 - Never force-push. Never rewrite history.
