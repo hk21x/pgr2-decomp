@@ -16,9 +16,82 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Sound headless: not silent, no clipping, 48 kHz, menu music, engine pitch follows the throttle; DSP effects and
   reverb are accepted but not applied
 - Saves: profile and settings persist across a reboot (`scripts/savetest.sh`); a lap record needs steering
-- Next: more modes, soak; F3 captures when Harry is back
+- Coverage: pad scripts for Time Attack, Kudos World Series, Arcade, replay; 60 minute soak clean
+- System link: two harness instances find each other and exchange the join, then the session stalls (open)
+- Next (when Harry is back): Windows checklist, F3 captures; then the presentation interval (menus 60, races 30)
 
 ## Log
+
+### 2026-10-18 - coverage, soak, system link
+
+Pad scripts (each from a first boot, making the profile as save1.txt does; checked with snaps at each step):
+- `timeattack.txt`: Circuit Challenge, Edinburgh, Princes Street East, MINI Cooper S, Auto; rolling start, 60 s
+  of throttle.
+- `kws.txt`: Kudos World Series, Compact Sports Series, Street Race (Florence, Duomo 2), MINI, Auto, Novice;
+  grid start, 60 s of throttle.
+- `arcade.txt`: Arcade Racing, Timed Run 1 (Stockholm, Gamla Stan Loop, Vauxhall VX220), Novice; 60 s throttle.
+- `replay.txt`: the same Timed Run left to time out (2:45), then View or Save Replay: the replay plays with its
+  controls (Save, rewind, pause, fast forward, cameras).
+No traps in any; quitting a race (pause > Quit > Yes) goes back to its menus or the title.
+
+Soak (`scripts/soak.sh 60`): Instant Action races back to back for 60 minutes, each 60 s of throttle, then
+pause, Quit, Instant Action again (a random city and car each time: Barcelona, Edinburgh, Florence, ...).
+31 races scripted, 30 3D scenes drawn, 107,460 frames, 200 million draws; no traps, no errors, no hang (frames to
+the end, 31 empty frames, one per load). Memory: RSS 100 MB at 5 minutes, 104 MB at 60 (+4.4 MB an hour), data
+600 -> 619 MB: no leak worth chasing. 10 minute run before it: the same.
+
+System link (two instances, `sdk/harness/run.sh -n 2`):
+1. Binding failed: PGR2 binds ports 1000-1002, Linux keeps ports below 1024 for root (WSAEACCES). Fixed (sdk
+   35f0f68): loopback instances on a non-Windows host shift those ports up 20000 and back. Both bind now.
+2. Host: Multiplayer > System Link > Create New Game > Edinburgh > Princes Street East > options: the lobby
+   ("Player (Host)", seven open, waiting). Joiner: System Link > Search for Games. Traced (not committed): the
+   search broadcast (9 bytes) reaches the host, the host's 204 byte answer reaches the joiner, the joiner sends a
+   186 byte join to the host's port 1002, the host answers 1183 bytes, the joiner acks 12 bytes. Then neither sends
+   anything; the host lists no one and the joiner says "You have lost connection with the host".
+3. A joiner with a different profile name: the same.
+Three attempts, stopped. Ideas for next time: which XNet calls run after the ack (XNetRegisterKey with the host's
+key, XNetXnAddrToInAddr on the host's XNADDR from the 1183 bytes; the runtime keeps one key), whether a socket
+waits in select() or an overlapped receive that never completes, and whether the identical console identity of
+two instances (same EEPROM, serial, profile id 12E9194916CD) matters. On Windows with two PCs the port shift does
+not apply; worth trying there.
+
+### 2026-10-18 - research: video settings, timing and 60 fps (no code)
+
+Video settings (EEPROM). PGR2 reads them: XGetVideoFlags (0x191297) calls ExQueryNonVolatileSetting(8,
+XC_VIDEO_FLAGS) and returns (value >> 16) & 0x5F (1 widescreen, 2 720p, 4 1080i, 8 480p, 0x10 letterbox, 0x40
+PAL60), dropping 720p/1080i unless the AV pack (0x192f34) is HDTV. Its callers: the device setup 0x1783a0 and the
+PAL60 check 0x143050. The device setup always asks for a 640x480 back buffer; widescreen sets
+D3DPRESENTFLAG_WIDESCREEN and the flag at +0x37C, 480p sets D3DPRESENTFLAG_PROGRESSIVE. 720p and 1080i are never
+used: PGR2 has no HD mode.
+- The runtime already reports widescreen when the output is 3:2 or wider, plus 480p (Windows: always widescreen
+  on Harry's 3440x1440). Headless A/B with the new `OUTPUT=WxH` (same Time Attack frame,
+  captures/1018-ab43-race.png and 1018-ab169-race.png): widescreen renders anamorphic 16:9 into 640x480, a wider
+  horizontal field of view (more of the street) and the HUD narrowed and moved out to the edges; the D3D12 backend
+  shows it at 16:9, so the shapes come out right. The 2D menus are the same in both.
+- So nothing to enable: widescreen is on, 480p changes nothing but a flag, and more pixels come from the runtime's
+  render scale (render_percent), not from the game.
+
+Timing. FUN_000d90f0 (from the main loop 0x179830) runs each frame:
+- dt = interval / refresh, from the presentation interval byte 0x4860F1 and the refresh rate byte 0x48614B (60).
+- game time += dt x timescale (timescale 1.0, set by FUN_000d9060); in some modes measured time is used instead:
+  swap timestamps from the swap callback 0xD9010 (or the performance counter), capped at 0.15 s.
+- Physics steps a fixed 1/60 s at a time (FUN_000f5d60) until it catches up with game time: two steps a frame at
+  30 fps, one at 60.
+The interval comes from FUN_00177c70(n), which sets the D3D presentation interval: n = 1 0x80000001 (every vblank),
+2 0x80000002 (every second vblank), and stores it in D3D's interval global 0x1D093C and the byte 0x4860F1.
+Measured headless: 1 through the movies and menus, 2 from the race on. So the console runs the frontend at 60 and
+races at 30, by presentation interval; the runtime ignores the interval and paces only by fps_cap, which is why
+races ran double speed at 60 and why the 30 fps default slows the menus to 30.
+
+What 60 fps would take:
+1. First, generic: the runtime honours the presentation interval in Swap (pace to refresh / interval; an XDK
+   layout key for D3D's interval global, 0x1D093C in 5659). Menus at 60, races at 30 as on the console, and the
+   fps_cap 30 default could go. Test that the game speed is right in both.
+2. Then races at 60: keep the interval at 1 in races (an override of FUN_00177c70 clamping 2 to 1, in src/game, as
+   an option). dt becomes 1/60 and physics takes one 1/60 step a frame: the same simulation, so handling is
+   unchanged. To check: anything per frame outside the physics loop (FUN_000179f0 compares an interval-derived
+   step in replay/ghost timing; ghosts saved at 30 replayed at 60; Kudos and HUD timers; particles; system link
+   between a 30 and a 60 machine), and that 60 frames a second of the race fit the frame budget on PC.
 
 ### 2026-10-18 - saves
 

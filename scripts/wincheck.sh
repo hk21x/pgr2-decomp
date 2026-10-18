@@ -17,7 +17,7 @@ for f in "${FILES[@]}"; do
     -isystem $M/lib/gcc/x86_64-w64-mingw32/13-posix/include/c++ \
     -isystem $M/lib/gcc/x86_64-w64-mingw32/13-posix/include/c++/x86_64-w64-mingw32 \
     -isystem "$(clang -print-resource-dir)/include" -isystem $M/x86_64-w64-mingw32/include \
-    -Isdk/runtime -Isrc -Ibuild/linux/_deps/imgui-src -Ibuild/linux/_deps/tomlplusplus-src/include \
+    -Isdk/runtime -Isrc -Igenerated/game -Ibuild/linux/_deps/imgui-src -Ibuild/linux/_deps/tomlplusplus-src/include \
     -DWIN32_LEAN_AND_MEAN -DNOMINMAX -Wno-everything "$f" 2>&1 | grep -E "error" | head -20)
   if [ -n "$out" ]; then echo "$out"; rc=1; else echo "ok $f"; fi
 done
