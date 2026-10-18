@@ -1,5 +1,9 @@
 #include "app/app.h"
 
+namespace pgr2 {
+bool race_60fps = false;  // races at 60 frames a second instead of the console's 30 (src/game/hooks.cpp)
+}
+
 // PGR2 asks for one vertical blank a frame in its menus and two in its races (D3D_PresentInterval), and steps its
 // races by a fixed 1/30 s a frame; the runtime paces by that, so the default fps_cap of 60 runs both at console speed.
 
@@ -13,7 +17,7 @@ const app::GameInfo app::kGame = {
     .splash = L"splash",                  // optional splash.png or splash.bmp beside the exe
     .missing = L"Put the game in the assets folder: its disc image (.iso), or default.xbe with its folders beside it.",
     .images = {{"default.xbe", "PGR2"}},  // each recompiled xbe and its exe, for title launches
-    .options = {},                        // game settings kept in the settings file
+    .options = {{"race_60fps", &pgr2::race_60fps, nullptr}},  // game settings kept in the settings file
     .load = nullptr,                      // reads more from the settings file's toml::table
     .save = nullptr,                      // writes more into it
     .init = nullptr,                      // after the settings load, before the window and boot

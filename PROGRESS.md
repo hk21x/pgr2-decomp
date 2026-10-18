@@ -8,7 +8,8 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - XDK 5659: 187 of 246 functions, 13 of 13 data
 - Known: car bodies partly missing; a stale band under the HUD seen once at a race start; reference renderer
   shows dotted textures (waiting for the Windows report)
-- Speed: paced by the game's own present interval (menus 60, races 30, as on the console); fps_cap 60 default
+- Speed: paced by the game's own present interval (menus 60, races 30, as on the console); fps_cap 60 default;
+  `race_60fps` option (experimental, off) runs races at 60
 - Smoke test: `scripts/smoke.sh` (title -> Instant Action -> race, no traps), run before every fast-forward of main
 - Upstream: draft PR description for TGP482/XboxXBE-Recomp in `.local/upstream-pr.md`, not sent
 - D3D12 groundwork (no capture): raw vertex path proven against the CPU path, all race shaders compile (DXC), env map
@@ -23,6 +24,19 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Next: Harry's XBE_VSC run for the black car; a per-draw capture for the stripes
 
 ## Log
+
+### 2026-10-18 - option: races at 60 frames a second (experimental, off)
+
+`race_60fps = true` in pgr2.toml (or PGR2_RACE60=1 headless) runs races at 60. src/game/hooks.cpp overrides the
+interval setter 0x177C70 (thiscall, interval 0/1/2; stores 0x80000000 + n in D3D's global and n in 0x4860F1):
+asked for 2, it passes 1. The frame step 0xD90F0 then gives dt 1/60 and physics takes one 1/60 step a frame, so
+the simulation is the one the console runs at 30, sampled twice as often.
+- Evidence (headless): the race presents 60 a second, interval stays 0x80000001; the start countdown ran 19 s in
+  22.2 s wall with two CPU snaps (the snaps cost more at 60). A replay recorded at 60 plays back (the result
+  screen's background replay moves). Not checked: replay and ghost speed against a 30 fps recording (0x179F0
+  compares a ghost sample step with dt), Kudos timing, system link with one side at 60.
+- Smoke OK with the option off (the default).
+Next: Windows checks (pacing, car body, stripes, race_60fps feel and replays).
 
 ### 2026-10-18 - frame pacing by the game's present interval
 

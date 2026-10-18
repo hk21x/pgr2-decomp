@@ -130,3 +130,22 @@ X86_FUNC(sub_00024DE0) {
         LOGR("pgr2 wheel %08X at %g %g %g ground %g flag %u colour %08X", w, F(w + 0x40), F(w + 0x44), F(w + 0x48), F(w + 4),
              kernel::G<uint8_t>(w + 0xD8), kernel::R32(w + 0xDC));
 }
+
+namespace pgr2 {
+extern bool race_60fps;
+}
+
+// race_60fps (settings file) or PGR2_RACE60: races at 60 frames a second. The game sets its presentation interval
+// through 0x177C70 (thiscall, the interval 0, 1 or 2): 1 in the movies and menus, 2 in races. Asked for 2, this
+// passes 1: the swap paces to 60 and the frame step (0xD90F0, 1 / (60 / interval)) becomes 1/60, so physics takes
+// one fixed 1/60 step a frame instead of two.
+X86_EXTERN_FUNC(__imp__sub_00177C70);
+X86_FUNC(sub_00177C70) {
+    static const bool on = [] {
+        bool v = pgr2::race_60fps || std::getenv("PGR2_RACE60") != nullptr;
+        if (v) LOGR("pgr2: races at 60 frames a second");
+        return v;
+    }();
+    if (on && kernel::R32(ctx.esp + 4) == 2) kernel::W32(ctx.esp + 4, 1);
+    __imp__sub_00177C70(ctx, base);
+}

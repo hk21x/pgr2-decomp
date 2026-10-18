@@ -38,7 +38,9 @@ The first Windows build. Everything below runs on your PC; nothing here touches 
 
 Files the exe writes beside itself, in `out\build\release`:
 - `logs\pgr2.log` the log of the last run (overwritten each start; send it with any report)
-- `pgr2.toml` settings (window, vsync, graphics options)
+- `pgr2.toml` settings (window, vsync, graphics options). Speed: the game's own frame rate is honoured (menus
+  60, races 30, as on the console); `fps_cap` only caps it further (60 by default, 0 for no cap of its own).
+  `race_60fps = true` runs races at 60 instead (an experiment: same physics, one 1/60 step a frame).
 - `hdd\` the emulated hard disk (E: saves, X/Y/Z: caches)
 - `CrashDumps\` a minidump when it crashes
 
