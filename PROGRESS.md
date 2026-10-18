@@ -3,15 +3,61 @@
 Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Status
-- Milestone: 3 - **title screen** in the harness, first boot (cache format and copy) and normal boot both
-- XDK 5659: 183 of 242 functions, 12 of 12 data (D3D complete; 25 DSOUND, 7 CRT, 6 Winsock still 0)
-- SDK fork: hk21x/XboxXBERecomp branch `pgr2-xdk5659`, pushed; `main` here points at it
-- Config: hand entries in `config/pgr2.toml`, `config/game.toml` is xbe_symbols output only
-- Known: pressing START during Intro2 (a movie with audio) hangs the movie player; car bodies missing in the
-  attract demo; the CPU reference renderer shows dotted textures and white bands (not checked on D3D12)
-- Next: the menu after the title, then a race; see the newest log entry
+- Milestone: 4 - **a race runs under pad control** in the harness (title -> Instant Action -> Yokohama race)
+- Windows: Harry's first build boots and takes input; white quad and solid-colour movies fixed in shared code since
+- XDK 5659: 185 of 244 functions, 12 of 12 data
+- Known: car bodies partly missing; a stale band under the HUD seen once at a race start; reference renderer
+  shows dotted textures (waiting for the Windows report)
+- Next: Windows retest of menus, movies and the race; then car bodies
 
 ## Log
+
+### 2026-10-18 - Windows prep, white quad, movies, menus, first race
+
+**Windows build prep.** `.gitmodules` uses https://github.com/hk21x/XboxXBERecomp.git (SSH push URL only in the
+VM's sdk config). PGR2 names: `PGR2.exe`, window "Project Gotham Racing 2", `pgr2.toml`, logs `pgr2_*.log`
+(the harness log is now `.local/run/1/logs/pgr2_001.log`). `build.bat` keeps the committed config (it runs
+xbe_symbols only when `config/game.toml` has no `[symbols]`). WINDOWS.md has the steps and checklist.
+D3D12 review found one real gap: titles poll GetVisibilityTestResult in a loop (PGR2 0x114CC0) and D3D12 wrote
+reports only at Present; D3D_SetFence now flushes when a report was asked for and Flush delivers reports.
+
+**Harry's first Windows run**: builds, boots, takes the pad. White quad flickering over the menus, movies solid.
+
+**White quad (shared code, D3D12 and headless).** PGR2 calls Swap(2) (copy, no finish), draws its own copy of
+the supersampled back buffer to the front buffer (a white quad sampling texture 0 = back buffer, u 0..1280, plus
+pillarbox bars; 0xD983D..0xD9B59), then Swap(4). The host presented on every Swap, so every other frame showed
+the copy pass: an untextured white quad. Swap now honours COPY/BYPASSCOPY/FINISH: the copy draws go to a target
+that is never shown, FINISH shows the back buffer, the swap count moves once a frame.
+
+**Movies.** The decoder writes correct YUY2 (checked in memory) and YUY2 conversion existed. PGR2's movie player
+gives texture coordinates in register 9 under FVF XYZRHW | DIFFUSE; my immediate-mode FVF path packed only the
+FVF's fields, so every pixel sampled texel (0,0). The FVF is now widened by the slots written.
+`captures/1018-0722-ref_00600.png` (Bizarre Creations), `1018-0722-ref_01200.png` (Microsoft Game Studios).
+
+**Car bodies / direct constant uploads.** 0x1852D0, 0x185330, 0x185450 run thousands of times in the attract
+demo (0x1853B0 never); their constants reach `g_state.vsc` (114..117 hold a matrix). Not the cause. Bodies are
+still partly missing; left for the Windows report.
+
+**Menus.** Three bugs stood between the title and the menus:
+- XAPI init failed: MODE SENSE page 0x3E (DVD authentication) through IOCTL_SCSI_PASS_THROUGH_DIRECT was answered
+  with zeros, then the signed security sector check (0x19372C). Now the page is answered and the check passes on
+  the host (`XapiVerifyMediaInDrive`, our name). T: and U: are mounted, no reboot to the dashboard, no "not enough
+  free blocks" dialog.
+- The harness ran unpaced (thousands of frames a second): presses were milliseconds long. Paced to 60 (FPS=N).
+- DirectSoundGetSampleTime (0x1EB88B, .XTLID 0xB0011) read the APU sample counter 0xFE80200C, which never moved:
+  the frontend clock (0xAD280, delta at 0x2FEE14) stood still, so menu text stopped at its first letter and items
+  were drawn at near zero size. Now a host function counting 48 kHz samples. Menus animate and respond.
+`captures/1018-s01.png` (title, no white quad), `1018-t01.png` (title menu), `1018-t03.png` (Instant Action).
+
+**Race.** Title -> RIGHT, RIGHT -> Instant Action -> "Welcome to Yokohama" (`1018-t04.png`) -> race start
+(`1018-t05.png`) -> accelerating, lap 1 of 2 at 80 mph (`1018-t06.png`), lap 2 (`1018-t08.png`).
+`scripts/pad/race.txt` does it from a clean start: `1018-0748-ref_10800.png` (in the race, lap 1).
+
+**START during Intro2** no longer hangs: it skips to the title (`1018-0750-ref_02400.png`). The frozen sample
+clock was the likely cause; not separately root-caused.
+
+**Next.** Windows retest; the stale band under the HUD at race start (`1018-t05.png`); car bodies; dotted
+textures once the Windows report says whether D3D12 shows them.
 
 ### 2026-10-17 - fork, config split, cache partition, first real drawing: attract demo and title screen
 
