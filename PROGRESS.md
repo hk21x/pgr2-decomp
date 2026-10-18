@@ -8,9 +8,26 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - XDK 5659: 185 of 244 functions, 12 of 12 data
 - Known: car bodies partly missing; a stale band under the HUD seen once at a race start; reference renderer
   shows dotted textures (waiting for the Windows report)
-- Next: Windows retest of menus, movies and the race; then car bodies
+- Speed: right at 30 fps (PGR2 default); Windows shows flat brown polygons and striped textures
+- Next: F3 captures of the brown polygons and striped textures from Windows
 
 ## Log
+
+### 2026-10-18 - game speed: 30 frames a second
+
+Harry finished a full Instant Action race on Windows; the game ran far too fast at fps_cap 60, and right at 30.
+PGR2 steps races by a fixed time per frame (the frame time path at 0xD9317 takes measured swap times only in some
+modes) and showed 30 frames a second on the console: it presents on the next vertical blank
+(interval 0x80000001) and its frames took more than one. Measured headless: the race clock ran 1.84x at 60
+(3:48 -> 3:07 in 22.3 s), 0.91x at 30 with snap overhead (4:35 -> 4:14 in 23 s).
+- `src/common/game_info.cpp`: PGR2's init sets fps_cap 30 unless the settings file has an fps_cap line.
+- sdk: the swap callback is called when a swap is shown (new layout key CDevice_SwapCallback, 5659 0x1DA4);
+  PGR2 records frame timestamps there. Correct, but not what fixed the speed.
+- harness: paces to the settings' fps_cap when FPS is unset, so it runs at 30 like Windows; pad scripts halved.
+The settings file `pgr2.toml` only exists once written from the settings overlay; create it by hand to override.
+
+Windows screenshots also show large flat brown polygons over track and sky, and green/magenta striped surfaces;
+car bodies are fine on D3D12 (headless only). Needs F3 captures with XBE_CAPTURE_DIR set.
 
 ### 2026-10-18 - Windows prep, white quad, movies, menus, first race
 

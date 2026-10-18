@@ -1,4 +1,3 @@
-# frame buttons [frames held]   (frames are presented frames, 60 a second; one line per press)
-# Boot to the title screen. The intro movies end by frame ~6100 (do not press START during Intro2: it hangs the
-# movie player, see PROGRESS.md); START in the attract demo goes to the title.
-7300 START 30
+# frame buttons [frames held]   (frames are presented frames, 30 a second as PGR2 runs; one line per press)
+# Boot to the title screen: the intro movies end by frame ~3050, START in the attract demo goes to the title.
+3650 START 15
