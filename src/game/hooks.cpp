@@ -118,7 +118,11 @@ X86_EXTERN_FUNC(__imp__sub_00024DE0);
 X86_FUNC(sub_00024DE0) {
     uint32_t w = ctx.ecx;
     __imp__sub_00024DE0(ctx, base);
-    static const bool clear = std::getenv("PGR2_LIGHT_CLEAR") != nullptr;  // experiment: every wheel sunlit
+    static const bool clear = [] {  // experiment: every wheel sunlit
+        bool on = std::getenv("PGR2_LIGHT_CLEAR") != nullptr;
+        if (on) LOGR("pgr2: PGR2_LIGHT_CLEAR on, every wheel counts as sunlit");
+        return on;
+    }();
     if (clear) kernel::G<uint8_t>(w + 0xD8) = 0;
     static const bool on = std::getenv("PGR2_LIGHT") != nullptr;
     static std::atomic<int> n{0};
