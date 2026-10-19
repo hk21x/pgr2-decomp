@@ -28,6 +28,19 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - night flicker: not reproduced headless; combiner calls noted in the frame log
+
+Harry: on the original Xbox lit windows never flicker (daytime clip in .local/win for reference).
+- src/game/hooks.cpp: PGR2_NIGHT=1 forces every race to night (0x383188 after FUN_000F14E0) so night is
+  reproducible headless; night Florence and Edinburgh render.
+- Headless night Edinburgh frame logs (90 frames, plain and XBE_VISIBLE_ALL=1): no one-frame stage blips. Harry's
+  Windows log had them (frames 11-14).
+- sdk: d3d::FrameLogNote; the game hook on FUN_00105ED0 (stage 0 combiner modes, cache 0x3F29A4) notes each call,
+  the cache, the caller and the resulting COLOROP/ARG1 in the frame log. Headless: ~47 calls a frame; mode 5
+  (full bright) once a frame from 0x8C025.
+Next: Harry's frame log at the flickering building with the notes, to see which caller sets the building's mode
+in a blip frame.
+
 ### 2026-10-19 - night and rain are normal in Instant Action; the flicker is night lighting
 
 Harry: night is possible in Instant Action on the original Xbox too. His log: a day race and a night race with the

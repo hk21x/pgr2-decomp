@@ -10,11 +10,13 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
 #include "core/log.h"
 #include "kernel/kernel.h"
+#include "xdk/d3d8.h"
 #include "xdk/hle.h"
 
 namespace {
@@ -156,4 +158,31 @@ X86_FUNC(sub_00116C20) {
     LOGR("pgr2: area loads with time of day %u (1 night), weather %u (2 overcast) from %08X", kernel::R32(0x383188),
          kernel::R32(0x383184), kernel::R32(ctx.esp));
     __imp__sub_00116C20(ctx, base);
+}
+
+// PGR2_NIGHT=1 (experiment): every race at night. The conditions are picked in 0x0F14E0 (it writes 0x383188 itself,
+// found with a watchpoint); night is set right after, before the race copies it and loads the city's night set
+X86_EXTERN_FUNC(__imp__sub_000F14E0);
+X86_FUNC(sub_000F14E0) {
+    __imp__sub_000F14E0(ctx, base);
+    static const bool night = [] {
+        const char* e = std::getenv("PGR2_NIGHT");
+        bool on = e && *e == '1';
+        if (on) LOGR("pgr2: PGR2_NIGHT=1, every race at night");
+        return on;
+    }();
+    if (night) kernel::W32(0x383188, 1);
+}
+
+// PGR2's stage 0 combiner modes (0x105ED0(mode): 1 MODULATE(diffuse, texture), 5 SELECTARG1(texture), ...; it skips a
+// mode equal to its cache 0x3F29A4): each call noted in the frame log with the cache and the caller, to see who picks
+// full bright for a building for one frame
+X86_EXTERN_FUNC(__imp__sub_00105ED0);
+X86_FUNC(sub_00105ED0) {
+    uint32_t mode = kernel::R32(ctx.esp + 4), cache = kernel::R32(0x3F29A4), ret = kernel::R32(ctx.esp);
+    __imp__sub_00105ED0(ctx, base);
+    char note[96];
+    std::snprintf(note, sizeof note, "combiner mode %u (cache %u) from %08X colorop %u arg1 %u", mode, cache, ret,
+                  kernel::R32(0x1D0570), kernel::R32(0x1D0578));
+    d3d::FrameLogNote(note);
 }
