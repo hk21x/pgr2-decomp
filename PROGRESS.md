@@ -27,6 +27,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - who sets night: FUN_000F14E0 (gdb watchpoint)
+
+Harry's log: Sydney loaded with time of day 1 (night), Hong Kong with weather 2 (rain); the race-start line said 0
+both times: set in between. Under gdb (the harness started inside gdb: this VM refuses ptrace attach; handle all
+nostop, hardware watchpoints on 0x100383188/0x100383184) the writes come from FUN_000F14E0, called by race setup
+(FUN_000F4910, FUN_000F4B00). It picks the conditions from per-city tables (0x33BECC, 0x33BEE4, default 0x33BEE8,
+0x68 bytes a city) by the game mode's flags (0x30CEFC.., 0x40 a mode) and an index 0x3667D4 = 0x34EB20 + 1 (a menu
+selection 0 to 4, likely difficulty; 0x366E58 keeps the last). It also calls rand() first.
+- src/game/hooks.cpp logs "pgr2: conditions: mode M city C slot S (selection, kept) -> ..." per race (the two result
+  fields are not yet read right: headless says 3/0 where the area loads 0/0 or 0/2). Headless: slot 3, selection 0.
+Next: Harry's log of a night race to compare the inputs.
+
 ### 2026-10-19 - the night cone challenge: the game loaded the night lighting set
 
 Harry's capture 191837 (Florence cone challenge, night; the console shows it by day): the sky texture itself

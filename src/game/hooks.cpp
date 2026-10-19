@@ -194,3 +194,15 @@ X86_FUNC(sub_00116C20) {
          kernel::R32(0x383184), kernel::R32(ctx.esp));
     __imp__sub_00116C20(ctx, base);
 }
+
+// where a race's time of day and weather are decided (0x0F14E0, fastcall, ecx the race): [0x1B9] time of day and
+// [0x1BA] weather, from the city's table (+0x20 the city, [0] the mode) indexed by 0x3667D4, which is 0x34EB20 + 1
+// (a menu selection 0 to 4; 0x366E58 keeps the last one)
+X86_EXTERN_FUNC(__imp__sub_000F14E0);
+X86_FUNC(sub_000F14E0) {
+    uint32_t race = ctx.ecx;
+    __imp__sub_000F14E0(ctx, base);
+    LOGR("pgr2: conditions: mode %u city %u slot %u (selection %u, kept %u) -> time of day %u, weather %u",
+         kernel::R32(race), kernel::R32(race + 0x20), kernel::R32(0x3667D4), kernel::R32(0x34EB20),
+         kernel::G<uint8_t>(0x366E58), kernel::R32(race + 0x1B9 * 4), kernel::R32(race + 0x1BA * 4));
+}
