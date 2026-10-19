@@ -55,6 +55,8 @@ Useful while testing:
 - Experiments, each `0` or `1` (the log says when one is set): `XBE_RENDER_THREAD` (drawing on its own thread, on
   by default), `XBE_RAW_VERTICES` (vertex data straight to the GPU, on by default), `XBE_STATE_WALK` (state set in
   program order, on by default).
+- `XBE_DRAW_SKIP=00000042 B0101C41` (experiment): draws with those vertex shader handles are left out, to find
+  which layer of the scene flickers (the log names the first one skipped).
 - `XBE_ZBIAS=3` (experiment): every polygon offset (the depth nudge that keeps shadows and road markings on top of
   the road) times that number. Captures now list each render target's guest and host size at the top of frame.txt.
 - `XBE_PERF=1` logs frame timing; `XBE_D3D12_DEBUG=1` turns on the Direct3D 12 debug layer (slow).

@@ -27,6 +27,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - flicker: the polygon offset scale was right; layer bisection switch
+
+Harry: no flicker while stationary; less with XBE_ZBIAS=10; most visible in sunlit areas. Capture 105745 lists
+the targets: every one is 3x (main depth 640x480 -> 1920x1440, D24S8 as on the console). The offsets match the
+XDK at 3x exactly (ZBIAS n gives units -n, slope -n/4, times 3: -1/-0.75, -9/-6.75, the shadow map's 8 -> 24), so
+the slope scale is not lost; the earlier reading was wrong. Sunlit, moving, helped by more offset: the layers on
+the road that rely on a polygon offset (multiply passes 00000042 with -9 and B0101C41 with -1, the shadow map
+projection B0101931, blended B0101B41 decals with -1) are the suspects.
+- sdk: XBE_DRAW_SKIP="h1 h2": draws with those vertex shader handles left out, to find the flickering layer.
+Next: Harry's runs skipping one layer at a time.
+
 ### 2026-10-19 - flicker: car shadow and road shadows; polygon offset experiment
 
 Harry's clean run: car body right with the render thread on (the earlier break was the leftover XBE_DRAW_TEST),
