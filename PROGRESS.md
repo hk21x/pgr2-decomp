@@ -27,6 +27,20 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - Edinburgh building flicker: the game picks a fullbright combiner for single frames
+
+Third frame log (stage tables written out). One-frame blips in stage 0 for a block of draws, here the building's
+draws (vs B0101B21, texture 827D1400) in frames 11 and 13: COLOROP and ALPHAOP 4 -> 2, COLORARG1 and ALPHAARG1 0 ->
+2: MODULATE(diffuse, texture) becomes SELECTARG1(texture): unlit, full bright at night.
+Traced: PGR2 sets stage 0 through its own mode switch FUN_00105ED0(mode) (cache 0x3F29A4, writes 0x1D0570.. and
+dirty 0x800); mode 1 is MODULATE(diffuse, texture), mode 5 SELECTARG1(texture). FUN_0016E960/0016F050 write
+stage 0 directly without updating that cache. The library applies stage 0's combiner on dirty 0x4000/0x800
+(FUN_001C78E0: 0x100, 0x800, 0x4000, 0xF stage units, 0x2000 fog, 0x400, 0xFF1000 lighting, 0x200; it clears all
+but 0xC0000070); the runtime copies the deferred tables at every draw instead. In the blip frames the draws before
+the building are the same as in normal frames: the game itself chose mode 5 for that draw, at irregular intervals.
+Open: a deliberate effect (a flickering sign or lamp, also on the console) or a decision fed by something emulated
+differently. Asked Harry to compare that spot with console footage.
+
 ### 2026-10-19 - Edinburgh building: one-frame texture stage glitch found
 
 Second frame log (split hashes). Vertex bytes, textures and render states of every static draw: identical in all
