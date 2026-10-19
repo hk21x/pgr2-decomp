@@ -27,6 +27,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - "car broken again" was a leftover XBE_DRAW_TEST
+
+Harry's three 6-frame captures (.local/win/095552_*, 095709_*, 095805_*): in the first two the body draws (vs
+B01019E1) ran with zen 0, zwrite 0, cull 0 and per-draw images were saved: XBE_DRAW_TEST and XBE_CAPTURE_DRAWS from
+the 2026-10-17 experiments were still set in his environment. The body's shader handle is B01019E1 with the render
+thread and B00019E1 without it (memory layout), so XBE_RENDER_THREAD=0 only seemed to fix the car: the experiment
+stopped matching. No code fault. The captures caught no flicker event (a few hundred scattered pixels).
+- sdk: the log lists every XBE_* and PGR2_* environment variable at startup.
+Next: a clean run (no leftover variables) and a new clip of the flicker.
+
 ### 2026-10-19 - flicker: Harry's videos analysed; state order; multi-frame capture
 
 Harry's 30 and 60 fps videos (.local/win/30fps.mp4, 60fps.mp4; car body right in both, also at 30). One-frame
