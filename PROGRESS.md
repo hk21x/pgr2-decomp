@@ -28,6 +28,24 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - under-car flicker at night; PGR2 uses W-buffering
+
+Harry's night clips (.local/win): the dark patch under the car is missing in single frames every 4-5 game frames
+while moving. His 4 frame logs: no stage blips at all (so the flame leak was not the visible flicker). At night
+there is no sun shadow pass (B0101931 absent); the patch is vs B0101A61 (n110/n59 pairs and n37 under the car,
+blend src ONE dst CONSTANT_COLOR, depth test, no write, t0 16x16, t3 a 256x256 target), drawn every frame on
+Windows with identical inputs.
+- PGR2 renders with ZENABLE 2 (D3DZB_USEW, W-buffering) on nearly every draw; the runtime treats it as a Z buffer.
+  xemu's rule (psh.c, Z_PERSPECTIVE): depth = vertex w interpolated linearly in screen space, plus the polygon
+  offset units, plus factor x slope, clamped to the clip range (SetDepthClipPlanes, which the runtime ignores),
+  stored as floor(value) in 24 bit units.
+- sdk: the CPU reference renderer implements it (REF_NO_WBUFFER=1 for the old way). Day and night frames look
+  right. But measured without the shadow patch (PGR2_NO_FILTER=1), the car shadow mesh still fails against the road
+  by up to 4k-16k units in W mode as in Z mode: W-buffering is correct but not the fix for these ground passes.
+  Not yet in D3D12 (needs SV_Depth from a noperspective w).
+- Headless the under-car decal is steady frame to frame in both modes.
+Next: Harry's A/B: XBE_DRAW_SKIP=B0101A61 and XBE_DRAW_TEST=B0101A61:depth.
+
 ### 2026-10-19 - flame leak may not be the visible flicker
 
 Harry: flicker also without gear changes or visible flames; night windows are dim on the console; flicker under

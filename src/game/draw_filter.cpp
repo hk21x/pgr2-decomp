@@ -1,5 +1,6 @@
 // PGR2's draws the renderer changes (gpu::g_draw_filter)
 #include <atomic>
+#include <cstdlib>
 
 #include "core/log.h"
 #include "gpu/state.h"
@@ -39,6 +40,10 @@ void CarShadowNearer(const gpu::State& s, gpu::DrawAdjust& adjust) {
 
 // called from the game's init (src/common/game_info.cpp): a static initializer here never ran in the Windows exe
 void InstallDrawFilter() {
+    if (std::getenv("PGR2_NO_FILTER")) {  // experiment: the game's draws as they come
+        LOGR("pgr2: PGR2_NO_FILTER, no draw filter");
+        return;
+    }
     gpu::g_draw_filter = CarShadowNearer;
     LOGR("pgr2: draw filter installed (car shadow pass nearer)");
 }
