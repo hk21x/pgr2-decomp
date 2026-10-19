@@ -27,6 +27,20 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - flicker round 3: twelve 6-frame captures (Moscow, Edinburgh), nothing caught
+
+Harry: fences and missing objects back; much less flicker; still: kerbs (red and white), signs, buildings and
+lights flicker, best seen at full speed. 12 runs of 6 captured frames (.local/win/1409xx-1411xx) plus a night clip.
+- Draw-list diff of consecutive frames (main screen, back buffers as one): only dynamic draws (cars, particles,
+  shadow quads with changing counts) come and go; no static draw changes textures, blend, depth, cull or c0 for one
+  frame in any run. In the captures the scenery is drawn the same way every frame; a capture flushes the GPU every
+  frame, so a timing dependent fault would not show (none of the captures ever caught the flicker).
+- Kerb overlay vs road headless: the overlay fails the road's depth by up to 4096 units (not rounding).
+- Deferred fog states the game writes inline are synced each draw (checked). Headless REF black band with RAW=1 was
+  a different moment, not the raw path (the CPU renderer never uses raw vertices).
+- sdk: XBE_VISIBLE_ALL=1 (every visibility test visible at once). Headless (day) culls little by visibility.
+Next: full speed A/B on Windows: XBE_RENDER_THREAD=0, XBE_RAW_VERTICES=0, XBE_VISIBLE_ALL=1, XBE_STATE_WALK=0.
+
 ### 2026-10-19 - missing fences, lamp posts and signs: SetVertexShaderInput
 
 Harry's capture 124828 against the console (YouTube): the low railing along the street is missing. Its texture
