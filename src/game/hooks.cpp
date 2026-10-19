@@ -161,3 +161,36 @@ X86_FUNC(sub_0015E280) {
     __imp__sub_0015E280(ctx, base);
     LOGR("pgr2: race setup %08X: time of day %u, weather %u", req, kernel::R32(0x383188), kernel::R32(0x383184));
 }
+
+// the lighting set a city loads (0x116990 returns "day", "overcast" or "night" from 0x383188 and 0x383184): each
+// answer that differs from the last, with the caller
+X86_EXTERN_FUNC(__imp__sub_00116990);
+X86_FUNC(sub_00116990) {
+    uint32_t ret = kernel::R32(ctx.esp);
+    __imp__sub_00116990(ctx, base);
+    static uint32_t last = 0;
+    if (ctx.eax != last) {
+        last = ctx.eax;
+        char name[12] = {};
+        for (int i = 0; i < 11 && kernel::G<uint8_t>(ctx.eax + i); i++) name[i] = char(kernel::G<uint8_t>(ctx.eax + i));
+        LOGR("pgr2: lighting set \"%s\" (time of day %u, weather %u) for %08X", name, kernel::R32(0x383188),
+             kernel::R32(0x383184), ret);
+    }
+}
+
+// the other writer of the time of day (0x59EC0 stores ebx into 0x383188): logged when the value changes
+X86_EXTERN_FUNC(__imp__sub_00059EC0);
+X86_FUNC(sub_00059EC0) {
+    uint32_t before = kernel::R32(0x383188);
+    __imp__sub_00059EC0(ctx, base);
+    if (kernel::R32(0x383188) != before)
+        LOGR("pgr2: time of day %u -> %u by 0x59EC0 from %08X", before, kernel::R32(0x383188), kernel::R32(ctx.esp));
+}
+
+// a city's area loads (0x116C20, the lighting set chosen inline from 0x383188 and 0x383184): the values it loads with
+X86_EXTERN_FUNC(__imp__sub_00116C20);
+X86_FUNC(sub_00116C20) {
+    LOGR("pgr2: area loads with time of day %u (1 night), weather %u (2 overcast) from %08X", kernel::R32(0x383188),
+         kernel::R32(0x383184), kernel::R32(ctx.esp));
+    __imp__sub_00116C20(ctx, base);
+}

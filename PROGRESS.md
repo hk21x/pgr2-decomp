@@ -27,6 +27,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - the night cone challenge: the game loaded the night lighting set
+
+Harry's capture 191837 (Florence cone challenge, night; the console shows it by day): the sky texture itself
+(2048x512, vs B0101BE1) is a night sky, so the game loaded the night set: not the renderer. Cities have three sets
+(Game\Areas\<city>.pak_day, pak_overcast, pak_night); FUN_00116990 and FUN_00116C20 (inline) choose "night" when
+0x383188 is 1, else "overcast" when 0x383184 is 1 or 2, else "day". FUN_001808C0 (race init) copies both into the
+race and picks sky and fog colours (night 0xFF101020). FUN_00059EC0 only resets them (garage).
+The race-start log line comes too early: headless the values change before the area loads (weather 0 at race start,
+2 at load). src/game/hooks.cpp now logs "pgr2: area loads with time of day N, weather W" (0x116C20) and writes to
+0x383188 by 0x59EC0. Headless Instant Action: day, or overcast (weather 2).
+Next: Harry's log of a night race with the area load line; then who sets 0x383188 to 1.
+
 ### 2026-10-19 - night races that are daytime on the console
 
 Harry: every event we show at night (Edinburgh, Moscow) is daytime on the original Xbox (screenshot: Edinburgh, F40,
