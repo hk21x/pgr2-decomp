@@ -22,10 +22,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Windows round 2: boots, movies, audio, saves OK; player car body black, stripes on some walls (captures in
   .local/win, see 2026-10-18 car bodies entry); environment map cube faces fixed (SetRenderTargetFast)
 - Car body: fixed (pushed constants applied in order), headless matches the console; Windows to confirm
-- Next: Windows checks (pacing, car body, white walls without a capture, stripes); system link waits for Harry
-  (three attempts used)
+- Flicker: car shadow fixed (draw filter, src/game/draw_filter.cpp); buildings still flicker, some barriers missing
+- Next: building flicker and missing barriers; system link waits for Harry (three attempts used)
 
 ## Log
+
+### 2026-10-19 - car shadow flicker fixed on Windows
+
+Harry: car shadow right and steady, cone shadows fine (08118bf). Still open, both older than this work: buildings
+flicker, and some barriers do not show.
+Next: a clip and a capture where a barrier is missing; bisect the building flicker with XBE_DRAW_SKIP (candidates:
+B0101B41 blended with polygon offset -1, building decals).
 
 ### 2026-10-19 - car shadow fix did not run on Windows: static initializer
 
