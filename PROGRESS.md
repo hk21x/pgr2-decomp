@@ -27,6 +27,23 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - flicker: car shadow and road shadows; polygon offset experiment
+
+Harry's clean run: car body right with the render thread on (the earlier break was the leftover XBE_DRAW_TEST),
+flicker unchanged. Clip .local/win/flicker-example.mp4 and five 6-frame captures (102016-102051, none caught a
+flicker frame). In the clip, at the green corner after the KWS start, the road's shadow pattern and a yellow kerb
+wedge swap between states from one game frame to the next, the same spot where headless showed it.
+Findings: the 256x256 target 83AA5000 is a light pool (sprite 83A2AB80 is a white blob), stable; the 1024x1024
+D16 shadow map holds the car from the sun, identical in every frame; matched road draws keep their textures and
+camera constants (only c54, a per piece shade flag, and c71-74, the light pool projection, change between them).
+Headless REF_ZEPS (a depth tolerance) did not reduce pops, so it is not z-fighting between road and kerb there.
+The shadow layers (car shadow multiply vs B0101931, building shadow decals vs B0101C41) rely on a polygon offset
+(units -1, slope -0.75); on Windows the main depth buffer's offset slope printed unscaled (-0.75), which means its
+host and guest sizes matched: either it is not upscaled, or the scale is lost. With a 3x render the slope should
+be 3x. Added: XBE_ZBIAS=N (scales every polygon offset) and the target list (guest and host sizes) at the top of
+each capture's frame.txt, to settle this on Windows. Harness: REF_DRAWLOG=2 logs constant changes, REF_ZEPS.
+Next: Harry's run with XBE_ZBIAS=3 and 10, and one capture to read the target sizes.
+
 ### 2026-10-19 - Windows build fix: GetEnvironmentStringsA
 
 Harry's build failed in system_info.cpp: the Windows SDK has no GetEnvironmentStringsA under UNICODE (its narrow
