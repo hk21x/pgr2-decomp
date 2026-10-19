@@ -28,6 +28,14 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - night frame log with combiner notes: no blip caught
+
+Harry's log (PGR2_NIGHT=1, Edinburgh, 90 frames, 5681 combiner notes): no on-screen draw changed stage states for
+one frame; blips only in an off-screen target (034E8000, reflections). His two earlier logs caught blips (frames
+3/29, 11-14). Recording slows the game (90 frames in 18 s), which may hide a timing dependent fault.
+- sdk: F4 records again each press, into framelog.txt, framelog_2.txt, ...
+Next: several recordings in one session at the building.
+
 ### 2026-10-19 - night flicker: not reproduced headless; combiner calls noted in the frame log
 
 Harry: on the original Xbox lit windows never flicker (daytime clip in .local/win for reference).
