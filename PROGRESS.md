@@ -27,6 +27,14 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - car shadow fix did not run on Windows: static initializer
+
+Harry's run of 56c3109: flicker as before, and no "car shadow pass" line in the log: the filter was never set. It
+was registered by a static initializer in src/game/draw_filter.cpp, a file nothing else references; it ran in the
+harness (it matched with and without the render thread) but not in the Windows exe. Now game_info.cpp's init calls
+InstallDrawFilter(), which logs "pgr2: draw filter installed". Smoke OK.
+Lesson: game code registers through an explicit call, never a static initializer.
+
 ### 2026-10-19 - flicker fixed (pending Windows): car shadow pass without the depth test
 
 Harry's bisection: XBE_DRAW_SKIP=B0101931 (the car shadow projection) made the flicker almost vanish;

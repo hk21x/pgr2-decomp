@@ -31,6 +31,10 @@ void CarShadowWithoutDepthTest(const gpu::State& s, gpu::DrawAdjust& adjust) {
     }
 }
 
-const bool registered = (gpu::g_draw_filter = CarShadowWithoutDepthTest, true);
-
 }  // namespace
+
+// called from the game's init (src/common/game_info.cpp): a static initializer here never ran in the Windows exe
+void InstallDrawFilter() {
+    gpu::g_draw_filter = CarShadowWithoutDepthTest;
+    LOGR("pgr2: draw filter installed (car shadow pass without the depth test)");
+}

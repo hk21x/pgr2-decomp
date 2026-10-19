@@ -1,5 +1,11 @@
 #include "app/app.h"
 
+void InstallDrawFilter();  // src/game/draw_filter.cpp
+
+namespace {
+void Init() { InstallDrawFilter(); }
+}  // namespace
+
 namespace pgr2 {
 bool race_60fps = false;  // races at 60 frames a second instead of the console's 30 (src/game/hooks.cpp)
 }
@@ -20,7 +26,7 @@ const app::GameInfo app::kGame = {
     .options = {{"race_60fps", &pgr2::race_60fps, nullptr}},  // game settings kept in the settings file
     .load = nullptr,                      // reads more from the settings file's toml::table
     .save = nullptr,                      // writes more into it
-    .init = nullptr,                      // after the settings load, before the window and boot
+    .init = Init,                         // after the settings load, before the window and boot
     .loaded = nullptr,                    // image in memory, before its entry point runs
     .window = nullptr,                    // the game window is up
     .message = nullptr,                   // window messages first; true takes one
