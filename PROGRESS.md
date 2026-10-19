@@ -27,6 +27,20 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - flicker fixed (pending Windows): car shadow pass without the depth test
+
+Harry's bisection: XBE_DRAW_SKIP=B0101931 (the car shadow projection) made the flicker almost vanish;
+XBE_DRAW_TEST=B0101931:depth the same; :alphakill much worse. The pass draws a ground mesh around the car that the
+game builds each frame (flat, about 10 x 11 m at road height, reaching behind the camera: negative w), with the
+car's shadow map compared in stage 0, polygon offset, no depth writes, multiply blend. Headless, as many of its
+pixels failed the depth test as passed, most by far more than any offset; with the test off one frame in three
+drew a band across the screen in the CPU renderer (which clips differently from D3D12), not seen on Windows.
+- sdk: gpu::g_draw_filter, a hook for a title's code to drop a draw's depth test or the draw (D3D12 and the CPU
+  renderer).
+- src/game/draw_filter.cpp: draws with a depth texture in stage 0, polygon offset, no depth writes and a multiply
+  blend go without the depth test. Matches only that pass (logged once per shader). Smoke OK.
+Next: Harry checks the flicker and that the car shadow is right (not drawn over the car or barriers).
+
 ### 2026-10-19 - flicker: the polygon offset scale was right; layer bisection switch
 
 Harry: no flicker while stationary; less with XBE_ZBIAS=10; most visible in sunlit areas. Capture 105745 lists
