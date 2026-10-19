@@ -146,45 +146,8 @@ X86_FUNC(sub_00177C70) {
         if (v) LOGR("pgr2: races at 60 frames a second");
         return v;
     }();
-    // a race starting asks for 2 vertical blanks: what it was set up with
-    if (kernel::R32(ctx.esp + 4) == 2)
-        LOGR("pgr2: race starts: time of day %u (1 night), weather %u", kernel::R32(0x383188), kernel::R32(0x383184));
     if (on && kernel::R32(ctx.esp + 4) == 2) kernel::W32(ctx.esp + 4, 1);
     __imp__sub_00177C70(ctx, base);
-}
-
-// each race's setup (0x15E280, fastcall, ecx the race request): time of day 0x383188 (1 night) and weather 0x383184
-// from the request (+0x2D54 and +0x2D6C), logged to compare with the console
-X86_EXTERN_FUNC(__imp__sub_0015E280);
-X86_FUNC(sub_0015E280) {
-    uint32_t req = ctx.ecx;
-    __imp__sub_0015E280(ctx, base);
-    LOGR("pgr2: race setup %08X: time of day %u, weather %u", req, kernel::R32(0x383188), kernel::R32(0x383184));
-}
-
-// the lighting set a city loads (0x116990 returns "day", "overcast" or "night" from 0x383188 and 0x383184): each
-// answer that differs from the last, with the caller
-X86_EXTERN_FUNC(__imp__sub_00116990);
-X86_FUNC(sub_00116990) {
-    uint32_t ret = kernel::R32(ctx.esp);
-    __imp__sub_00116990(ctx, base);
-    static uint32_t last = 0;
-    if (ctx.eax != last) {
-        last = ctx.eax;
-        char name[12] = {};
-        for (int i = 0; i < 11 && kernel::G<uint8_t>(ctx.eax + i); i++) name[i] = char(kernel::G<uint8_t>(ctx.eax + i));
-        LOGR("pgr2: lighting set \"%s\" (time of day %u, weather %u) for %08X", name, kernel::R32(0x383188),
-             kernel::R32(0x383184), ret);
-    }
-}
-
-// the other writer of the time of day (0x59EC0 stores ebx into 0x383188): logged when the value changes
-X86_EXTERN_FUNC(__imp__sub_00059EC0);
-X86_FUNC(sub_00059EC0) {
-    uint32_t before = kernel::R32(0x383188);
-    __imp__sub_00059EC0(ctx, base);
-    if (kernel::R32(0x383188) != before)
-        LOGR("pgr2: time of day %u -> %u by 0x59EC0 from %08X", before, kernel::R32(0x383188), kernel::R32(ctx.esp));
 }
 
 // a city's area loads (0x116C20, the lighting set chosen inline from 0x383188 and 0x383184): the values it loads with
@@ -193,16 +156,4 @@ X86_FUNC(sub_00116C20) {
     LOGR("pgr2: area loads with time of day %u (1 night), weather %u (2 overcast) from %08X", kernel::R32(0x383188),
          kernel::R32(0x383184), kernel::R32(ctx.esp));
     __imp__sub_00116C20(ctx, base);
-}
-
-// where a race's time of day and weather are decided (0x0F14E0, fastcall, ecx the race): [0x1B9] time of day and
-// [0x1BA] weather, from the city's table (+0x20 the city, [0] the mode) indexed by 0x3667D4, which is 0x34EB20 + 1
-// (a menu selection 0 to 4; 0x366E58 keeps the last one)
-X86_EXTERN_FUNC(__imp__sub_000F14E0);
-X86_FUNC(sub_000F14E0) {
-    uint32_t race = ctx.ecx;
-    __imp__sub_000F14E0(ctx, base);
-    LOGR("pgr2: conditions: mode %u city %u slot %u (selection %u, kept %u) -> time of day %u, weather %u",
-         kernel::R32(race), kernel::R32(race + 0x20), kernel::R32(0x3667D4), kernel::R32(0x34EB20),
-         kernel::G<uint8_t>(0x366E58), kernel::R32(race + 0x1B9 * 4), kernel::R32(race + 0x1BA * 4));
 }

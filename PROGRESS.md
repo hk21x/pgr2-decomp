@@ -22,10 +22,22 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Windows round 2: boots, movies, audio, saves OK; player car body black, stripes on some walls (captures in
   .local/win, see 2026-10-18 car bodies entry); environment map cube faces fixed (SetRenderTargetFast)
 - Car body: fixed (pushed constants applied in order), headless matches the console; Windows to confirm
-- Flicker: car shadow fixed (draw filter, src/game/draw_filter.cpp); buildings still flicker, some barriers missing
+- Flicker: car shadow fixed (draw filter); fences/posts/signs fixed (SetVertexShaderInput); night lighting flickers
+  (lit windows blip to full bright for a frame: the game's own combiner choice, to compare with the console)
 - Next: building flicker and missing barriers; system link waits for Harry (three attempts used)
 
 ## Log
+
+### 2026-10-19 - night and rain are normal in Instant Action; the flicker is night lighting
+
+Harry: night is possible in Instant Action on the original Xbox too. His log: a day race and a night race with the
+same inputs to FUN_000F14E0 (slot 3, selection 0): a random roll, as on the console. The time of day search was a
+detour; the earlier "night where the console shows day" comparisons were different rolls.
+- src/game/hooks.cpp keeps "pgr2: area loads with time of day T, weather W" (0x116C20); the race-start, setup,
+  0x116990, 0x59EC0 and conditions diagnostics are removed (the conditions result fields were never read right).
+Open: night lighting. The Edinburgh building blip (stage 0 MODULATE(diffuse, texture) to SELECTARG1(texture) for a
+frame, PGR2's combiner mode 1 vs 5 via FUN_00105ED0) is the game's own per frame choice; to compare with console
+night footage of the same city.
 
 ### 2026-10-19 - who sets night: FUN_000F14E0 (gdb watchpoint)
 
