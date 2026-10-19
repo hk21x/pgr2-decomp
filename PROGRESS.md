@@ -28,6 +28,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - D3D12 W-buffer (opt-in), render target reload logging
+
+- sdk 9f82dd1: XBE_WBUFFER=1: draws with ZENABLE 2 (D3DZB_USEW, nearly all of PGR2's) write SV_Depth = w
+  interpolated linearly on the screen (noperspective TEXCOORD6 from the vertex shader) plus the polygon offset in its
+  units and slope; the rasterizer bias is zeroed for them. Off by default until tried. Headless: AUDIT with
+  XBE_WBUFFER=1 makes the same keys; all 80 shaders of a race (40 W-buffered) compile with DXC.
+- Under the car at night the road (B0101BB1, B0101D01) samples a 256x256 light pool target in stage 3, redrawn each
+  frame. A target whose guest memory looks CPU-written is reloaded from memory over what the GPU drew; such reloads
+  are now logged in release builds (three per target) and XBE_NO_TARGET_UPLOAD=1 skips them for sampled targets.
+Next (Windows): XBE_WBUFFER=1, XBE_NO_TARGET_UPLOAD=1, and the log's reload lines during a night race.
+
 ### 2026-10-19 - PC settings window (F1), keyboard controls, remapping; under-car A/B negative; car select
 
 - sdk 1274a46: F1 settings window (ImGui): display mode, resolution (applied at once), vsync, aspect ratio (auto,
