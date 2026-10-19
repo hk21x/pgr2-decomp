@@ -28,6 +28,14 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - flame leak may not be the visible flicker
+
+Harry: flicker also without gear changes or visible flames; night windows are dim on the console; flicker under
+the car throughout. All screen blips in his logs follow the flame code (0x216FD), but every vs B0101B21 draw in his
+captures (and headless) has a pixel shader bound, which overrides the stage 0 combiner: the mode 5 leak only shows
+if those draws run without one. The frame log now records the pixel shader per draw (sdk).
+Next: Harry's log with pixel shaders; a clip of the under-car flicker at night.
+
 ### 2026-10-19 - night building flicker: caught; exhaust backfire flames leave combiner mode 5
 
 Harry's repeated frame logs (PGR2_NIGHT, 5 x 30 frames, flickering throughout): framelog_2 blips every 3-4 frames
