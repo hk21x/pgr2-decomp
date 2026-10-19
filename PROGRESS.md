@@ -5,7 +5,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 ## Status
 - Milestone: 4 - **a race runs under pad control** in the harness (title -> Instant Action -> Yokohama race)
 - Windows: Harry's first build boots and takes input; white quad and solid-colour movies fixed in shared code since
-- XDK 5659: 187 of 246 functions, 13 of 13 data
+- XDK 5659: 189 of 248 functions, 13 of 13 data
 - Known: car bodies partly missing; a stale band under the HUD seen once at a race start; reference renderer
   shows dotted textures (waiting for the Windows report)
 - Speed: paced by the game's own present interval (menus 60, races 30, as on the console); fps_cap 60 default;
@@ -26,6 +26,22 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Next: building flicker and missing barriers; system link waits for Harry (three attempts used)
 
 ## Log
+
+### 2026-10-19 - missing fences, lamp posts and signs: SetVertexShaderInput
+
+Harry's capture 124828 against the console (YouTube): the low railing along the street is missing. Its texture
+(32x32 DXT1, dark rails and posts) is drawn as quads with the building shader, writing no pixels; headless the
+same quads decoded positions like -1.5e38: the buffer holds packed shorts, read as float3. PGR2 calls
+D3DDevice_SetVertexShaderInput (0x1C0560; SetVertexShaderInputDirect 0x1BFFD0 tail-calls it with a table at
+0x1CF704): the library pushes its own vertex array addresses and formats (0x1720, 0x1760) and sets dirty bit 30 so
+the draws skip theirs. The SDK did not know it, so those draws used SetStreamSource's streams and the shader's
+declaration.
+- sdk: both hosted; the attributes come from the shader's (or the given) layout plus each stream input's offset.
+  Signatures by the round trip (game.toml +2 lines, rescan stable). Headless: street lamps, posts, a blue sign and
+  the chevron barrier now appear at the KWS start (render thread on and off). Smoke OK, wincheck OK.
+- Seen while testing, not new: with raw vertices headless sometimes leaves a black band where road near the camera
+  should be (also in earlier runs). To look at next.
+Next: Harry checks the fences and the car shadow (4096 offset).
 
 ### 2026-10-19 - car shadow: depth test kept, 4096 units nearer
 
