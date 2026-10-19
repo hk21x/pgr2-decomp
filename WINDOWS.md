@@ -57,6 +57,8 @@ Useful while testing:
   program order, on by default).
 - `XBE_DRAW_SKIP=00000042 B0101C41` (experiment): draws with those vertex shader handles are left out, to find
   which layer of the scene flickers (the log names the first one skipped).
+- `XBE_FRAMELOG=60`: F4 records the next 60 frames' draws into `logs\framelog.txt` at full speed (no images, no
+  slowdown worth noticing), with hashes of what each draw reads; for flicker a capture does not catch.
 - `XBE_VISIBLE_ALL=1` (experiment): every GPU visibility test answers "visible" at once (lamp glows and anything
   the game draws only when visible).
 - `XBE_ZBIAS=3` (experiment): every polygon offset (the depth nudge that keeps shadows and road markings on top of

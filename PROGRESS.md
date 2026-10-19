@@ -27,6 +27,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - flicker: A/B switches all unchanged; frame log at full speed
+
+Harry: XBE_RENDER_THREAD=0, XBE_VISIBLE_ALL=1, XBE_RAW_VERTICES=0, XBE_STATE_WALK=0: no change, flicker on every
+example. So not threading, visibility tests or the raw vertex path. The capture "kerb flip" in 141150 was the car
+moving over white paint (65 mph is a metre a game frame); the night clip shows signs and rails changing from one
+game frame to the next. Captures never caught a flicker frame.
+- sdk: XBE_FRAMELOG=N, F4 (or a file named framelog) logs N frames of draws at full speed with hashes of the
+  vertex bytes, indices, texture contents and states each reads. scripts/framelog.py groups draws by identity and
+  shows which input changes and whether it returns to earlier values (A B A B: double buffered data read wrong).
+  Headless baseline (KWS race, 30 frames): static scenery identical every frame, only the car body's states change.
+Next: Harry's frame logs at the flickering spots (Moscow, Edinburgh).
+
 ### 2026-10-19 - flicker round 3: twelve 6-frame captures (Moscow, Edinburgh), nothing caught
 
 Harry: fences and missing objects back; much less flicker; still: kerbs (red and white), signs, buildings and
