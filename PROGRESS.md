@@ -27,6 +27,13 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - Windows build fix: GetEnvironmentStringsA
+
+Harry's build failed in system_info.cpp: the Windows SDK has no GetEnvironmentStringsA under UNICODE (its narrow
+function is plain GetEnvironmentStrings), mingw has both, so wincheck passed. sdk: the wide block instead.
+scripts/wincheck.sh now defines UNICODE, _UNICODE and _CRT_SECURE_NO_WARNINGS as the Windows build does (it then
+reproduces the failure on the old code) and checks every runtime source that includes windows.h by default (13).
+
 ### 2026-10-19 - "car broken again" was a leftover XBE_DRAW_TEST
 
 Harry's three 6-frame captures (.local/win/095552_*, 095709_*, 095805_*): in the first two the body draws (vs
