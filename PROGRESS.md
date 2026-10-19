@@ -27,6 +27,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - car shadow: depth test kept, 4096 units nearer
+
+Without the depth test the car shadow was steady but showed through the car's rear (Harry's screenshot). Measured
+headless with the new REF_ZOWNER (for each pixel the pass failed: which shader wrote the depth that stopped it, and
+by how much): road (B0001B11) and kerbs (B0001CC1) at most 4096 units of the 24 bit buffer, the car body (B00019E1)
+4096 to 65536. The filter now keeps the test and draws the pass 4096 units nearer (gpu::DrawAdjust::depth_bias): the
+road and kerb failures are gone, the car still hides it. Main depth buffer is LIN_D24S8 (0x2E), the shadow map
+LIN_D16 (0x30): no float depth involved. Smoke OK.
+Next: Harry checks the shadow under the car; the missing fence (capture 124828 against the YouTube frame).
+
 ### 2026-10-19 - car shadow flicker fixed on Windows
 
 Harry: car shadow right and steady, cone shadows fine (08118bf). Still open, both older than this work: buildings
