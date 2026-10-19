@@ -42,6 +42,17 @@ Files the exe writes beside itself, in `out\build\release`:
   60, races 30, as on the console); `fps_cap` only caps it further (60 by default, 0 for no cap of its own).
   `race_60fps = true` runs races at 60 instead (an experiment: same physics, one 1/60 step a frame).
 - `hdd\` the emulated hard disk (E: saves, X/Y/Z: caches)
+
+**Settings window: F1** (in game, any time). Tabs: Display (display mode, resolution, vsync, aspect ratio),
+Graphics (render scale, anisotropic filtering, frame rate cap), Game (race_60fps), Controls. Everything is saved to
+`pgr2.toml` at once. Display mode and resolution apply at once; aspect ratio, render scale and game options at the
+next start. While the window is open the game gets no input.
+
+Keyboard (plays as controller 1 while the game window has the focus; remap in F1 > Controls, two keys per input):
+- Steer / menus: arrow keys or A / D (left stick); accelerate W (right trigger), brake S (left trigger)
+- A: Enter or Space; B: Backspace; X: Q; Y: E; Black: R; White: F; Start: Escape or P; Back: Tab
+- D-pad: numpad 8 / 2 / 4 / 6; right stick: I / J / K / L; stick clicks: C and V
+Controller remapping: F1 > Controls, the last column picks which physical input drives each console input.
 - `CrashDumps\` a minidump when it crashes
 
 Useful while testing:

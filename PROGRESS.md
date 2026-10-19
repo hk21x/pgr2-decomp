@@ -28,6 +28,19 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - PC settings window (F1), keyboard controls, remapping; under-car A/B negative; car select
+
+- sdk 1274a46: F1 settings window (ImGui): display mode, resolution (applied at once), vsync, aspect ratio (auto,
+  4:3, 16:9: Widescreen() honours it; next start), render scale (next start), anisotropic filtering, frame rate cap,
+  the game's options (race_60fps), and controls: two keys per console input (keyboard = controller 1 while the window
+  has focus) and a physical-to-console map for controllers. Saved to pgr2.toml ([keys], [gamepad] by name, only
+  what differs). Neutral input to the game while it is open. Not run yet: Windows only (wincheck passes; it now has
+  SDL's headers, so input.cpp is checked too). Headless: PGR2's menus take the left stick, so arrows steer and
+  navigate.
+- Harry: XBE_DRAW_SKIP=B0101A61 and XBE_DRAW_TEST=B0101A61:depth do not stop the under-car flicker: not that pass.
+- Car selection with missing panels (Harry): the CPU renderer draws the car complete; the audit finds no raw vs
+  converted vertex difference on that screen; needs a Windows capture.
+
 ### 2026-10-19 - under-car flicker at night; PGR2 uses W-buffering
 
 Harry's night clips (.local/win): the dark patch under the car is missing in single frames every 4-5 game frames
