@@ -27,6 +27,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - frame log of the Edinburgh building flicker (night)
+
+Harry's 60 frame log (.local/win/framelog.txt; the building on the right flickers, only while moving). Every
+static draw on screen read identical vertex bytes and texture contents in all 60 frames: the data is right. What
+changed every frame for the night world draws (vs B0101B21, 538 a frame) was the state hash: within a frame all
+538 share one of 9 values, and the set changes every frame: a frame-wide value (pixel constants or deferred render
+states such as fog), not per object.
+- sdk: the frame log now keeps stage states and render states apart, writes the 16 pixel constants as values and
+  hashes the vertex constants per block of 16 registers; framelog.py reports each. Headless: only the car paint's
+  light (pixel c0) and the camera blocks change. Logging 60 frames took Harry 11.5 s (slower than intended).
+Next: Harry's second log at the same building.
+
 ### 2026-10-19 - flicker: A/B switches all unchanged; frame log at full speed
 
 Harry: XBE_RENDER_THREAD=0, XBE_VISIBLE_ALL=1, XBE_RAW_VERTICES=0, XBE_STATE_WALK=0: no change, flicker on every
