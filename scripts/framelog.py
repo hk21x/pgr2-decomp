@@ -4,13 +4,32 @@ reads changes from frame to frame: vertex bytes, texture contents, stage states,
 shader constants, and the vertex shader constants by block of 16 registers (c-96 up). Static scenery keeps one
 value for its own inputs; camera matrices change for every draw. A value that comes back after a change (A B A B)
 is the sign of a flicker.
-    scripts/framelog.py logs/framelog.txt [screen targets, comma separated: only those, as one] [-v block]"""
+    scripts/framelog.py logs/framelog.txt [screen targets, comma separated: only those, as one]
+    scripts/framelog.py logs/framelog.txt --tss HASH1 HASH2   which stage states two tables differ in"""
 import sys, collections
 args = [a for a in sys.argv[1:]]
+TSS = ["ADDRESSU", "ADDRESSV", "ADDRESSW", "MAGFILTER", "MINFILTER", "MIPFILTER", "MIPMAPLODBIAS", "MAXMIPLEVEL",
+       "MAXANISOTROPY", "COLORKEYOP", "COLORSIGN", "ALPHAKILL", "COLOROP", "COLORARG0", "COLORARG1", "COLORARG2",
+       "ALPHAOP", "ALPHAARG0", "ALPHAARG1", "ALPHAARG2", "RESULTARG", "TEXTURETRANSFORMFLAGS", "BUMPENVMAT00",
+       "BUMPENVMAT01", "BUMPENVMAT11", "BUMPENVMAT10", "BUMPENVLSCALE", "BUMPENVLOFFSET", "TEXCOORDINDEX",
+       "BORDERCOLOR", "COLORKEYCOLOR", "?"]  # the runtime's order (state.h)
+if len(args) == 4 and args[1] == '--tss':
+    defs = {}
+    for l in open(args[0]):
+        if l.startswith('tssdef '):
+            f = l.split(); defs[f[1][:len(args[2])]] = l
+    def stages(l):
+        return [part.split()[1:] for part in l.split('|')[1:]]
+    a, b = stages(defs[args[2]]), stages(defs[args[3]])
+    for st in range(4):
+        for i, (x, y) in enumerate(zip(a[st], b[st])):
+            if x != y: print(f"stage {st} {TSS[i] if i < len(TSS) else i}: {x} -> {y}")
+    sys.exit()
 screen = set(args[1].split(',')) if len(args) > 1 and not args[1].startswith('-') else set()
 rows = collections.defaultdict(lambda: collections.defaultdict(list))
 frames = set()
 for l in open(args[0]):
+    if l.startswith('tssdef'): continue
     f = l.split()
     if len(f) < 26: continue
     fr = int(f[0]); frames.add(fr)

@@ -27,6 +27,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - Edinburgh building: one-frame texture stage glitch found
+
+Second frame log (split hashes). Vertex bytes, textures and render states of every static draw: identical in all
+60 frames. Pixel constants change smoothly (lamps passing: c0 ramps up and down), no alternation. The texture stage
+states of a block of draws late in the frame (vs B0101A21, A61, A71 and B21 pieces, about 50) are different in
+frames 3 and 29 only, then back: once or twice a second a stage setting differs for part of the frame. No draw
+exists only in those frames, so a state change, not a stray draw, carries it.
+- sdk: the frame log writes each stage table the first time it appears (tssdef); scripts/framelog.py --tss A B
+  names the stage states that differ.
+Next: Harry's third log, to see which stage setting and value.
+
 ### 2026-10-19 - frame log of the Edinburgh building flicker (night)
 
 Harry's 60 frame log (.local/win/framelog.txt; the building on the right flickers, only while moving). Every
