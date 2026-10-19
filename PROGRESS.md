@@ -28,6 +28,22 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - night building flicker: caught; exhaust backfire flames leave combiner mode 5
+
+Harry's repeated frame logs (PGR2_NIGHT, 5 x 30 frames, flickering throughout): framelog_2 blips every 3-4 frames
+(5, 9, 12, 15, 18), framelog_3 at 10, 11, 16. In each blip frame the combiner notes show mode 5 (SELECTARG1(texture),
+full bright) set from 0x216FD right before the flickering draws (vs B0101B21, t0 827D1400), which then draw with it.
+- 0x216FD is in FUN_00021620, called by FUN_00021CD0 for a car when its byte +0x1508 is set; the positions it uses
+  (+0x1484, +0x1490) are tagged 'EXHL'/'EXHR' (FUN_0001CC90): exhaust backfire flames. It draws a quad with
+  Begin/End in mode 5 and leaves mode 5 set; the next draws inherit it.
+- Headless: the flame pass (FUN_000314E0) is skipped in camera mode 12 unless 0x291A27 is -1 (PGR2_FLARES=1 forces
+  it); with it, all cars' +0x1508 stay 0 (gdb watchpoint: only the init clear): the scripts hold the throttle on
+  automatic, no backfire. Harry's driving backfires.
+- src/game/hooks.cpp: PGR2_FLARE_LOG=1 logs the race view camera mode, the flame pass and gate inputs; flames noted
+  in the frame log; PGR2_FLARES=1 experiment.
+Open: why the console does not show it (same game code). Questions for Harry: does the flicker follow gear changes
+(flames)? On the console at night, are those windows bright or dim?
+
 ### 2026-10-19 - night frame log with combiner notes: no blip caught
 
 Harry's log (PGR2_NIGHT=1, Edinburgh, 90 frames, 5681 combiner notes): no on-screen draw changed stage states for

@@ -186,3 +186,63 @@ X86_FUNC(sub_00105ED0) {
                   kernel::R32(0x1D0570), kernel::R32(0x1D0578));
     d3d::FrameLogNote(note);
 }
+
+// a car's light flares (0x21CD0, ecx the car): drawn when its byte +0x1508 is set, in combiner mode 5, which the next
+// draws inherit. Noted in the frame log when set; PGR2_FLARE_LOG=1 logs the first 40 cars it is set for
+X86_EXTERN_FUNC(__imp__sub_00021CD0);
+X86_FUNC(sub_00021CD0) {
+    uint32_t car = ctx.ecx;
+    uint8_t flag = kernel::G<uint8_t>(car + 0x1508);
+    static const bool log_cars = std::getenv("PGR2_FLARE_LOG") != nullptr;
+    static std::atomic<int> cars{0};
+    if (log_cars && cars++ < 3) LOGR("pgr2: flares for car %08X, flag %u", car, flag);
+    if (flag) {
+        char note[64];
+        std::snprintf(note, sizeof note, "flares car %08X flag %u", car, flag);
+        d3d::FrameLogNote(note);
+        static const bool log = std::getenv("PGR2_FLARE_LOG") != nullptr;
+        static std::atomic<int> n{0};
+        if (log && n++ < 40) LOGR("pgr2: %s", note);
+    }
+    __imp__sub_00021CD0(ctx, base);
+}
+
+// the gate before a car's flares (0x1C9C0, ecx the car): PGR2_FLARE_LOG=1 logs its inputs, the first 20 calls
+X86_EXTERN_FUNC(__imp__sub_0001C9C0);
+X86_FUNC(sub_0001C9C0) {
+    uint32_t car = ctx.ecx;
+    __imp__sub_0001C9C0(ctx, base);
+    static const bool log = std::getenv("PGR2_FLARE_LOG") != nullptr;
+    static std::atomic<int> n{0};
+    if (!log || n++ >= 20) return;
+    uint32_t p = kernel::R32(car + 0x94), cam = kernel::R32(0x3CD804);
+    LOGR("pgr2: flare gate car %08X -> %u: 15d1 %02X, owner %08X, owner 19c8 %u 19cc %u 19d0 %u, camera 40 %u", car,
+         ctx.eax & 0xFF, kernel::G<uint8_t>(car + 0x15D1), p, p ? kernel::R32(p + 0x19C8) : 0, p ? kernel::R32(p + 0x19CC) : 0,
+         p ? kernel::G<uint8_t>(p + 0x19D0) : 0, cam ? kernel::R32(cam + 0x40) : 0);
+}
+
+// the cars' flare pass (0x314E0, ecx the car list 0x297390, +0xC the count): PGR2_FLARE_LOG=1 logs the count, 5 times
+X86_EXTERN_FUNC(__imp__sub_000314E0);
+X86_FUNC(sub_000314E0) {
+    static const bool log = std::getenv("PGR2_FLARE_LOG") != nullptr;
+    static std::atomic<int> n{0};
+    if (log && n++ < 5) LOGR("pgr2: flare pass over %u cars", kernel::R32(ctx.ecx + 0xC));
+    __imp__sub_000314E0(ctx, base);
+}
+
+// the race view's drawing (0x17FCC0, ecx the view, [4] its camera): flares and other effects are skipped when the
+// camera's mode +0x128 is 12 and 0x291A27 is not -1. PGR2_FLARE_LOG=1 logs those when they change
+X86_EXTERN_FUNC(__imp__sub_0017FCC0);
+X86_FUNC(sub_0017FCC0) {
+    static const bool log = std::getenv("PGR2_FLARE_LOG") != nullptr;
+    if (log) {
+        uint32_t cam = kernel::R32(ctx.ecx + 16);
+        uint32_t now = (cam ? kernel::R32(cam + 0x128) : 0xFFFF) << 8 | kernel::G<uint8_t>(0x291A27);
+        static uint32_t last = ~0u;
+        if (now != last) LOGR("pgr2: race view camera mode %u, 291A27 %d", (last = now) >> 8, int8_t(now & 0xFF));
+    }
+    // PGR2_FLARES=1 (experiment): 0x291A27 -1, so the flare pass runs in camera mode 12 as in the other views
+    static const bool flares = std::getenv("PGR2_FLARES") != nullptr;
+    if (flares) kernel::G<uint8_t>(0x291A27) = 0xFF;
+    __imp__sub_0017FCC0(ctx, base);
+}
