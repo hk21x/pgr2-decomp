@@ -146,6 +146,18 @@ X86_FUNC(sub_00177C70) {
         if (v) LOGR("pgr2: races at 60 frames a second");
         return v;
     }();
+    // a race starting asks for 2 vertical blanks: what it was set up with
+    if (kernel::R32(ctx.esp + 4) == 2)
+        LOGR("pgr2: race starts: time of day %u (1 night), weather %u", kernel::R32(0x383188), kernel::R32(0x383184));
     if (on && kernel::R32(ctx.esp + 4) == 2) kernel::W32(ctx.esp + 4, 1);
     __imp__sub_00177C70(ctx, base);
+}
+
+// each race's setup (0x15E280, fastcall, ecx the race request): time of day 0x383188 (1 night) and weather 0x383184
+// from the request (+0x2D54 and +0x2D6C), logged to compare with the console
+X86_EXTERN_FUNC(__imp__sub_0015E280);
+X86_FUNC(sub_0015E280) {
+    uint32_t req = ctx.ecx;
+    __imp__sub_0015E280(ctx, base);
+    LOGR("pgr2: race setup %08X: time of day %u, weather %u", req, kernel::R32(0x383188), kernel::R32(0x383184));
 }

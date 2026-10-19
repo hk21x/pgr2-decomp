@@ -27,6 +27,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - night races that are daytime on the console
+
+Harry: every event we show at night (Edinburgh, Moscow) is daytime on the original Xbox (screenshot: Edinburgh, F40,
+daylight). Much of the remaining flicker (lit windows, lamp glows, the building) is night-only lighting.
+Traced: the race's time of day is 0x383188 (1 night; weather 0x383184), copied from the race request (+0x2D54 in the
+setup, FUN_0015E280 / FUN_001648F0; the request's own +0xA24 is cycled 0/1 by a race-setup menu option at
+0x976A0-0x97720 and 0x92EC0). Data: data\audio\<city>Night.ini picked when it is 1 (0x12B76F); Florence has no
+night data. Not the clock: KeQuerySystemTime feeds date text and weekly counters only (FUN_00132780, FUN_00083A90);
+the runtime's clock is right (UTC, time zone 0). Headless (fresh disk): attract and Instant Action start with time
+of day 0. src/game/hooks.cpp now logs "pgr2: race starts: time of day N" at each race start.
+Next: Harry's log; suspect a Day/Night option kept in his saved profile (a fresh disk would show day).
+
 ### 2026-10-19 - Edinburgh building flicker: the game picks a fullbright combiner for single frames
 
 Third frame log (stage tables written out). One-frame blips in stage 0 for a block of draws, here the building's
