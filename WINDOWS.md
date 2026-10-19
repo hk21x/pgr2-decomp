@@ -50,6 +50,11 @@ Useful while testing:
   next frame there. The log says `F3: thread stacks, the next frame captured` when the key arrives and
   `d3d12: capturing a frame into ...` when it starts. Without the key: create an empty file named `capture` beside
   `PGR2.exe` (`type nul > out\build\release\capture` from a second prompt) and the next frame is captured.
+- `XBE_CAPTURE_FRAMES=6` makes F3 (or the capture file) capture that many frames in a row, one folder each
+  (`HHMMSS_01` ... `HHMMSS_06`): for a flicker, so a good and a bad frame can be compared.
+- Experiments, each `0` or `1` (the log says when one is set): `XBE_RENDER_THREAD` (drawing on its own thread, on
+  by default), `XBE_RAW_VERTICES` (vertex data straight to the GPU, on by default), `XBE_STATE_WALK` (state set in
+  program order, on by default).
 - `XBE_PERF=1` logs frame timing; `XBE_D3D12_DEBUG=1` turns on the Direct3D 12 debug layer (slow).
 - `XBE_VSC=56 54` logs who writes those vertex shader constants and the values (each distinct one once); used to
   find why the player's car body is black.

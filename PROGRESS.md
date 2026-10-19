@@ -27,6 +27,23 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-19 - flicker: Harry's videos analysed; state order; multi-frame capture
+
+Harry's 30 and 60 fps videos (.local/win/30fps.mp4, 60fps.mp4; car body right in both, also at 30). One-frame
+pops in almost every frame; in the large ones the car's shadow on the road vanishes for a frame and a dark
+translucent rectangle with a hard vertical edge darkens part of the screen (sky and far buildings, right half).
+Headless (KWS Florence race, frame pairs and 6-frame runs with the new SNAP_FRAMES): similar one-frame artefacts
+with and without the render thread, so not a threading race. The new REF_DRAWLOG lists each draw (pixels, box,
+state, textures): the road's lightmap stage samples a 256x256 shadow texture (surface 03AA5000) filled each frame
+by a full quad and two sprite quads; a 1024x1024 D16 shadow map is applied by a multiply pass (vs B0001931);
+six 256x256 reflection faces are drawn each frame. Textures of matched draws do not swap between frames.
+- sdk 72975c8: every state setter reads pending pushed commands first (XBE_STATE_WALK=0 to compare), as the
+  constant setters did since the car body fix. Headless pops over 8 six-frame runs: 121,688 pixels with it,
+  171,398 without (fewer, not gone). Smoke OK.
+- XBE_CAPTURE_FRAMES=N: F3 captures N frames in a row, so a bad frame can be diffed with its neighbours on D3D12.
+- XBE_RENDER_THREAD / XBE_RAW_VERTICES environment overrides for Windows A/B.
+Next: Harry's 6-frame capture over a flicker; his A/B with XBE_STATE_WALK=0 and XBE_RENDER_THREAD=0.
+
 ### 2026-10-18 - checked: does a capture leave state that could whiten walls?
 
 Read the D3D12 capture path: a capture's saves blit and then Flush (Submit + wait, command list reset, Begin).
