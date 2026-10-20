@@ -190,10 +190,18 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
   - cars in the race: dword 0x383818; laps: dword 0x383830; race type: dword 0x383814 (1 in Instant Action)
   - finished: lap >= laps (the HUD switches to "Finished" there, 0xDB5CC)
   - the end-of-race Kudos breakdown reads floats at 0x39D42C, 0x39D44C, 0x39D46C, 0x39D48C (+ the car's offset)
-  - in condition syntax, player 1 finishing first: `0xX39b33c=0_0x 39b334>=0xX383830` (with car 0; a pointer chain
+  - in condition syntax, player 1 finishing first: `0xX39b33c=0_0x 39b334<h8000_0x 39b334>=0xX383830` (the lap below 0x8000: it is negative before the start; car 0, a pointer chain
     through 0x49E258 for any car)
-- To find: Kudos World Series and Arcade medals per series and stage, Time Attack challenges (92 circuit, 102 car),
-  race state (mode, finish, position, the race's Kudos), Geometry Wars score. A profile with progress (Harry's saves)
+- **Medals**: each race's record is 0x1C bytes from 0x35DD88 (the object 0x35BA78 + 0x2310); its first dword is the
+  medal won, 1 Steel, 2 Bronze, 3 Silver, 4 Gold, 5 Platinum, 0 none (0xA66E0 counts them, called by 0xA6790 for the
+  Single Player screen's medal rows with 1 to 5 in icon order). Levels (0x34A8C8, 0x2C each: flags, children,
+  first child or race) and groups (0x34C284, 0x4C each) are built from Levels.Ini: Kudos World Series is group 3
+  (classes = levels 23-36, races 1-172: Compact Sports 1-7, Sports Convertible 8-14, Coupe 15-22, Sport Utility
+  23-30, Pacific Muscle 31-40, Roadster 41-51, Classics 52-62, Sports Coupe 63-75, American Muscle 76-89, Super Car
+  90-103, Grand Touring 104-119, Track Specials 120-136, Extreme 137-153, Ultimate 154-172); Arcade is group 4 (Street
+  Racing 173-192, Timed Run 193-212, Cone Challenge 213-232, 5 stages of 4 each); Time Attack group 5.
+  To confirm with real saves: that a record keeps the best medal won.
+- To find: Time Attack challenges (92 circuit, 102 car), the race's own Kudos, Geometry Wars score, tokens spent. A profile with progress (Harry's saves)
   is the quickest way for the medals.
 
 ## In the port
@@ -202,7 +210,9 @@ Built (2026-10-20): `sdk/runtime/core/achievements.cpp` evaluates RetroAchieveme
 delta and prior, add source, sub source, add address, and/or next, reset and pause ifs, hit counts, alternative
 groups) once a frame, waits for a condition to be unmet once before it can unlock, keeps unlocks in
 `achievements.toml` beside the exe, shows a pop-up and lists the set in the settings window's Achievements tab.
-`src/game/achievement_set.cpp` holds the mapped part of the set: the seven Kudos rank achievements.
+`src/game/achievement_set.cpp` holds the mapped part of the set: 47 achievements (Kudos World Series 5, classes 28,
+Arcade 7, Kudos ranks 7). Checked headless by writing Steel into races 1-7 mid-race: Pocket Rocket unlocked, nothing
+else did.
 `PGR2_ACH_TEST=1` adds a test one that unlocks at a race's start (checked headless).
 
 The plan was:

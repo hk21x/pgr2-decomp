@@ -15,7 +15,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): works headless; Windows
   to confirm
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
-  achievements.toml); live: the 7 Kudos rank ones; medals and the rest need mapping (Harry's saves would help)
+  achievements.toml); live: 47 (KWS, classes, Arcade, ranks); garage, feats, Geometry Wars still to map
 - System link: works headless (scripts/linktest.sh); Windows to try
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
@@ -23,6 +23,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - achievements: race state and medals mapped, 47 live
+
+- Race state from the HUD code (0xDB460, 0xE0840), checked against the HUD in a headless race: car records of 0x2498
+  bytes (lap int16 at 0x39B334, position at 0x39B33C, both from 0), player 1's car at 0x49E258, laps 0x383830, cars
+  0x383818, finished when lap >= laps.
+- Medals from the Single Player screen's medal rows (0x627B5 -> 0xA6790 -> 0xA66E0): a dword per race from
+  0x35DD88 (stride 0x1C), 1 Steel to 5 Platinum; the level and group tables give each class's and Arcade type's
+  consecutive races (ACHIEVEMENTS.md).
+- src/game/achievement_set.cpp: the Kudos World Series (5), class (28) and Arcade (7) achievements added to the ranks
+  (47 in all). Headless: Steel written into races 1-7 mid-race unlocked Pocket Rocket alone. wincheck OK, smoke OK.
+Next: Harry's saves to confirm medal values; garage (tokens spent), Geometry Wars, single-race feats.
 
 ### 2026-10-20 - CPU renderer: the black band near the camera fixed
 
