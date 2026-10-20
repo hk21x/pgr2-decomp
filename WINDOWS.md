@@ -16,8 +16,7 @@ Everything below runs on your PC; nothing here touches the Linux VM. FINDINGS.md
 
 ## Steps
 
-1. Clone with the SDK. This repository is private: Git for Windows opens a browser to sign in to GitHub the
-   first time. The SDK fork is public and needs no sign-in.
+1. Clone with the SDK (both repositories are public, no sign-in needed).
    ```
    git clone --recurse-submodules https://github.com/hk21x/pgr2-decomp.git
    cd pgr2-decomp

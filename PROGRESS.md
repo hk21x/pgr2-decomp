@@ -24,6 +24,12 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - repository public
+
+Harry made hk21x/pgr2-decomp public. Checked the whole history: 56 paths ever committed, all code, configs, docs and
+pad scripts; the only binaries are the two README images (screenshots); no blob over 500 KB; no game files, generated
+code, captures or tokens. WINDOWS.md no longer says the repository is private.
+
 ### 2026-10-20 - ultrawide HUD bars: corners on the edge stay there
 
 Harry: performance much better; in ultrawide a street race's text sits outside its grey bars. The bars are drawn in one
