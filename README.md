@@ -25,7 +25,7 @@ This port was created using the [Xbox XBE Recomp](https://github.com/TGP482/Xbox
 ### Graphics
 - **Render Scale** - Renders at a percentage of the screen, from 25% to 200%.
 - **Anisotropic Filtering** - Up to 16x.
-- **Antialiasing** - FXAA on the finished frame; render scale above 100% supersamples.
+- **Antialiasing** - MSAA 2x, 4x or 8x on the 3D scene, or FXAA on the finished frame; render scale above 100% supersamples.
 - **Field of View** - Widens or narrows the race cameras, 50% to 200% of the console's.
 - **Console Accurate Depth** - W-buffered depth as the Xbox does it, keeping car bodies, showroom cars and street lights right.
 - **Reflections** - Car paint and glass reflections from the game's environment cube.

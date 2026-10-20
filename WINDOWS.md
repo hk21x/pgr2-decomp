@@ -47,7 +47,8 @@ Files the exe writes beside itself, in `out\build\release`:
 Settings** (it replaces Screen Center; closing the window returns to General Options by itself) (Start alone closes it; the D-pad or left stick moves,
 A selects, B goes back). Tabs:
 - Display: monitor (with more than one), display mode, resolution, vsync, aspect ratio.
-- Graphics: render scale, anisotropic filtering, frame rate cap, antialiasing (FXAA), frames-a-second counter.
+- Graphics: render scale, anisotropic filtering, frame rate cap, antialiasing (FXAA, MSAA 2x/4x/8x), frames-a-second
+  counter.
 - Game: skip intro movies, hide the race HUD, race camera field of view (%), races at 60 (experimental).
 - General: pause when the window is not in front.
 - Controls: keys and controller remapping.

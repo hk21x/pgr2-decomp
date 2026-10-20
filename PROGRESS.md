@@ -24,6 +24,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - MSAA (Windows to test)
+
+sdk d3d12: antialiasing 2/3/4 is MSAA 2x/4x/8x. Colour targets at least 320x240 (the scene; not reflections, the
+mini map or shadow maps) and the depth targets drawn with them get a multisampled twin (EnsureMs, checked against the
+device's sample support). Draws go to the twins (pipelines keyed by sample count); res stays what everything else
+reads: Settle resolves a twin into it before sampling, copies, read-backs, captures and presenting (ResolveSubresource
+for colour, a pass loading sample 0 for depth), Refresh fills a twin from res after a CPU upload, a copy or a draw
+without the twin, Clear clears both. Visibility counts divide by the samples. Changing the level or the render scale
+settles and drops the twins. Off by default. wincheck OK, the depth resolve shader compiles with DXC, smoke OK; not
+run on a GPU.
+
 ### 2026-10-20 - achievements: garage, speed and a win (59 live)
 
 Harry's save owns exactly Cars.Ini's 29 ShowroomFree cars: the collection tiers became 40/60/80/102 and Token Gesture
