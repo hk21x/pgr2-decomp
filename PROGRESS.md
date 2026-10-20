@@ -24,6 +24,15 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - ultrawide HUD bars: corners on the edge stay there
+
+Harry: performance much better; in ultrawide a street race's text sits outside its grey bars. The bars are drawn in one
+draw with the right hand bar, so the draw spanned the frame and was left unsqueezed as a full screen pass, while the
+text (its own draws) was squeezed. Now each corner decides: one on the frame's left or right edge stays, the rest are
+squeezed (D3D12 vertex shader, the CPU renderer the same), so bars reach from the edge to past their text and full
+screen passes keep their width without a per draw extent check. Headless preview at 2.39: the POSITION / LAP TIME,
+Kudos and LAP bars run from the edges to just past their text. Smoke OK.
+
 ### 2026-10-20 - race_60fps: trimming the render thread's per draw cost
 
 Harry's step times at the spot (5800 draws): assemble 3.1, bind 4.0, consts 1.9, tables 1.6, geometry 1.8, shaders
