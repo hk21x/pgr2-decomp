@@ -24,6 +24,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - race_60fps: trimming the render thread's per draw cost
+
+Harry's step times at the spot (5800 draws): assemble 3.1, bind 4.0, consts 1.9, tables 1.6, geometry 1.8, shaders
+1.0, pso 0.5, setup 0.2, untimed ~3.7 ms: spread, ~3 us a draw; 60 needs ~15 ms. Trimmed (sdk):
+- the perf clock reads (about 8 a draw, always on) only with XBE_PERF;
+- a guest texture's binding remembered per stage for the rest of the frame (keyed by its header words; palettised
+  ones and an extension excluded), the colour and depth target lookup remembered for the same surfaces; both start
+  over each frame and whenever a target is made, dropped or rescaled (targets_gen_);
+- Assemble copied the whole State (tens of KB) per draw while SetVertexShaderInput is active; now only the four
+  fields it reads.
+Smoke OK; a Hong Kong race snap draws rails, posts and buildings. Windows to measure.
+
 ### 2026-10-20 - race_60fps slowdown: reuse helped uploads, not time; per step timers
 
 Harry's second log at the spot: uploads 41 -> 21-23 MB a frame, reuse 77% of vertex constants, 37% of draw
