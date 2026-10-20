@@ -203,6 +203,11 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
   To confirm with real saves: that a record keeps the best medal won.
 - **Geometry Wars** (its text, 0x145990): score dword 0x45A308, hi-score 0x45A314, bombs 0x45A304, state 0x45A300
   (1 game over).
+- **Harry's save (2026-10-20)**: the object 0x35BA78 is in Profile.Sav from file offset 0x1208 (its car table: 102
+  at +0x24, then 0x1C-byte records keyed 2000 + car). Car ownership confirmed: bit 0 (player index 0) set for 29 cars.
+  The race records hold an id at +0x10 (2132 + race) and no medals in that save, so the medal values are still to
+  confirm with a save that has some. Its Kudos block differs from memory (count 0 at +0x1608, 2014 at +0x1620): to
+  check against the status screen's Total Kudos.
 - To find: Time Attack challenges (92 circuit, 102 car), the race's own Kudos, tokens spent; the player index
   (0x366800) that picks the car ownership bit, from a real save. A profile with progress (Harry's saves)
   is the quickest way for the medals.
