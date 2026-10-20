@@ -1,17 +1,86 @@
 # Project Gotham Racing 2 - XBE Recomp
 
-An unofficial native PC port of the original Xbox version of Project Gotham Racing 2, with extended graphics options and other enhancements.
+![Project Gotham Racing 2 - native PC port](docs/images/pgr2-pc-port.webp)
 
-This port was created using the [Xbox XBE Recomp](https://github.com/TGP482/XboxXBE-Recomp) tool.
+An unofficial native PC port of the original Xbox version of Project Gotham Racing 2, with extended graphics options
+and other enhancements. The game's own x86 code is statically recompiled into a Windows executable with the
+[Xbox XBE Recomp](https://github.com/TGP482/XboxXBE-Recomp) tool; the Xbox's graphics, sound and system libraries are
+reimplemented for Windows (Direct3D 12, XAudio2, SDL). It is not an emulator.
 
 > [!NOTE]
-> This project does not include any game assets. You must provide the files from your own legally acquired copy of the game to install or build.
+> This project does not include any game assets. You must provide the files from your own legally acquired copy of
+> the game to build and play.
 
-## Installation
+## Supported Version
 
-- Put your game files in the `assets` folder. This can be an ISO, or the extracted data files.
-- Run `PGR2.exe`.
-- Recomp settings can be adjusted in `pgr2.toml` beside the exe.
+The European (PAL) Xbox release of Project Gotham Racing 2: `default.xbe` with SHA-1
+`676895b86f01938804c5f1cdcad8b44044295cb4` (title id 4D53004B). The executable is recompiled from that exact file
+and checks it at start; another release (US or Japanese) has different code and needs its own configuration, which
+does not exist yet. The log (`logs\pgr2.log`) names the SHA-1 of the `default.xbe` it found.
+
+## Getting Started
+
+### Requirements
+- Windows 10 or 11, 64 bit, and a GPU with Direct3D 12.
+- [Git](https://git-scm.com/download/win).
+- Visual Studio 2022 (Community is fine) with **Desktop development with C++**. `build.bat` offers to add
+  **C++ Clang tools for Windows** and **C++ CMake tools for Windows** if they are missing.
+- About 15 GB free for the build.
+- Your PAL disc's files: `default.xbe` and its folders (`Cache`, `CarDynamics`, `data`, `Frontend`, `Game`, `media`,
+  ...), or an `.iso` image of the disc.
+
+### 1. Clone the repository, with its SDK
+```
+git clone --recurse-submodules https://github.com/hk21x/pgr2-decomp.git
+cd pgr2-decomp
+```
+Cloned without `--recurse-submodules`? Run `git submodule update --init`.
+
+### 2. Add your game files
+Put them in the `assets` folder: `assets\default.xbe` with the game's folders beside it. With an `.iso`, put the
+`.iso` in `assets` and also copy `default.xbe` out of it into `assets` (the build recompiles from that file).
+
+### 3. Build
+Run `build.bat` from Explorer or a command prompt. The first build recompiles the game and compiles everything,
+which takes 30 to 90 minutes; later builds are quicker. The executable is `out\build\release\PGR2.exe`. Do not run
+`xbe_symbols` or edit `config\game.toml`: the committed configuration is the one for the supported release.
+
+### 4. Play
+Answer Y to "Play now?", or run `out\build\release\PGR2.exe`. The first start sets up the emulated hard disk and
+copies the game's cache while the intro movies play (about two minutes); later starts are quick.
+
+`PGR2.exe` finds the `assets` folder beside itself or in any folder above it, so it can also be run from a copy of
+`out\build\release` with an `assets` folder next to it.
+
+Files the game writes beside the exe:
+- `pgr2.toml` settings (the settings window writes it)
+- `hdd\` the emulated hard disk: profiles, saves and caches (delete it to start again from a first boot)
+- `logs\pgr2.log` the log of the last run (send it with any problem report)
+- `achievements.toml` achievements unlocked
+- `CrashDumps\` a minidump if it crashes
+
+## Controls and Settings
+
+**Settings window:** press **F1**, or **Back + Start** on a controller, or choose **Options > General Options > PC
+Settings** in the game's menus. Tabs: Display, Graphics, Game, Achievements, General and Controls. Changes are saved
+at once.
+
+**Keyboard** (plays as controller 1 while the window has the focus; remap in Controls, two keys per input):
+
+| Console input | Keys |
+| --- | --- |
+| Steer / menus (left stick) | Arrow keys, or A / D |
+| Accelerate / brake | W / S |
+| A / B / X / Y | Enter or Space / Backspace / Q / E |
+| Black / White | R / F |
+| Start / Back | Escape or P / Tab |
+| D-pad | Numpad 8 / 2 / 4 / 6 |
+| Right stick, stick clicks | I J K L, C and V |
+
+**Controllers:** Xbox, PlayStation and Switch controllers, with hot plugging and rumble; any console input can be
+mapped to any controller input in Controls.
+
+![Ultrawide: the view widened to 21:9, the HUD kept at 16:9](docs/images/pgr2-ultrawide.webp)
 
 ## Features
 
@@ -60,26 +129,14 @@ below 60 in the busiest streets. Progress is
 in [PROGRESS.md](PROGRESS.md), technical findings in [FINDINGS.md](FINDINGS.md), and what may carry over to
 Project Gotham Racing 1 in [PGR1.md](PGR1.md).
 
-## System Requirements
+## Troubleshooting
 
-### Minimum
-- **OS**
-  - Windows 10 64-bit
-- **GPU** with support for Direct3D 12
-
-## Building
-
-### 1. Clone the Repository
-Clone this repository using [Git](https://git-scm.com/).
-
-### 2. Add the Required Game Files
-Place your extracted game data files in the `assets` folder. `default.xbe` must be there, with the game's folders beside it.
-
-### 3. Install Dependencies
-Install Visual Studio 2022 with **Desktop development with C++**, **C++ Clang tools for Windows** and **C++ CMake tools for Windows** (`build.bat` offers to add the last two).
-
-### 4. Build the Project
-Run `build.bat`. The first build recompiles the game and takes a while. The exe is written to `out\build\release`.
+- Something wrong: the first lines of `logs\pgr2.log` list the settings, the GPU and any `XBE_*` or `PGR2_*`
+  environment variables; leftover ones from experiments change how the game draws. [WINDOWS.md](WINDOWS.md) lists
+  the diagnostic switches (frame captures with F3, frame logs with F4, `XBE_PERF` timings).
+- "Another release" in the log, or the game not starting: the `default.xbe` in `assets` is not the supported PAL one.
+- A first boot again (the cache, the intro movies): delete `out\build\release\hdd`.
+- Races at 60 frames a second dipping below 60: it is experimental; the console's 30 is the default.
 
 ## Credits
 
