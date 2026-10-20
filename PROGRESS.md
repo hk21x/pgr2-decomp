@@ -3,30 +3,23 @@
 Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Status
-- Milestone: 4 - **a race runs under pad control** in the harness (title -> Instant Action -> Yokohama race)
-- Windows: Harry's first build boots and takes input; white quad and solid-colour movies fixed in shared code since
-- XDK 5659: 189 of 248 functions, 13 of 13 data
-- Known: car bodies partly missing; a stale band under the HUD seen once at a race start; reference renderer
-  shows dotted textures (waiting for the Windows report)
-- Speed: paced by the game's own present interval (menus 60, races 30, as on the console); fps_cap 60 default;
-  `race_60fps` option (experimental, off) runs races at 60
-- Smoke test: `scripts/smoke.sh` (title -> Instant Action -> race, no traps), run before every fast-forward of main
-- Upstream: draft PR description for TGP482/XboxXBE-Recomp in `.local/upstream-pr.md`, not sent
-- D3D12 groundwork (no capture): raw vertex path proven against the CPU path, all race shaders compile (DXC), env map
-  cube fixed; brown polygons and stripes not reproduced, see 2026-10-18 D3D12 entry for the list to check on Windows
-- Sound headless: not silent, no clipping, 48 kHz, menu music, engine pitch follows the throttle; DSP effects and
-  reverb are accepted but not applied
-- Saves: profile and settings persist across a reboot (`scripts/savetest.sh`); a lap record needs steering
-- Coverage: pad scripts for Time Attack, Kudos World Series, Arcade, replay; 60 minute soak clean
-- System link: works headless (lobby and race between two instances, scripts/linktest.sh); Windows to try
-- Windows round 2: boots, movies, audio, saves OK; player car body black, stripes on some walls (captures in
-  .local/win, see 2026-10-18 car bodies entry); environment map cube faces fixed (SetRenderTargetFast)
-- Car body: fixed (pushed constants applied in order), headless matches the console; Windows to confirm
-- Flicker: car shadow fixed (draw filter); fences/posts/signs fixed (SetVertexShaderInput); night lighting flickers
-  (lit windows blip to full bright for a frame: the game's own combiner choice, to compare with the console)
-- Next: building flicker and missing barriers; system link fixed headless
+- Milestone: 4 - a race runs under pad control; Windows: boots, menus, races, saves, movies, audio
+- XDK 5659: 191 of 250 functions, 13 of 13 data
+- Speed: paced by the game's present interval (menus 60, races 30); race_60fps option
+- Rendering: car body fixed; car shadow flicker fixed; fences/posts/signs (SetVertexShaderInput); W-buffering on
+  by default (car selection panels, to confirm on Windows); open: night under-car flicker, building flicker
+- PC: F1 settings window (display, graphics, game options, controls), keyboard play, controller remapping
+- System link: works headless (scripts/linktest.sh); Windows to try
+- Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
+- Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - overnight checks
+
+- 20 minute soak with everything above: 9 races, no traps, frames to the end, RSS 102 -> 105 MB.
+- Code review of the settings window and input: the keyboard's controller 1 now stays plugged in while keyboard
+  play is on (alt-tabbing away would have unplugged it, and the game pauses on a removed controller).
 
 ### 2026-10-20 - W-buffer depth: perspective correct w
 
