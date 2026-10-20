@@ -78,9 +78,10 @@ Each item is marked:
 ## Rendering: PGR2's own techniques
 
 - **Car shadow.** The car's 1024x1024 D16 shadow map is projected onto a ground mesh built each frame
-  (vs B0101931) with a polygon offset and no depth writes. It failed the road's depth test by up to 4096 units, so
-  it flickered. `src/game/draw_filter.cpp` draws that pass 4096 units nearer (gpu::DrawAdjust::depth_bias); the
-  car still hides it.
+  (vs B0101931) with a polygon offset and no depth writes. With a Z buffer it failed the road's depth test by up to
+  4096 units and flickered; `src/game/draw_filter.cpp` drew it 4096 units nearer. Since W-buffering that nudge is a
+  quarter of a metre and put the shadow on the car's lower body in the sun, while the plain pass looks right: the
+  nudge is off (`PGR2_SHADOW_NEARER=1` brings it back).
 - **Polygon offsets** match the XDK exactly at 3x upscale. The layers that rely on them are road shadows, kerbs and
   decals.
 - **Light pool under the car.** This is a 256x256 target drawn each frame, sampled in stage 3 by the road. The

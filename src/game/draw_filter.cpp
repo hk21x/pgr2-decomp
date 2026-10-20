@@ -15,6 +15,9 @@ namespace {
 // test it was steady but showed through the car. Measured headless (which shader's depth stopped each failed pixel,
 // and by how much): the road and kerbs by at most 4096 units of a 24 bit buffer, the car body by 4096 to 65536. So
 // the pass keeps its depth test, 4096 units nearer. 0x300 is GL_SRC_COLOR.
+// That was measured with a Z buffer. Since W-buffering (the console's depth for PGR2's draws) 4096 units are about a
+// quarter of a metre of w, and in the sun the shadow then reached onto the car's lower body (Harry, 2026-10-20); his
+// runs without it showed the shadow right. So it is off unless PGR2_SHADOW_NEARER=1.
 constexpr int32_t kCarShadowBias = -4096;
 
 void CarShadowNearer(const gpu::State& s, gpu::DrawAdjust& adjust) {
@@ -40,10 +43,8 @@ void CarShadowNearer(const gpu::State& s, gpu::DrawAdjust& adjust) {
 
 // called from the game's init (src/common/game_info.cpp): a static initializer here never ran in the Windows exe
 void InstallDrawFilter() {
-    if (std::getenv("PGR2_NO_FILTER")) {  // experiment: the game's draws as they come
-        LOGR("pgr2: PGR2_NO_FILTER, no draw filter");
-        return;
-    }
+    const char* e = std::getenv("PGR2_SHADOW_NEARER");
+    if (!e || *e != '1') return;  // the game's draws as they come
     gpu::g_draw_filter = CarShadowNearer;
-    LOGR("pgr2: draw filter installed (car shadow pass nearer)");
+    LOGR("pgr2: PGR2_SHADOW_NEARER=1, draw filter installed (car shadow pass nearer)");
 }

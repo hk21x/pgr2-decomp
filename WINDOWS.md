@@ -94,8 +94,8 @@ Useful while testing:
   plus once before the first.
 - `XBE_DRAW_TEST=B01019E1:alphakill` (or `:cull`, `:depth`, several joined by commas): an experiment, draws with that
   vertex shader without that test.
-- Game switches (experiments, `1` to turn on): `PGR2_NIGHT` every race at night; `PGR2_NO_FILTER` the car shadow
-  pass without its depth fix; `PGR2_FLARE_LOG` / `PGR2_FLARES` exhaust flame diagnostics; `PGR2_LIGHT` /
+- Game switches (experiments, `1` to turn on): `PGR2_NIGHT` every race at night; `PGR2_SHADOW_NEARER` the car shadow
+  pass drawn 4096 depth units nearer (the old flicker fix, off by default since W-buffering); `PGR2_FLARE_LOG` / `PGR2_FLARES` exhaust flame diagnostics; `PGR2_LIGHT` /
   `PGR2_LIGHT_CLEAR` car lighting diagnostics. `XNET_TRACE=1` logs every network call (system link).
 - Leftover variables from an earlier experiment give false regressions: the log lists every `XBE_*` and `PGR2_*`
   variable it sees at the top. Clear them (`Remove-Item Env:XBE_DRAW_TEST` in PowerShell) when done.

@@ -24,6 +24,14 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - car shadow nudge off: it caused the sunlit patches
+
+Harry's A/B at the Florence spot: XBE_DRAW_SKIP=B0101931 removes the car's shadow (so the patches came from that
+pass), PGR2_NO_FILTER=1 shows the shadow right with no patches. The 4096-unit nudge was measured with a Z buffer; under
+W-buffering it is about 0.24 m of w, enough to win against the car's lower body. The draw filter is now off by default
+(PGR2_SHADOW_NEARER=1 turns it on). To watch: the under-car shadow flicker it was made for (likely gone with
+W-buffering). The D16 W-depth fix of the previous entry stays (correct on its own).
+
 ### 2026-10-20 - sunlit shadow patches on the car (D3D12 W-buffer on D16); render scale with MSAA
 
 Harry: patches of shadow on the player's car in sunlit daytime races, MSAA or not; and with MSAA on the render scale
