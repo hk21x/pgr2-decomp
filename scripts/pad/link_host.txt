@@ -1,0 +1,21 @@
+# System link host (instance 1): make the profile, Multiplayer > System Link > Create New Game, Edinburgh, Princes
+# Street East, default options; the lobby waits, then Start Game once the joiner is in, and accelerate. Used by
+# scripts/linktest.sh with link_join.txt.
+4760 START 30
+4910 START 20
+5060 A 10
+5360 A 10
+5660 A 10
+5960 A 10
+6260 A 10
+6760 RIGHT 10
+6860 A 10
+7160 RIGHT 10
+7260 RIGHT 10
+7360 A 10
+7660 A 10
+7960 A 10
+8260 A 10
+8560 A 10
+12000 A 10
+13800 RT 3600

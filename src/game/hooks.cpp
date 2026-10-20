@@ -246,3 +246,35 @@ X86_FUNC(sub_0017FCC0) {
     if (flares) kernel::G<uint8_t>(0x291A27) = 0xFF;
     __imp__sub_0017FCC0(ctx, base);
 }
+
+// the system link session's teardown (0x165AF0, ecx the session): XNET_TRACE=1 logs who ends it, with the guest stack
+X86_EXTERN_FUNC(__imp__sub_00165AF0);
+X86_FUNC(sub_00165AF0) {
+    static const bool trace = std::getenv("XNET_TRACE") != nullptr;
+    if (trace) {
+        LOGR("pgr2: link session %08X ends, from %08X", ctx.ecx, kernel::R32(ctx.esp));
+        // its players: [+0x3730, +0x3734) of 0x2DB0 bytes each, +0x76 their connected flag
+        uint32_t b = kernel::R32(ctx.ecx + 0x3730), e = kernel::R32(ctx.ecx + 0x3734);
+        LOGR("pgr2: players %08X..%08X", b, e);
+        for (uint32_t p = b; p && p < e && p - b < 16 * 0x2DB0; p += 0x2DB0)
+            LOGR("pgr2:   player %08X flag 76 %u, first words %08X %08X %08X %08X", p, kernel::G<uint8_t>(p + 0x76),
+                 kernel::R32(p), kernel::R32(p + 4), kernel::R32(p + 8), kernel::R32(p + 12));
+        kernel::LogGuestStack(ctx, 24);
+    }
+    __imp__sub_00165AF0(ctx, base);
+}
+
+// a link player's removal (0x1654D0, ecx the session, the player's id): XNET_TRACE=1 logs the timeout inputs
+X86_EXTERN_FUNC(__imp__sub_001654D0);
+X86_FUNC(sub_001654D0) {
+    static const bool trace = std::getenv("XNET_TRACE") != nullptr;
+    if (trace) {
+        uint32_t s = ctx.ecx, id = kernel::R32(ctx.esp + 4), now = kernel::R32(kernel::R32(0x27562C));
+        LOGR("pgr2: link player %08X removed (args %u %u), tick %u, timeout %u, from %08X", id, kernel::R32(ctx.esp + 8),
+             kernel::R32(ctx.esp + 12), now, kernel::R32(s + 0x2F28), kernel::R32(ctx.esp));
+        for (uint32_t p = kernel::R32(s + 0x3730), e = kernel::R32(s + 0x3734); p && p < e; p += 0x2DB0)
+            LOGR("pgr2:   player %08X last heard %u, +74 %u +76 %u +2dac %u", kernel::R32(p + 0x24), kernel::R32(p + 0x60),
+                 kernel::G<uint8_t>(p + 0x74), kernel::G<uint8_t>(p + 0x76), kernel::G<uint8_t>(p + 0x2DAC));
+    }
+    __imp__sub_001654D0(ctx, base);
+}

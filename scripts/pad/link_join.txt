@@ -1,0 +1,21 @@
+# System link joiner (instance 2): a profile named "1", Multiplayer > System Link > Search for Games, join the first
+# game, wait for the host to start, accelerate. Used by scripts/linktest.sh with link_host.txt.
+4760 START 30
+4910 START 20
+5060 A 10
+# name: RIGHT to "1", A types it, LEFT back to DONE, A
+5260 RIGHT 10
+5360 A 10
+5460 LEFT 10
+5560 A 10
+5860 A 10
+6160 A 10
+6460 A 10
+6960 RIGHT 10
+7060 A 10
+7360 RIGHT 10
+7460 RIGHT 10
+7560 A 10
+9060 RIGHT 10
+9160 A 10
+13800 RT 3600

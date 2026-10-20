@@ -18,15 +18,30 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   reverb are accepted but not applied
 - Saves: profile and settings persist across a reboot (`scripts/savetest.sh`); a lap record needs steering
 - Coverage: pad scripts for Time Attack, Kudos World Series, Arcade, replay; 60 minute soak clean
-- System link: two harness instances find each other and exchange the join, then the session stalls (open)
+- System link: works headless (lobby and race between two instances, scripts/linktest.sh); Windows to try
 - Windows round 2: boots, movies, audio, saves OK; player car body black, stripes on some walls (captures in
   .local/win, see 2026-10-18 car bodies entry); environment map cube faces fixed (SetRenderTargetFast)
 - Car body: fixed (pushed constants applied in order), headless matches the console; Windows to confirm
 - Flicker: car shadow fixed (draw filter); fences/posts/signs fixed (SetVertexShaderInput); night lighting flickers
   (lit windows blip to full bright for a frame: the game's own combiner choice, to compare with the console)
-- Next: building flicker and missing barriers; system link waits for Harry (three attempts used)
+- Next: building flicker and missing barriers; system link fixed headless
 
 ## Log
+
+### 2026-10-20 - System link works: XNetGetConnectStatus
+
+Fourth attempt, with new tools (XNET_TRACE, gdb watchpoints with the joiner started under gdb, guest stack logs).
+Chain: the joiner showed "lost connection" (FUN_00099780 from FUN_00094FF0) because FUN_00160560 found no connected
+player; the host's entry was added at the join and removed by FUN_001654D0 because its +0x74 "leaving" flag was set
+by FUN_00160C70 when FUN_0025A4B1(the host's address) returned 3. FUN_0025A4B1 is XNetGetConnectStatus (XTLID
+0x40032): the library's version answers XNET_CONNECT_STATUS_LOST when its network object is null.
+- sdk: XNetGetConnectStatus returns CONNECTED; XNetUnregisterInAddr (0x40030) hosted; both signed by the round trip
+  (game.toml +2, rescan stable). XNET_TRACE=1 logs every network call.
+- Two instances: lobby with both players, the host starts, both race (positions 1/2, 2/2), VDP keepalives on port
+  1000 throughout. scripts/linktest.sh (two instances, link_host.txt / link_join.txt) checks it: LINKTEST OK.
+- src/game/hooks.cpp: XNET_TRACE also logs the link session teardown (0x165AF0) with the guest stack and player
+  removals (0x1654D0).
+Next (Windows): two PCs on a LAN, or two instances with --instance 1 / 2.
 
 ### 2026-10-19 - D3D12 W-buffer (opt-in), render target reload logging
 
