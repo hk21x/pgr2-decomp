@@ -24,6 +24,21 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - ultrawide
+
+Aspect setting 3, "Fill the screen" (aspect = 'screen'): app::FrameAspect() is the screen's shape (at least 16:9).
+- PGR2 (src/game/hooks.cpp): the widescreen 3D views (race cameras 0x1857F0; 0x88480, 0x16E960, 0x184530) take
+  their aspect from 0x2790F8 (16:9) when 0x48614C is set; it is set to the frame's shape each frame. Headless at
+  2.39: the car 0.76 as wide in the 640x480 frame, as (16/9)/2.39 predicts.
+- sdk d3d12: the frame shown at that shape; screen shaped targets (the front buffer's height, wider than tall) get
+  XStretch more pixels across (640x480 at 2.39 and scale 3: 3440x1440), so viewport, scissor, clear rects, copies
+  (direct only at equal scales), slopes and point sizes take separate x and y scales; a shape change remakes the
+  targets as a scale change does. 2D (pretransformed, no depth test, not spanning the frame) is squeezed by
+  (16/9)/shape into the centred 16:9 part (DrawConstants::hud, HudSqueeze); light glows and full screen passes stay.
+- Harness: FRAME_ASPECT_X100 forces a shape; the CPU renderer squeezes 2D the same way. Previews (stretched snaps):
+  a Hong Kong race with a round speedometer and a centred HUD, the title screen centred with its line full width.
+wincheck OK, smoke OK. Windows to check.
+
 ### 2026-10-20 - car shadow nudge off: it caused the sunlit patches
 
 Harry's A/B at the Florence spot: XBE_DRAW_SKIP=B0101931 removes the car's shadow (so the patches came from that

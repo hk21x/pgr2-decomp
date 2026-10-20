@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cctype>
+#include <cmath>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -16,6 +17,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "app/app.h"
 #include "core/log.h"
 #include "kernel/kernel.h"
 #include "xdk/d3d8.h"
@@ -222,6 +224,18 @@ X86_FUNC(sub_001859A0) {
     __imp__sub_001859A0(ctx, base);
 }
 
+// ultrawide: the game's widescreen 3D views (race cameras 0x1857F0, garage, showroom: 0x88480, 0x16E960, 0x184530)
+// take their aspect from the constant 0x2790F8 (16:9; 0x2790FC is 4:3) when the widescreen flag 0x48614C is set;
+// it is set to the shape the frame is shown at, so the view widens instead of stretching
+void ApplyAspect() {
+    float want = std::max(app::FrameAspect(), 16.0f / 9.0f);
+    float cur;
+    std::memcpy(&cur, &kernel::G<uint32_t>(0x2790F8), 4);
+    if (std::fabs(cur - want) < 1e-4f) return;
+    std::memcpy(&kernel::G<uint32_t>(0x2790F8), &want, 4);
+    LOGR("pgr2: widescreen 3D views at %.3f:1", want);
+}
+
 // hide_hud: HideOverlays (a Frontend.ini switch, the byte 0x291A24), which the HUD code (0xDA000-0xE8000) reads each
 // frame, set before every frame step (0xD90F0) so the option applies at once
 X86_EXTERN_FUNC(__imp__sub_000D90F0);
@@ -231,6 +245,7 @@ X86_FUNC(sub_000D90F0) {
     was = pgr2::hide_hud;
     pgr2::ApplySettingsEntry();
     ApplyDrawDistance();
+    ApplyAspect();
     __imp__sub_000D90F0(ctx, base);
     ApplyFov();
 }
