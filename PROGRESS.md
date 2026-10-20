@@ -8,13 +8,25 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Speed: paced by the game's present interval (menus 60, races 30); race_60fps option
 - Rendering: car body fixed; car shadow flicker fixed; fences/posts/signs (SetVertexShaderInput); W-buffering on
   by default (car selection panels, to confirm on Windows); showroom car depth (wheel through the body) fixed;
-  open: night under-car flicker, building flicker
+  street light glows through buildings fixed (to confirm on Windows); open: night under-car flicker, building flicker
 - PC: F1 settings window (display, graphics, game options, controls), keyboard play, controller remapping
 - System link: works headless (scripts/linktest.sh); Windows to try
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - street light glows through buildings: W-buffer scale of pretransformed w
+
+Harry: under-car flicker much better, car selection fixed, F1 works; new: night street lights show through buildings.
+The glows are tested for visibility: 0x114FA0 / 0x114D20 draw a small XYZRHW quad per light between Begin and
+EndVisibilityTest (0x1C42F0), with rhw = 1 / (1/rhw - 0.1) and z = 1, so the console takes their depth from w.
+The XDK's SetTransform (0x1C34A0) keeps 1 / the projection's far w (device +0x940); W-buffered, 0x1C0FC0 folds
+ZScale / far w into the fixed function matrix and 0x1C0300 into the pass-through program's c0.w. SetTransform is HLE
+here, so the probes and the glows had w ~6 against the buildings' ~200000 (vertex programs carry the scale in their
+own matrices): always in front. sdk: State::inv_wfar from SetTransform (PGR2's far w 999.934); both renderers scale
+fixed function and pretransformed w by zscale * inv_wfar. CPU renderer: hidden probes now fail the depth test
+(zfail 196 of a 14x14 quad), before none did. Visibility tests are noted in the frame log. Smoke OK.
 
 ### 2026-10-20 - car selection: the wheel through the body was a depth buffer bigger than the target
 
