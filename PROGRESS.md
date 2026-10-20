@@ -28,6 +28,13 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - W-buffer depth: perspective correct w
+
+With w interpolated linearly on the screen (as xemu does) the CPU renderer drew long triangles that reach the camera
+as streaks in front of everything (1 frame in 8 runs); the pixel's own w (1 / interpolated 1/w; in D3D12 a
+perspective interpolated TEXCOORD6) has no streaks and keeps the car selection whole. The headless one-frame pop
+count is too noisy to rank depth modes (the CPU renderer also leaves random spike patterns in single snaps).
+
 ### 2026-10-20 - car selection's missing panels: the Z buffer; W-buffering on by default
 
 The CPU renderer shows the car selection MINI whole with W-buffering and broken with z / w (panels missing, the
