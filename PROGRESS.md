@@ -24,6 +24,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - draw distance option (experimental)
+
+Harry: street lights fixed, the new options work, the night building flicker is gone. Draw distance traced:
+Frontend\Cities.Ini's DrawDistance (a UTF-16 key at 0x28099C, read into the city table: 0x68 bytes a city from
+0x30D670, +0x48; every one of the 17 is 3000). Race setup 0x1808C0 copies the city's into 0x49DFDC (2000 in one
+mode), and the race camera 0x1859A0 makes it its far plane, times 1, 0.75 or 0.25 by view; other cameras 0x1857F0
+read the table (500, 0x291A08, for scratch ones). draw_distance_percent (25-400, from the next race; PGR2_DRAW
+headless) scales both. Hong Kong (race.txt, same moment, HUD hidden): 25% cuts the street's far end; 400% adds
+nothing over 100% (the pixel difference is edges from a sub-pixel position change): the city's own geometry ends
+before 3000 and the skyline is painted on the sky. Kept as an experimental option. Smoke OK.
+Next: whether objects also have their own cull or detail distances (more buildings, trees, traffic farther out).
+
 ### 2026-10-20 - achievements: race state and medals mapped, 47 live
 
 - Race state from the HUD code (0xDB460, 0xE0840), checked against the HUD in a headless race: car records of 0x2498

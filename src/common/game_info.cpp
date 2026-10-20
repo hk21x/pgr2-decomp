@@ -6,7 +6,7 @@ void InstallDrawFilter();  // src/game/draw_filter.cpp
 
 namespace pgr2 {
 extern bool skip_intro, hide_hud;
-extern uint32_t fov_percent;
+extern uint32_t fov_percent, draw_distance_percent;
 void SettingsEntryPad(int port, input::Pad& pad);  // src/game/settings_entry.cpp
 std::vector<achievements::Def> AchievementSet();    // src/game/achievement_set.cpp
 }
@@ -18,6 +18,7 @@ void Init() {
     if (const char* e = std::getenv("PGR2_SKIP_INTRO"); e && *e == '1') pgr2::skip_intro = true;
     if (const char* e = std::getenv("PGR2_HIDE_HUD"); e && *e == '1') pgr2::hide_hud = true;
     if (const char* e = std::getenv("PGR2_FOV")) pgr2::fov_percent = uint32_t(std::atoi(e));
+    if (const char* e = std::getenv("PGR2_DRAW")) pgr2::draw_distance_percent = uint32_t(std::atoi(e));
 }
 }  // namespace
 
@@ -26,6 +27,7 @@ bool race_60fps = false;  // races at 60 frames a second instead of the console'
 bool skip_intro = false;  // no intro movies at start (src/game/hooks.cpp)
 bool hide_hud = false;    // no race HUD, for screenshots (src/game/hooks.cpp)
 uint32_t fov_percent = 100;  // the race cameras' field of view, percent of the console's (src/game/hooks.cpp)
+uint32_t draw_distance_percent = 100;  // how far the race cameras see, percent of the console's (src/game/hooks.cpp)
 }
 
 // PGR2 asks for one vertical blank a frame in its menus and two in its races (D3D_PresentInterval), and steps its
@@ -46,6 +48,8 @@ const app::GameInfo app::kGame = {
                 {"hide_hud", &pgr2::hide_hud, nullptr, "Hide the race HUD", "For screenshots and replays; at once."},
                 {"fov_percent", nullptr, &pgr2::fov_percent, "Race camera field of view (%)",
                  "100 is the console's; 50 to 200, at once."},
+                {"draw_distance_percent", nullptr, &pgr2::draw_distance_percent, "Draw distance (%)",
+                 "100 is the console's; 25 to 400, from the next race. Experimental: most streets end before it."},
                 {"race_60fps", &pgr2::race_60fps, nullptr, "Races at 60 frames a second (experimental)",
                  "Same physics, sampled twice as often; at the next start."}},
     .load = nullptr,                      // reads more from the settings file's toml::table

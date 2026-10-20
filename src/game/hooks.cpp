@@ -137,7 +137,7 @@ X86_FUNC(sub_00024DE0) {
 
 namespace pgr2 {
 extern bool race_60fps, skip_intro, hide_hud;
-extern uint32_t fov_percent;
+extern uint32_t fov_percent, draw_distance_percent;
 void ApplySettingsEntry();  // src/game/settings_entry.cpp
 }
 
@@ -188,6 +188,40 @@ void ApplyFov() {
     logged = pct;
 }
 
+// draw_distance_percent: how far the race cameras see. Cities.Ini gives every city DrawDistance = 3000, kept in the
+// city table (0x68 bytes a city from 0x30D670, the distance at +0x48; 17 cities); race setup (0x1808C0) copies the
+// city's into 0x49DFDC (2000 in one mode) and the race camera (0x1859A0) makes it its far plane, times 1, 0.75 or 0.25
+// by view; other cameras (0x1857F0) read the table. Both are scaled; a value that is not the one written last is the
+// game's own.
+struct Scaled {
+    float original = 0, written = 0;
+    void Apply(uint32_t va, uint32_t pct) {
+        float cur;
+        std::memcpy(&cur, &kernel::G<uint32_t>(va), 4);
+        if (cur != written) original = cur;
+        float f = original * float(pct) / 100;
+        if (f != cur) std::memcpy(&kernel::G<uint32_t>(va), &f, 4);
+        written = f;
+    }
+};
+uint32_t DrawPercent() { return std::clamp<uint32_t>(pgr2::draw_distance_percent, 25, 400); }
+
+void ApplyDrawDistance() {
+    static Scaled cities[17];
+    static uint32_t logged = 100;
+    uint32_t pct = DrawPercent();
+    for (int i = 0; i < 17; i++) cities[i].Apply(0x30D6B8 + i * 0x68, pct);
+    if (pct != logged) LOGR("pgr2: draw distance %u%% (%g)", pct, cities[0].written);
+    logged = pct;
+}
+
+X86_EXTERN_FUNC(__imp__sub_001859A0);
+X86_FUNC(sub_001859A0) {
+    static Scaled race;
+    race.Apply(0x49DFDC, DrawPercent());
+    __imp__sub_001859A0(ctx, base);
+}
+
 // hide_hud: HideOverlays (a Frontend.ini switch, the byte 0x291A24), which the HUD code (0xDA000-0xE8000) reads each
 // frame, set before every frame step (0xD90F0) so the option applies at once
 X86_EXTERN_FUNC(__imp__sub_000D90F0);
@@ -196,6 +230,7 @@ X86_FUNC(sub_000D90F0) {
     if (pgr2::hide_hud || was) kernel::G<uint8_t>(0x291A24) = pgr2::hide_hud ? 1 : 0;
     was = pgr2::hide_hud;
     pgr2::ApplySettingsEntry();
+    ApplyDrawDistance();
     __imp__sub_000D90F0(ctx, base);
     ApplyFov();
 }

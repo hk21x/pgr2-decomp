@@ -124,6 +124,8 @@ Still to confirm:
    close it (Start, F1 or the window's X) and the menu goes back to General Options on its own.
 1b. **Achievements**: F1 > Achievements lists the Kudos rank ones; reaching Kudos Rank 5 (20,250 Kudos in total)
    should pop up "Achievement unlocked" top right and write achievements.toml beside the exe.
+1d. **Draw distance** (F1 > Game, experimental): try 200-400% in a city with long views (Sydney, Nürburgring);
+   in Hong Kong it changes nothing visible, the street ends first.
 1c. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with
    it; skip intro (next start goes straight to the title); hide HUD in a race; field of view at 130% (is the road
    near the car drawn? the CPU renderer here leaves a band there at any setting); FXAA on and off; the counter; pause
