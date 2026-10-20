@@ -23,6 +23,15 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - sound effects: measured, not built
+
+A race (Hong Kong, race.txt) traced: PGR2 sets the I3DL2 listener every frame (room 0 mB, room HF 0, decay 2.1 s, HF
+ratio 1.0, reflections 0 mB after one call at +1000, reverb 0 mB after one at +2000, delays 0.02 / 0.012 s), never
+calls SetI3DL2Source, and routes every voice to speaker bins 0-5 only (no FX sends, so nothing reaches the custom
+effects image 6WayDistortion.bin's 15 effects). Filters: bypass on streams, mode 3 (multi) on some 3D buffers with
+0x8000 coefficients. Whether the console's custom image runs an I3DL2 reverb at all is unknown, so a reverb here
+could take PGR2 further from the console. Not built; wanted: a console recording of a street and a tunnel.
+
 ### 2026-10-20 - achievements: memory mapped in part, runtime built
 
 - Tools: Ghidra helper scripts committed (scripts/ghidra, scripts/ghidra.sh); harness `memdump` file writes guest
