@@ -43,10 +43,16 @@ Files the exe writes beside itself, in `out\build\release`:
   `race_60fps = true` runs races at 60 instead (an experiment: same physics, one 1/60 step a frame).
 - `hdd\` the emulated hard disk (E: saves, X/Y/Z: caches)
 
-**Settings window: F1** (in game, any time). Tabs: Display (display mode, resolution, vsync, aspect ratio),
-Graphics (render scale, anisotropic filtering, frame rate cap), Game (race_60fps), Controls. Everything is saved to
-`pgr2.toml` at once. Display mode and resolution apply at once; aspect ratio, render scale and game options at the
-next start. While the window is open the game gets no input.
+**Settings window: F1**, or **Back + Start** on a controller (Start alone closes it; the D-pad or left stick moves,
+A selects, B goes back). Tabs:
+- Display: monitor (with more than one), display mode, resolution, vsync, aspect ratio.
+- Graphics: render scale, anisotropic filtering, frame rate cap, antialiasing (FXAA), frames-a-second counter.
+- Game: skip intro movies, hide the race HUD, race camera field of view (%), races at 60 (experimental).
+- General: pause when the window is not in front.
+- Controls: keys and controller remapping.
+Everything is saved to `pgr2.toml` at once. Display mode, resolution, monitor, antialiasing, the counter, hide HUD
+and field of view apply at once; aspect ratio, render scale, skip intro and race_60fps at the next start. While the
+window is open the game gets no input.
 
 Keyboard (plays as controller 1 while the game window has the focus; remap in F1 > Controls, two keys per input):
 - Steer / menus: arrow keys or A / D (left stick); accelerate W (right trigger), brake S (left trigger)
@@ -113,6 +119,10 @@ shadow, fences and signs, car selection, the F1 window.
 
 Still to confirm:
 1. **Street lights at night**: glows hidden behind buildings, still visible where the lamp is in view.
+1a. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with
+   it; skip intro (next start goes straight to the title); hide HUD in a race; field of view at 130% (is the road
+   near the car drawn? the CPU renderer here leaves a band there at any setting); FXAA on and off; the counter; pause
+   on alt-tab (sound stops too); a second monitor if you have one.
 2. **Flicker**: buildings at night (Edinburgh), kerbs, signs; the light patch under the car at night.
 3. **Keyboard and remapping**: drive a race on the keyboard; remap a key and a controller input, restart, check
    they were kept.

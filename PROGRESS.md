@@ -9,13 +9,41 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Rendering, confirmed on Windows: car body, car shadow, fences/posts/signs, car selection (W-buffer and showroom
   depth), under-car flicker much improved. To confirm: street light glows behind buildings. Open: night building
   flicker (Edinburgh), remaining flicker
-- PC: F1 settings window (display, graphics, game options, controls), keyboard play, controller remapping (confirmed)
+- PC: F1 / Back+Start settings window (display, monitor, graphics, FXAA, fps counter, pause on focus loss, game
+  options: skip intro, hide HUD, field of view, race_60fps; controls), keyboard play, remapping (window confirmed;
+  the 2026-10-20 options to confirm on Windows)
+- Achievements: draft set in ACHIEVEMENTS.md (64, 780 points, RetroAchievements style); memory mapping not started
 - System link: works headless (scripts/linktest.sh); Windows to try
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - PC options from the SCDA port's list; achievements draft
+
+Harry asked for the graphics and settings options of TGP482's Splinter Cell Double Agent port (same SDK), the
+settings window reachable in game, and an achievement set for RetroAchievements.
+- Achievements: ACHIEVEMENTS.md, 64 achievements (780 points) built from the game's own data (Frontend\*.Ini: 14
+  Kudos World Series classes, 75 series, 301 races, 5 medal levels, 60 Kudos ranks, 3 Arcade types x 5 stages,
+  Geometry Wars), written as RA memory conditions to be mapped (profile in RAM, race state, context flags).
+- SCDA's options are game code in its own repository, not in the SDK. Taken over, written here (sdk, generic): a
+  monitor choice, FXAA (final blit, psfxaa; compiles with DXC), a frames-a-second counter, pause on focus loss
+  (Pace waits, the XAudio2 thread stops pulling the mixer, so the title's sample clock stops too), option labels and
+  help lines, controller navigation of the window through SDL (ImGui's XInput polling off) and Back + Start to open
+  it. Not taken: shader model 3, shadow filter, AO (SCDA's engine); MSAA, SMAA, HDR output and shadow map
+  resolution are candidates for later.
+- PGR2 (src/game): Frontend\Frontend.ini and camera_settings.ini are developer switches the retail game never
+  reads; their globals are live. skip_intro: the boot sequence 0x13DB90 plays Intro1, Intro2, the language movie
+  and Intro3 through the movie player 0x13C810 (stdcall path, flag), which now reports those four played at once
+  (IntroMovies, 0x291AB6, is dead). First boot reaches the title at 45 s (the cache copy waits stay), a normal boot
+  in 14 s. hide_hud: HideOverlays (0x291A24, read by the HUD code 0xDA000-0xE8000) each frame; a race without HUD
+  checked. fov_percent: the four race camera fields of view (0.975 rad at 0x49DCF0, 0x49DD10, 0x49DD28, 0x49DD3C),
+  scaled each frame; 140% checked (wider view; the CPU renderer's black band near the camera grows with it, also
+  there at 100%). PGR2_SKIP_INTRO, PGR2_HIDE_HUD and PGR2_FOV set them headless.
+- An entry in PGR2's own Options menu would need its frontend menu code; Back + Start does the job for now.
+- wincheck OK on every changed Windows file; smoke OK.
+Next: Harry's Windows check of the options and the street lights; then the night building flicker.
 
 ### 2026-10-20 - documentation pass; PGR1 assessment
 

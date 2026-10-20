@@ -6,7 +6,9 @@
 // X86_FUNC(sub_00012345) {
 //     __imp__sub_00012345(ctx, base);  // the original
 // }
+#include <algorithm>
 #include <atomic>
+#include <cctype>
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -134,7 +136,66 @@ X86_FUNC(sub_00024DE0) {
 }
 
 namespace pgr2 {
-extern bool race_60fps;
+extern bool race_60fps, skip_intro, hide_hud;
+extern uint32_t fov_percent;
+}
+
+// skip_intro: the boot sequence 0x13DB90 plays Intro1, Intro2, the language's movie and Intro3 through the movie
+// player 0x13C810 (stdcall: path, flag; true when played), waiting for the cache copy between them. Those four
+// report "played" at once, so the waits stay. (Frontend.ini's IntroMovies, the byte 0x291AB6, is never read.)
+X86_EXTERN_FUNC(__imp__sub_0013C810);
+X86_FUNC(sub_0013C810) {
+    static const char* kIntros[] = {"intro1.xmv", "intro2.xmv", "intro3.xmv", "english.xmv", "japanese.xmv",
+                                    "german.xmv", "french.xmv", "spanish.xmv", "italian.xmv", "korean.xmv",
+                                    "chinese.xmv"};
+    if (pgr2::skip_intro) {
+        std::string path;
+        for (uint32_t p = kernel::R32(ctx.esp + 4); p && path.size() < 260; p++) {
+            char c = char(kernel::G<uint8_t>(p));
+            if (!c) break;
+            path += char(std::tolower(static_cast<unsigned char>(c)));
+        }
+        std::string name = path.substr(path.find_last_of('\\') + 1);
+        for (const char* intro : kIntros)
+            if (name == intro) {
+                LOGR("pgr2: intro movie %s skipped", path.c_str());
+                ctx.eax = 1;
+                ctx.esp += 12;  // ret 8
+                return;
+            }
+    }
+    __imp__sub_0013C810(ctx, base);
+}
+
+// fov_percent: the race cameras' fields of view (radians, 0.975 each: the camera table's fov entries, Frontend's
+// camera_settings.ini keys fov0, fov1, inCar_fov0, inCar_fov1, read by 0x17B1D0 and 0x17C200), scaled. A value that
+// is not the one written last is the game's own and becomes the one scaled.
+void ApplyFov() {
+    static const uint32_t kFov[] = {0x49DCF0, 0x49DD10, 0x49DD28, 0x49DD3C};
+    static float original[4], written[4];
+    static uint32_t logged = 100;
+    uint32_t pct = std::clamp<uint32_t>(pgr2::fov_percent, 50, 200);
+    for (int i = 0; i < 4; i++) {
+        float cur;
+        std::memcpy(&cur, &kernel::G<uint32_t>(kFov[i]), 4);
+        if (cur != written[i]) original[i] = cur;
+        float f = original[i] * float(pct) / 100;
+        if (f != cur) std::memcpy(&kernel::G<uint32_t>(kFov[i]), &f, 4);
+        written[i] = f;
+    }
+    if (pct != logged) LOGR("pgr2: race camera field of view %u%% (%g rad)", pct, original[0] * float(pct) / 100);
+    logged = pct;
+}
+
+// hide_hud: HideOverlays (a Frontend.ini switch, the byte 0x291A24), which the HUD code (0xDA000-0xE8000) reads each
+// frame, set before every frame step (0xD90F0) so the option applies at once
+X86_EXTERN_FUNC(__imp__sub_000D90F0);
+X86_FUNC(sub_000D90F0) {
+    static bool was = false;
+    if (pgr2::hide_hud || was) kernel::G<uint8_t>(0x291A24) = pgr2::hide_hud ? 1 : 0;
+    was = pgr2::hide_hud;
+    __imp__sub_000D90F0(ctx, base);
+    ApplyFov();
 }
 
 // race_60fps (settings file) or PGR2_RACE60: races at 60 frames a second. The game sets its presentation interval

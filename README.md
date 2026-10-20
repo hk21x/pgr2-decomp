@@ -19,10 +19,14 @@ This port was created using the [Xbox XBE Recomp](https://github.com/TGP482/Xbox
 - **Display Modes** - Fullscreen, borderless window or window, at any resolution the monitor offers, applied at once.
 - **Widescreen** - The game's own 16:9 mode (wider field of view, HUD at the edges), chosen from the screen's shape or set to 4:3 or 16:9.
 - **Frame Pacing** - Runs at the game's own rate, menus at 60 and races at 30 as on the console, with vsync and a frame rate cap.
+- **Monitor** - Chooses which display the game uses.
+- **FPS Counter** - Shows the frame rate in a corner.
 
 ### Graphics
 - **Render Scale** - Renders at a percentage of the screen, from 25% to 200%.
 - **Anisotropic Filtering** - Up to 16x.
+- **Antialiasing** - FXAA on the finished frame; render scale above 100% supersamples.
+- **Field of View** - Widens or narrows the race cameras, 50% to 200% of the console's.
 - **Console Accurate Depth** - W-buffered depth as the Xbox does it, keeping car bodies, showroom cars and street lights right.
 - **Reflections** - Car paint and glass reflections from the game's environment cube.
 
@@ -33,7 +37,10 @@ Supports Xbox, PlayStation and Switch controllers, with hot plugging and rumble.
 Plays as controller 1, with two keys for each console input, remappable in the settings window.
 
 ### General
-- **Settings Window** - Press F1 in game for display, graphics, game options and controls. Changes are saved to `pgr2.toml`.
+- **Settings Window** - Press F1, or Back + Start on a controller, for display, graphics, game options and controls. Changes are saved to `pgr2.toml`.
+- **Skip Intro** - Goes straight to the title screen.
+- **Hide HUD** - Clears the race HUD for screenshots and replays.
+- **Pause On Focus Loss** - The game and its sound stop while another window is in front.
 - **Saves** - Profiles, options and career progress are kept on an emulated hard disk beside the exe.
 - **System Link** - Plays over the LAN, or by connecting straight to a friend's IP address (`join_ip`).
 - **60 FPS Races** - `race_60fps` runs races at 60 frames a second with unchanged physics (experimental).
