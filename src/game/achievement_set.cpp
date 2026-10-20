@@ -40,6 +40,37 @@ const char* Medals(Range r, int medal) {
     return kept.emplace_back(std::move(c)).c_str();
 }
 
+// Cars: car c's record is 0x1C bytes from 0x35BAA4 (the object 0x35BA78 + 0x2C), owned by player p when bit p of its
+// first dword is set (0xA63C0; p is 0x366800, 0 for the one profile). Frontend\Cars.Ini's order: the 29 ShowroomFree
+// cars are owned from the start, these 68 cost Kudos Tokens, the other 5 are the Kudos World Series rewards.
+constexpr int kTokenCars[68] = {3,  4,  5,  6,  7,  8,  11, 12, 13, 14, 17, 18, 19, 20, 23, 24, 25, 26, 28, 29, 31, 32, 34,
+                                35, 36, 38, 40, 42, 43, 44, 45, 46, 47, 50, 51, 52, 54, 55, 56, 58, 59, 60, 61, 63, 65, 66,
+                                67, 68, 70, 72, 73, 74, 75, 76, 81, 82, 83, 84, 85, 87, 88, 89, 91, 92, 95, 96, 97, 98};
+
+// how many of the cars are owned, at least n
+const char* Owned(const int* cars, int count, int n) {
+    static std::deque<std::string> kept;
+    std::string c;
+    for (int i = 0; i < count; i++) {
+        char b[32];
+        std::snprintf(b, sizeof b, "%s0xM%x", i + 1 < count ? "A:" : "", 0x35BAA4 + cars[i] * 0x1C);
+        c += b;
+        if (i + 1 < count) c += "_";
+    }
+    return kept.emplace_back(c + ">=" + std::to_string(n)).c_str();
+}
+const int* AllCars() {
+    static int all[102];
+    for (int i = 0; i < 102; i++) all[i] = i;
+    return all;
+}
+
+// Player 1 racing (car 0; the attract demo drives it too, with 0x38384C set and race type 0x383814 0). Speed: the
+// float at 0x298D50 + car x 0x6990 in m/s (the speedometer, 0xE5CF0, shows its magnitude); compared by its bits, which
+// order as the numbers do for positive floats (backwards is negative, above 0x80000000)
+#define PGR2_RACING "0xH38384c=0_0xX383814>0_"
+#define PGR2_SPEED "0xX298d50<h80000000_0xX298d50>="
+
 }  // namespace
 
 std::vector<achievements::Def> AchievementSet() {
@@ -84,6 +115,18 @@ std::vector<achievements::Def> AchievementSet() {
         {"arcade_timed_platinum", "Clockwork", "Platinum on every Timed Run stage", 10, Medals(kArcade[1], 5)},
         {"arcade_cone_platinum", "Cone Artist", "Platinum on every Cone Challenge stage", 10, Medals(kArcade[2], 5)},
         {"arcade_platinum", "Arcade Perfect", "Platinum on every Arcade stage", 25, Medals(kArcadeAll, 5)},
+        // the garage
+        {"token_gesture", "Token Gesture", "Unlock a car with Kudos Tokens", 2, Owned(kTokenCars, 68, 1)},
+        {"cars40", "Collector", "Own 40 cars", 5, Owned(AllCars(), 102, 40)},
+        {"cars60", "Curator", "Own 60 cars", 10, Owned(AllCars(), 102, 60)},
+        {"cars80", "Museum Piece", "Own 80 cars", 25, Owned(AllCars(), 102, 80)},
+        {"cars102", "Full House", "Own every car", 50, Owned(AllCars(), 102, 102)},
+        // in a race: speed (100 mph is 44.7 m/s, 175 mph 78.2) and winning (position 0, the lap past the last one; the
+        // lap is negative before the start)
+        {"speed100", "Ton Up", "Reach 100 mph in a race", 2, PGR2_RACING PGR2_SPEED "h4232c71c"},
+        {"speed175", "Flat Out", "Reach 175 mph in a race", 10, PGR2_RACING PGR2_SPEED "h429c6e39"},
+        {"win", "First Past the Post", "Win a race", 5,
+         PGR2_RACING "0xX39b33c=0_0x 39b334<h8000_0x 39b334>=0xX383830"},
         // Geometry Wars in the garage (0x145990 draws its text): score 0x45A308, hi-score 0x45A314, bombs 0x45A304,
         // state 0x45A300 (1 game over)
         {"gw_play", "Insert Coin", "Score in Geometry Wars", 1, "0xX45a308>0"},

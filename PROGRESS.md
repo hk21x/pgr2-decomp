@@ -15,7 +15,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): works headless; Windows
   to confirm
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
-  achievements.toml); live: 51 (KWS, classes, Arcade, ranks, Geometry Wars); garage and feats still to map
+  achievements.toml); live: 59; five feats still to map (race Kudos, Expert Overtake, contact, lap records)
 - System link: works headless (scripts/linktest.sh); Windows to try
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
@@ -23,6 +23,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - achievements: garage, speed and a win (59 live)
+
+Harry's save owns exactly Cars.Ini's 29 ShowroomFree cars: the collection tiers became 40/60/80/102 and Token Gesture
+any of the 68 token cars. Speed traced from the speedometer (0xE5CF0): |float 0x298D50 + car x 0x6990| m/s
+(0x39B0D0 is the odometer, 0x29DAB0 the engine for the rev counter); checked at 73 mph against the HUD. The attract
+demo drives car 0 too: player racing is 0x38384C = 0 and race type 0x383814 > 0 (dumps of the demo and a race).
+Added Token Gesture, Collector, Curator, Museum Piece, Full House, Ton Up, Flat Out, First Past the Post. Headless:
+a plain race and the demo unlock nothing; writing 50 m/s then a first-place finish mid-race unlocked Ton Up and First
+Past the Post, not Flat Out. Smoke OK.
 
 ### 2026-10-20 - mini map lost when the render scale changes
 

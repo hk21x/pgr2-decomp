@@ -94,9 +94,9 @@ Points: 105.
 | Title | Description | Points |
 | --- | --- | --- |
 | Token Gesture | Unlock a car with Kudos Tokens | 2 |
-| Collector | Own 25 cars | 5 |
-| Curator | Own 50 cars | 10 |
-| Museum Piece | Own 75 cars | 25 |
+| Collector | Own 40 cars | 5 |
+| Curator | Own 60 cars | 10 |
+| Museum Piece | Own 80 cars | 25 |
 | Full House | Own every car | 50 |
 
 Points: 92.
@@ -119,9 +119,9 @@ Points: 70.
 | --- | --- | --- |
 | Style Points | Earn 2,000 Kudos in a single race | 3 |
 | Showboat | Earn 10,000 Kudos in a single race | 10 |
-| Ton Up | Reach 100 mph at a Speed Camera | 2 |
-| Flat Out | Reach 175 mph at a Speed Camera | 10 |
-| Clean Sweep | Win an Expert One on One | 5 |
+| Ton Up | Reach 100 mph in a race | 2 |
+| Flat Out | Reach 175 mph in a race | 10 |
+| First Past the Post | Win a race | 5 |
 | Traffic Control | Win an Expert Overtake event | 5 |
 | Untouchable | Win a Kudos World Series race at Expert without touching a wall or a car | 25 |
 | Lap of Honour | Set a lap record in Time Attack on 10 different routes | 10 |
@@ -208,6 +208,13 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
   Past the car table the file is serialized differently from memory, so the save was loaded in the harness and
   memory read instead: races 213-216 (Cone Challenge stage 1) hold 1, Steel, matching his Single Player screen
   (Arcade: 4 Steel). Medal values confirmed. Total Kudos 5,010 (one entry), tokens 2, player index 0.
+- **Cars**: a new profile owns the 29 ShowroomFree cars of Cars.Ini (Harry's save owns exactly those); 68 cost
+  tokens, 5 are the Kudos World Series rewards. So the collection tiers are 40, 60, 80 and 102, and Token Gesture is
+  owning any token car.
+- **Speed**: the float at 0x298D50 + car x 0x6990, m/s (the speedometer 0xE5CF0 shows its magnitude, x 2.2374 for
+  mph); 0x39B0D0 / 0x39B0D4 are the odometer. Compared by its bits (positive floats order as integers).
+- **Player racing**: 0x38384C is 0 and race type 0x383814 above 0 (the attract demo drives car 0 with 0x38384C set
+  and type 0; the HUD checks the same byte).
 - To find: Time Attack challenges (92 circuit, 102 car), the race's own Kudos, tokens spent; the player index
   (0x366800) that picks the car ownership bit, from a real save. A profile with progress (Harry's saves)
   is the quickest way for the medals.
@@ -218,8 +225,11 @@ Built (2026-10-20): `sdk/runtime/core/achievements.cpp` evaluates RetroAchieveme
 delta and prior, add source, sub source, add address, and/or next, reset and pause ifs, hit counts, alternative
 groups) once a frame, waits for a condition to be unmet once before it can unlock, keeps unlocks in
 `achievements.toml` beside the exe, shows a pop-up and lists the set in the settings window's Achievements tab.
-`src/game/achievement_set.cpp` holds the mapped part of the set: 51 achievements (Kudos World Series 5, classes 28,
-Arcade 7, Kudos ranks 7, Geometry Wars 4). Checked headless by writing Steel into races 1-7 mid-race: Pocket Rocket unlocked, nothing
+`src/game/achievement_set.cpp` holds the mapped part of the set: 59 achievements (Kudos World Series 5, classes 28,
+Arcade 7, Kudos ranks 7, Geometry Wars 4, garage 5, Ton Up, Flat Out, First Past the Post). Still to map: Style
+Points and Showboat (the race's Kudos), Traffic Control (Expert Overtake), Untouchable (contact), Lap of Honour (lap
+records). The draft's Speed Camera wording became any race, and Clean Sweep (Expert One on One) became First Past
+the Post (any win), so they need no event type. Checked headless by writing Steel into races 1-7 mid-race: Pocket Rocket unlocked, nothing
 else did.
 `PGR2_ACH_TEST=1` adds a test one that unlocks at a race's start (checked headless).
 
