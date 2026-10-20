@@ -28,6 +28,13 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - car selection's missing panels: the Z buffer; W-buffering on by default
+
+The CPU renderer shows the car selection MINI whole with W-buffering and broken with z / w (panels missing, the
+background through the body), matching Harry's Windows report: the showroom's depth range leaves a Z buffer no
+precision at the car. sdk: the D3D12 W-buffer is now on by default (XBE_WBUFFER=0 turns it off). Shaders of the
+menus, car selection and a race compile with DXC (71). Smoke OK.
+
 ### 2026-10-20 - System link works: XNetGetConnectStatus
 
 Fourth attempt, with new tools (XNET_TRACE, gdb watchpoints with the joiner started under gdb, guest stack logs).

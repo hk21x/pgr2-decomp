@@ -70,8 +70,8 @@ Useful while testing:
   which layer of the scene flickers (the log names the first one skipped).
 - `XBE_FRAMELOG=60`: F4 records the next 60 frames' draws into `logs\framelog.txt` at full speed (no images, no
   slowdown worth noticing), with hashes of what each draw reads; for flicker a capture does not catch.
-- `XBE_WBUFFER=1` (experiment): depth as the console's W-buffer (PGR2 asks for it on nearly every draw). Try it for
-  the flicker under the car, the shadows and kerbs.
+- `XBE_WBUFFER=0`: back to the old depth (z / w). By default depth now works as the console's W-buffer, which PGR2
+  asks for on nearly every draw (it fixed the car selection's missing panels in the CPU renderer).
 - `XBE_NO_TARGET_UPLOAD=1` (experiment): render targets the game reads (light pools, reflections) are never reloaded
   from memory. The log now lists such reloads (`reloaded from guest memory`) without any switch.
 - `XBE_VISIBLE_ALL=1` (experiment): every GPU visibility test answers "visible" at once (lamp glows and anything
