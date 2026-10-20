@@ -37,7 +37,7 @@ Supports Xbox, PlayStation and Switch controllers, with hot plugging and rumble.
 Plays as controller 1, with two keys for each console input, remappable in the settings window.
 
 ### General
-- **Settings Window** - Press F1, or Back + Start on a controller, for display, graphics, game options and controls. Changes are saved to `pgr2.toml`.
+- **Settings Window** - Press F1, Back + Start on a controller, or choose Options > General Options > PC Settings in the game's menus, for display, graphics, game options and controls. Changes are saved to `pgr2.toml`.
 - **Skip Intro** - Goes straight to the title screen.
 - **Hide HUD** - Clears the race HUD for screenshots and replays.
 - **Pause On Focus Loss** - The game and its sound stop while another window is in front.

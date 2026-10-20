@@ -7,6 +7,7 @@ void InstallDrawFilter();  // src/game/draw_filter.cpp
 namespace pgr2 {
 extern bool skip_intro, hide_hud;
 extern uint32_t fov_percent;
+void SettingsEntryPad(int port, input::Pad& pad);  // src/game/settings_entry.cpp
 }
 
 namespace {
@@ -53,6 +54,6 @@ const app::GameInfo app::kGame = {
     .window = nullptr,                    // the game window is up
     .message = nullptr,                   // window messages first; true takes one
     .ui = nullptr,                        // ImGui drawing each frame
-    .pad = nullptr,                       // changes a polled pad
+    .pad = pgr2::SettingsEntryPad,        // changes a polled pad: B back from PC Settings
     .rumble = nullptr,                    // changes a rumble before it is set
 };

@@ -12,6 +12,8 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - PC: F1 / Back+Start settings window (display, monitor, graphics, FXAA, fps counter, pause on focus loss, game
   options: skip intro, hide HUD, field of view, race_60fps; controls), keyboard play, remapping (window confirmed;
   the 2026-10-20 options to confirm on Windows)
+- PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): works headless; Windows
+  to confirm
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points, RetroAchievements style); memory mapping not started
 - System link: works headless (scripts/linktest.sh); Windows to try
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
@@ -19,6 +21,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - PC Settings in PGR2's own Options menu
+
+src/game/settings_entry.cpp: Screen Center becomes PC Settings. Each frame the string table entries 965 (label), 1406
+(help) and 1044 (page title) point at our UTF-16 texts (mem::AllocSystem; put back if the game reloads its strings).
+The page builder 0xA2E60 builds its page as before, then opens the settings window; once the window closes and 0.7 s
+have passed (a B pressed while the page slides in is lost: tried first, the page stayed), GameInfo::pad holds B on
+port 0 for 0.2 s and the menu is back on General Options. Headless (no window there: it reports itself closed at
+once): label, help and title read PC Settings, choosing it returns to General Options, which answers the D-pad.
+wincheck OK, smoke OK. Next: Harry checks it with the real window.
 
 ### 2026-10-20 - scope: a PC Settings entry in PGR2's own Options menu
 

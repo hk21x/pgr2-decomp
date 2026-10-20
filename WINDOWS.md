@@ -43,7 +43,8 @@ Files the exe writes beside itself, in `out\build\release`:
   `race_60fps = true` runs races at 60 instead (an experiment: same physics, one 1/60 step a frame).
 - `hdd\` the emulated hard disk (E: saves, X/Y/Z: caches)
 
-**Settings window: F1**, or **Back + Start** on a controller (Start alone closes it; the D-pad or left stick moves,
+**Settings window: F1**, **Back + Start** on a controller, or in the game's menus **Options > General Options > PC
+Settings** (it replaces Screen Center; closing the window returns to General Options by itself) (Start alone closes it; the D-pad or left stick moves,
 A selects, B goes back). Tabs:
 - Display: monitor (with more than one), display mode, resolution, vsync, aspect ratio.
 - Graphics: render scale, anisotropic filtering, frame rate cap, antialiasing (FXAA), frames-a-second counter.
@@ -119,7 +120,9 @@ shadow, fences and signs, car selection, the F1 window.
 
 Still to confirm:
 1. **Street lights at night**: glows hidden behind buildings, still visible where the lamp is in view.
-1a. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with
+1a. **PC Settings in the game's menu**: Options > General Options > PC Settings opens the window over the page;
+   close it (Start, F1 or the window's X) and the menu goes back to General Options on its own.
+1b. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with
    it; skip intro (next start goes straight to the title); hide HUD in a race; field of view at 130% (is the road
    near the car drawn? the CPU renderer here leaves a band there at any setting); FXAA on and off; the counter; pause
    on alt-tab (sound stops too); a second monitor if you have one.

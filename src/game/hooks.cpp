@@ -138,6 +138,7 @@ X86_FUNC(sub_00024DE0) {
 namespace pgr2 {
 extern bool race_60fps, skip_intro, hide_hud;
 extern uint32_t fov_percent;
+void ApplySettingsEntry();  // src/game/settings_entry.cpp
 }
 
 // skip_intro: the boot sequence 0x13DB90 plays Intro1, Intro2, the language's movie and Intro3 through the movie
@@ -194,6 +195,7 @@ X86_FUNC(sub_000D90F0) {
     static bool was = false;
     if (pgr2::hide_hud || was) kernel::G<uint8_t>(0x291A24) = pgr2::hide_hud ? 1 : 0;
     was = pgr2::hide_hud;
+    pgr2::ApplySettingsEntry();
     __imp__sub_000D90F0(ctx, base);
     ApplyFov();
 }
