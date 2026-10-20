@@ -24,6 +24,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - mini map lost when the render scale changes
+
+Harry: changing the render scale makes the race's mini map transparent. The harness's CAP lists show the map drawn
+once, at the race's start, into the 128x128 target 018EB000 (1864 translucent quads), then sampled by a HUD quad
+(FVF 0x20144, alpha kill) every frame. D3D12's ApplySettings applied a new scale at once by dropping every target, so
+a target drawn once came back empty. sdk: RescaleTargets keeps each colour target's picture, blitted (with alpha)
+into a new resource at the new scale on the same view slot; depth targets start again; with a renderer extension
+the old behaviour stays. The settings window now says render scale applies at once (it always did). wincheck OK,
+smoke OK. Windows to check.
+
 ### 2026-10-20 - draw distance option (experimental)
 
 Harry: street lights fixed, the new options work, the night building flicker is gone. Draw distance traced:

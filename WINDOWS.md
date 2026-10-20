@@ -51,8 +51,8 @@ A selects, B goes back). Tabs:
 - Game: skip intro movies, hide the race HUD, race camera field of view (%), races at 60 (experimental).
 - General: pause when the window is not in front.
 - Controls: keys and controller remapping.
-Everything is saved to `pgr2.toml` at once. Display mode, resolution, monitor, antialiasing, the counter, hide HUD
-and field of view apply at once; aspect ratio, render scale, skip intro and race_60fps at the next start. While the
+Everything is saved to `pgr2.toml` at once. Display mode, resolution, monitor, render scale, antialiasing, the counter, hide HUD
+and field of view apply at once; aspect ratio, skip intro and race_60fps at the next start. While the
 window is open the game gets no input.
 
 Keyboard (plays as controller 1 while the game window has the focus; remap in F1 > Controls, two keys per input):
