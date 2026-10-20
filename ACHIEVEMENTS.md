@@ -205,9 +205,9 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
   (1 game over).
 - **Harry's save (2026-10-20)**: the object 0x35BA78 is in Profile.Sav from file offset 0x1208 (its car table: 102
   at +0x24, then 0x1C-byte records keyed 2000 + car). Car ownership confirmed: bit 0 (player index 0) set for 29 cars.
-  The race records hold an id at +0x10 (2132 + race) and no medals in that save, so the medal values are still to
-  confirm with a save that has some. Its Kudos block differs from memory (count 0 at +0x1608, 2014 at +0x1620): to
-  check against the status screen's Total Kudos.
+  Past the car table the file is serialized differently from memory, so the save was loaded in the harness and
+  memory read instead: races 213-216 (Cone Challenge stage 1) hold 1, Steel, matching his Single Player screen
+  (Arcade: 4 Steel). Medal values confirmed. Total Kudos 5,010 (one entry), tokens 2, player index 0.
 - To find: Time Attack challenges (92 circuit, 102 car), the race's own Kudos, tokens spent; the player index
   (0x366800) that picks the car ownership bit, from a real save. A profile with progress (Harry's saves)
   is the quickest way for the medals.
