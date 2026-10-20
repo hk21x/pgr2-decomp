@@ -44,8 +44,9 @@ Plays as controller 1, with two keys for each console input, remappable in the s
 - **Pause On Focus Loss** - The game and its sound stop while another window is in front.
 - **Saves** - Profiles, options and career progress are kept on an emulated hard disk beside the exe.
 - **System Link** - Plays over the LAN, or by connecting straight to a friend's IP address (`join_ip`).
-- **Achievements** - A first set (Kudos ranks) with pop-ups and a list in the settings window; the full draft is in [ACHIEVEMENTS.md](ACHIEVEMENTS.md).
-- **60 FPS Races** - `race_60fps` runs races at 60 frames a second with unchanged physics (experimental).
+- **Achievements** - 59 achievements (Kudos World Series and class medals, Arcade, Kudos ranks, the garage, speed, wins, Geometry Wars) with pop-ups and a list in the settings window, written in RetroAchievements' condition format; the set and its memory map are in [ACHIEVEMENTS.md](ACHIEVEMENTS.md).
+- **60 FPS Races** - "Races at 60 frames a second" in the settings window, with unchanged physics (experimental: the busiest streets need a fast CPU to hold 60).
+- **Draw Distance** - 25% to 400% of the console's (experimental: most streets end before the console's distance).
 
 ### Miscellaneous
 - **Boot Splash** - Place a `splash.png` (or `.bmp`) beside the exe to display a splash screen at launch.
@@ -53,8 +54,9 @@ Plays as controller 1, with two keys for each console input, remappable in the s
 
 ## Status
 
-Boots, plays the movies and menus, races in every mode tried, saves and plays system link. Known open issues are
-some remaining flicker on buildings at night, and sound effects (reverb, filters) that are not modelled. Progress is
+Boots, plays the movies and menus, races in every mode tried, saves and plays system link; flicker fixed, ultrawide,
+MSAA and the settings window in. Open: sound effects (reverb, filters) are not modelled, and races at 60 can dip
+below 60 in the busiest streets. Progress is
 in [PROGRESS.md](PROGRESS.md), technical findings in [FINDINGS.md](FINDINGS.md), and what may carry over to
 Project Gotham Racing 1 in [PGR1.md](PGR1.md).
 
