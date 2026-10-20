@@ -182,6 +182,16 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
 - **Cars owned**: car n (0 to 101; count 0x3109F0) is owned when bit p of the dword at 0x35BAA4 + n x 0x1C is set,
   p being the player index at 0x366800, and the car's entry in the car table (0x310A68 + n x 0x9C) is non-zero
   (0xA63C0; the byte 0x291969 unlocks every car).
+- **Race state** (the race HUD, 0xDB460 and 0xE0840; checked live against the HUD in a headless race):
+  - player n's car: dword 0x49E258 + n x 0x158 (0 for player 1)
+  - each car's record: 0x2498 bytes from 0x39B000 (car c at + c x 0x2498): lap (int16, from 0; negative before the
+    start) at 0x39B334, position (dword, from 0) at 0x39B33C, a flag byte at 0x39B30E that takes a car out of the
+    field count
+  - cars in the race: dword 0x383818; laps: dword 0x383830; race type: dword 0x383814 (1 in Instant Action)
+  - finished: lap >= laps (the HUD switches to "Finished" there, 0xDB5CC)
+  - the end-of-race Kudos breakdown reads floats at 0x39D42C, 0x39D44C, 0x39D46C, 0x39D48C (+ the car's offset)
+  - in condition syntax, player 1 finishing first: `0xX39b33c=0_0x 39b334>=0xX383830` (with car 0; a pointer chain
+    through 0x49E258 for any car)
 - To find: Kudos World Series and Arcade medals per series and stage, Time Attack challenges (92 circuit, 102 car),
   race state (mode, finish, position, the race's Kudos), Geometry Wars score. A profile with progress (Harry's saves)
   is the quickest way for the medals.
