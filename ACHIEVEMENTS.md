@@ -170,6 +170,22 @@ harness, gdb watchpoints, and Harry's save files for late-game states):
 Late-game states cannot be reached by headless pad scripts (they cannot steer). A few of Harry's Profile.Sav files
 at different stages of a career let the career fields be read and checked directly.
 
+## Mapped so far (2026-10-20)
+
+Found with the harness's `memdump` (guest memory against a saved Profile.Sav) and the status screens' code:
+- **Live profile**: static, at 0x3665AC (the XBE's data, the same on a console). Profile.Sav's 30,100 bytes match it
+  except the 20-byte signature and runtime-filled records. A second copy is on the heap at 0x6321DC.
+- **Kudos Tokens held**: dword 0x366EBC (profile +0x910), read by the token line at 0x6F3E1.
+- **Total Kudos**: the sum of the dwords at 0x35D090 + 16 x i, for i below the dword at 0x35D080 (8): the object at
+  0x35BA78, method 0xA66C0. Kudos ranks follow from it (Frontend\Ranking.Ini: rank 2 at 4,000 ... rank 60 at
+  8,153,000).
+- **Cars owned**: car n (0 to 101; count 0x3109F0) is owned when bit p of the dword at 0x35BAA4 + n x 0x1C is set,
+  p being the player index at 0x366800, and the car's entry in the car table (0x310A68 + n x 0x9C) is non-zero
+  (0xA63C0; the byte 0x291969 unlocks every car).
+- To find: Kudos World Series and Arcade medals per series and stage, Time Attack challenges (92 circuit, 102 car),
+  race state (mode, finish, position, the race's Kudos), Geometry Wars score. A profile with progress (Harry's saves)
+  is the quickest way for the medals.
+
 ## In the port
 
 - The SDK gets a small achievement runtime:
