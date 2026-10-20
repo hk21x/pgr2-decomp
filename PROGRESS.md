@@ -20,6 +20,20 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - scope: a PC Settings entry in PGR2's own Options menu
+
+Traced headless (an experiment, not committed):
+- Options > General Options is built by 0xA4100: each item is a button with a page builder (0x58970: x, y, ...,
+  builder, type 2), a label (0x89200) and a help line (0x891E0), both pointers from the string table at 0x28A870
+  (UTF-16, StringList.ini ids). Items: Game Options, Controller Options, Screen Center, Screen Brightness, ...
+- Screen Center: label id 965 (pointer 0x28B784), help 1406 (0x28BE68), page title 1044 (0x28B8C0 by the same
+  table), builder 0xA2E60 (no arguments, returns 1). Its page has arrows, Continue and Back; B returns.
+- A builder that builds nothing leaves an empty page that B cannot leave (soft lock): the page must be built.
+Plan: relabel Screen Center as "PC Settings" (pointers to our own UTF-16 strings), let 0xA2E60 build its page,
+open the settings window over it, and on closing press B for the player (GameInfo::pad) to return. About half a day
+with headless checks; Windows check for the window itself. A native page drawn with PGR2's own widgets: several
+days (widget API, value selectors), not recommended.
+
 ### 2026-10-20 - PC options from the SCDA port's list; achievements draft
 
 Harry asked for the graphics and settings options of TGP482's Splinter Cell Double Agent port (same SDK), the
