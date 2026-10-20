@@ -24,6 +24,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - race_60fps slowdown: the render thread's per draw cost
+
+Harry's perf lines (Hong Kong arcade race 1, races at 60, draw distance 200, scale 100, MSAA off): at the slow spot
+5000-6000 draws a frame, host (render thread) 17-19 ms a frame (draw 16-18: assemble 3.0, bind 4.0, the rest ~10),
+title thread recording 4 ms and waiting 14-17 ms for it; 41 MB uploaded a frame (each draw copied all 192 vertex
+constants and a 2.1 KB constant block). Before the spot: 1850 draws, host 8 ms. So the render thread's per draw
+cost (~3 us) caps it near 5500 draws at 60. sdk: a draw reuses the last vertex constant and draw constant uploads
+when their bytes match (same ring generation), a descriptor table already made for the same four views, and sets
+root arguments only when they change; the third perf line counts the reuses. wincheck OK, smoke OK.
+Next: Harry's perf lines at the spot again.
+
 ### 2026-10-20 - race_60fps slowdown in Hong Kong (Arcade race 1, after turn 3)
 
 Harry: drops to about 40 fps there with race_60fps on, fine without; MSAA, render scale and aspect make no
