@@ -7,13 +7,24 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - XDK 5659: 191 of 250 functions, 13 of 13 data
 - Speed: paced by the game's present interval (menus 60, races 30); race_60fps option
 - Rendering: car body fixed; car shadow flicker fixed; fences/posts/signs (SetVertexShaderInput); W-buffering on
-  by default (car selection panels, to confirm on Windows); open: night under-car flicker, building flicker
+  by default (car selection panels, to confirm on Windows); showroom car depth (wheel through the body) fixed;
+  open: night under-car flicker, building flicker
 - PC: F1 settings window (display, graphics, game options, controls), keyboard play, controller remapping
 - System link: works headless (scripts/linktest.sh); Windows to try
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - car selection: the wheel through the body was a depth buffer bigger than the target
+
+Harry: the CPU renderer, like Windows, shows the MINI's front right wheel through the body. The drawlog showed the
+showroom car rendered into a 500x200 texture (02DB7000, pasted onto the screen by a 2D quad) with the 640x480 depth
+buffer 03B40000 bound; both renderers dropped depth when the sizes differ, so the car's 71 draws ran without a depth
+test. The console uses the top left of the bigger buffer. sdk 0f1b57e: the CPU renderer keeps a depth buffer at least
+as big as the target; D3D12 binds a depth target of the colour target's size for that surface (Clear too). The
+CPU snap of the car selection is solid. Smoke OK. Next: Harry to confirm on Windows; night under-car and building
+flicker.
 
 ### 2026-10-20 - overnight checks
 
