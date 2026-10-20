@@ -84,6 +84,12 @@ std::vector<achievements::Def> AchievementSet() {
         {"arcade_timed_platinum", "Clockwork", "Platinum on every Timed Run stage", 10, Medals(kArcade[1], 5)},
         {"arcade_cone_platinum", "Cone Artist", "Platinum on every Cone Challenge stage", 10, Medals(kArcade[2], 5)},
         {"arcade_platinum", "Arcade Perfect", "Platinum on every Arcade stage", 25, Medals(kArcadeAll, 5)},
+        // Geometry Wars in the garage (0x145990 draws its text): score 0x45A308, hi-score 0x45A314, bombs 0x45A304,
+        // state 0x45A300 (1 game over)
+        {"gw_play", "Insert Coin", "Score in Geometry Wars", 1, "0xX45a308>0"},
+        {"gw_10k", "Pacifist", "Score 10,000 in Geometry Wars", 3, "0xX45a308>=10000"},
+        {"gw_100k", "Grid Warrior", "Score 100,000 in Geometry Wars", 10, "0xX45a308>=100000"},
+        {"gw_1m", "Geometry Master", "Score 1,000,000 in Geometry Wars", 25, "0xX45a308>=1000000"},
     });
     // PGR2_ACH_TEST=1: a test achievement that unlocks when a race starts (D3D's present interval, 0x1D093C, goes to
     // two vertical blanks a frame)

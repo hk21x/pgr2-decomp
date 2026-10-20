@@ -15,7 +15,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): works headless; Windows
   to confirm
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
-  achievements.toml); live: 47 (KWS, classes, Arcade, ranks); garage, feats, Geometry Wars still to map
+  achievements.toml); live: 51 (KWS, classes, Arcade, ranks, Geometry Wars); garage and feats still to map
 - System link: works headless (scripts/linktest.sh); Windows to try
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
@@ -34,7 +34,8 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   consecutive races (ACHIEVEMENTS.md).
 - src/game/achievement_set.cpp: the Kudos World Series (5), class (28) and Arcade (7) achievements added to the ranks
   (47 in all). Headless: Steel written into races 1-7 mid-race unlocked Pocket Rocket alone. wincheck OK, smoke OK.
-Next: Harry's saves to confirm medal values; garage (tokens spent), Geometry Wars, single-race feats.
+Then Geometry Wars (score 0x45A308, hi-score 0x45A314, from its text at 0x145990): 4 more, 51 live.
+Next: Harry's saves to confirm medal values and the player index; garage (tokens spent), single-race feats.
 
 ### 2026-10-20 - CPU renderer: the black band near the camera fixed
 

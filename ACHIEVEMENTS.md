@@ -201,7 +201,10 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
   90-103, Grand Touring 104-119, Track Specials 120-136, Extreme 137-153, Ultimate 154-172); Arcade is group 4 (Street
   Racing 173-192, Timed Run 193-212, Cone Challenge 213-232, 5 stages of 4 each); Time Attack group 5.
   To confirm with real saves: that a record keeps the best medal won.
-- To find: Time Attack challenges (92 circuit, 102 car), the race's own Kudos, Geometry Wars score, tokens spent. A profile with progress (Harry's saves)
+- **Geometry Wars** (its text, 0x145990): score dword 0x45A308, hi-score 0x45A314, bombs 0x45A304, state 0x45A300
+  (1 game over).
+- To find: Time Attack challenges (92 circuit, 102 car), the race's own Kudos, tokens spent; the player index
+  (0x366800) that picks the car ownership bit, from a real save. A profile with progress (Harry's saves)
   is the quickest way for the medals.
 
 ## In the port
@@ -210,8 +213,8 @@ Built (2026-10-20): `sdk/runtime/core/achievements.cpp` evaluates RetroAchieveme
 delta and prior, add source, sub source, add address, and/or next, reset and pause ifs, hit counts, alternative
 groups) once a frame, waits for a condition to be unmet once before it can unlock, keeps unlocks in
 `achievements.toml` beside the exe, shows a pop-up and lists the set in the settings window's Achievements tab.
-`src/game/achievement_set.cpp` holds the mapped part of the set: 47 achievements (Kudos World Series 5, classes 28,
-Arcade 7, Kudos ranks 7). Checked headless by writing Steel into races 1-7 mid-race: Pocket Rocket unlocked, nothing
+`src/game/achievement_set.cpp` holds the mapped part of the set: 51 achievements (Kudos World Series 5, classes 28,
+Arcade 7, Kudos ranks 7, Geometry Wars 4). Checked headless by writing Steel into races 1-7 mid-race: Pocket Rocket unlocked, nothing
 else did.
 `PGR2_ACH_TEST=1` adds a test one that unlocks at a race's start (checked headless).
 
