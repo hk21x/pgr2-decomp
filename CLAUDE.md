@@ -1,7 +1,7 @@
 # Project Gotham Racing 2 (original Xbox) - static recompilation
 
 Goal: a native Windows port of PGR2 built with the XboxXBE-Recomp toolkit in `sdk/` (a git submodule).
-Read `sdk/README.md`, `sdk/harness/README.md` and `PROGRESS.md` at the start of every session.
+Read `sdk/README.md`, `sdk/harness/README.md`, `PROGRESS.md` and `FINDINGS.md` at the start of every session.
 
 ## Environment
 - Headless Ubuntu VM. No GPU, no window. Harry builds and play-tests the real Windows exe separately.
@@ -28,6 +28,7 @@ Read `sdk/README.md`, `sdk/harness/README.md` and `PROGRESS.md` at the start of 
      every run is a first boot that formats the cache partition and copies the cache (about 100 s of movies first).
      Pad scripts: `boot.txt` reaches the title screen, `none.txt` presses nothing. Frames are paced to 60 a second
      (`FPS=N`, `FPS=0` unpaced), so pad frames are wall clock; use REF of 600 or more, or `snap`.
+- `scripts/linktest.sh` two headless instances over system link (LINKTEST OK); `scripts/savetest.sh`, `scripts/soak.sh N`.
 - Debugging: `gdb` (/usr/bin/gdb). Recompiled functions are `__imp__sub_XXXXXXXX(X86Context& ctx /*rdi*/, base)`;
      guest memory is at 0x100000000, guest esp is the dword at ctx+16.
 - Ghidra: `python3 sdk/tools/symbols/xbe2pe.py config/pgr2.toml .local/game.exe`, then

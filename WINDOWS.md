@@ -1,6 +1,6 @@
 # Building and running PGR2 on Windows
 
-The first Windows build. Everything below runs on your PC; nothing here touches the Linux VM.
+Everything below runs on your PC; nothing here touches the Linux VM. FINDINGS.md explains the fixes referred to here.
 
 ## What you need
 
@@ -70,8 +70,8 @@ Useful while testing:
   which layer of the scene flickers (the log names the first one skipped).
 - `XBE_FRAMELOG=60`: F4 records the next 60 frames' draws into `logs\framelog.txt` at full speed (no images, no
   slowdown worth noticing), with hashes of what each draw reads; for flicker a capture does not catch.
-- `XBE_WBUFFER=0`: back to the old depth (z / w). By default depth now works as the console's W-buffer, which PGR2
-  asks for on nearly every draw (it fixed the car selection's missing panels in the CPU renderer).
+- `XBE_WBUFFER=0`: back to the old depth (z / w). By default depth works as the console's W-buffer, which PGR2
+  asks for on nearly every draw (car selection panels, the showroom car's wheels, street lights behind buildings).
 - `XBE_NO_TARGET_UPLOAD=1` (experiment): render targets the game reads (light pools, reflections) are never reloaded
   from memory. The log now lists such reloads (`reloaded from guest memory`) without any switch.
 - `XBE_VISIBLE_ALL=1` (experiment): every GPU visibility test answers "visible" at once (lamp glows and anything
@@ -86,24 +86,37 @@ Useful while testing:
   plus once before the first.
 - `XBE_DRAW_TEST=B01019E1:alphakill` (or `:cull`, `:depth`, several joined by commas): an experiment, draws with that
   vertex shader without that test.
+- Game switches (experiments, `1` to turn on): `PGR2_NIGHT` every race at night; `PGR2_NO_FILTER` the car shadow
+  pass without its depth fix; `PGR2_FLARE_LOG` / `PGR2_FLARES` exhaust flame diagnostics; `PGR2_LIGHT` /
+  `PGR2_LIGHT_CLEAR` car lighting diagnostics. `XNET_TRACE=1` logs every network call (system link).
+- Leftover variables from an earlier experiment give false regressions: the log lists every `XBE_*` and `PGR2_*`
+  variable it sees at the top. Clear them (`Remove-Item Env:XBE_DRAW_TEST` in PowerShell) when done.
 - Setting these: in Command Prompt `set XBE_VSC=56 54`; in PowerShell `$env:XBE_VSC = "56 54"` (PowerShell's
   `set` does not set an environment variable). Start `PGR2.exe` from that same window.
 
 `release.bat` zips `PGR2.exe` with an empty `assets` folder; not needed yet.
 
+## System link
+
+On one LAN: start PGR2 on both PCs, then Multiplayer > System Link: one creates a game, the other searches.
+Past the LAN: set `join_ip = 'a.b.c.d'` (the host's address) in the joiner's `pgr2.toml`; the search also asks that
+host. On one PC: copy `out\build\release` to a second folder and start each copy with `PGR2.exe --instance 1` and
+`--instance 2`. Headless this works end to end (lobby, race, results); it has not been tried on Windows yet.
+
 ## What to look at and report
 
-Please note for each: works / wrong (how) / not reached, and send the log. Screenshots help.
+Please note for each: works / wrong (how) / not reached, and send `logs\pgr2.log`. Screenshots and short clips help;
+for a flicker, a frame log (F4 with `XBE_FRAMELOG=60`) at the spot.
 
-1. **Starts at all**: window titled "Project Gotham Racing 2", no message box. If it closes, the log's last lines.
-2. **Intro movies** (Microsoft Game Studios / Bizarre Creations logos, the intro): in the headless renderer they
-   are black. Picture? Sound? Smooth or stuttering? Do they end by themselves?
-3. **Do not press START during the second intro movie**: it hangs the movie player (known, see PROGRESS.md).
-   Pressing it during the first movie or later is worth one try each: does it skip, or hang?
-4. **Attract demo** after the movies (a race in Hong Kong and other cities, no input): are the **car bodies**
-   there? In the headless renderer some cars show only wheels and driver. Lighting too dark?
-5. **Title screen** (press START during the attract demo): the PGR2 logo over a car picture. Headless it shows
-   **dotted textures and white bands** across the panels; are they on Windows too?
-6. **After pressing A on the title**: what screen comes up, does the menu respond to the D-pad?
-7. Sound in the menus and the attract demo.
-8. Frame rate (the log has it with XBE_PERF=1) and anything flickering.
+Confirmed on Windows so far: boot, movies, menus, races, saves, sound, reflections, the player's car body, the car
+shadow, fences and signs, car selection, the F1 window.
+
+Still to confirm:
+1. **Street lights at night**: glows hidden behind buildings, still visible where the lamp is in view.
+2. **Flicker**: buildings at night (Edinburgh), kerbs, signs; the light patch under the car at night.
+3. **Keyboard and remapping**: drive a race on the keyboard; remap a key and a controller input, restart, check
+   they were kept.
+4. **Display options**: each display mode and a resolution change while racing; aspect 4:3 and 16:9 (next start).
+5. **System link**: two PCs, or two copies with `--instance`.
+6. **race_60fps**: feel, replays and ghosts recorded at 60.
+7. **Sound**: music volume in the menus, the engine, anything missing (reverb and filters are not modelled).

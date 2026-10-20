@@ -3,18 +3,29 @@
 Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Status
-- Milestone: 4 - a race runs under pad control; Windows: boots, menus, races, saves, movies, audio
+- Milestone: 4 - races run under pad control; Windows: boots, movies, menus, races, saves, audio, reflections
 - XDK 5659: 191 of 250 functions, 13 of 13 data
-- Speed: paced by the game's present interval (menus 60, races 30); race_60fps option
-- Rendering: car body fixed; car shadow flicker fixed; fences/posts/signs (SetVertexShaderInput); W-buffering on
-  by default (car selection panels, to confirm on Windows); showroom car depth (wheel through the body) fixed;
-  street light glows through buildings fixed (to confirm on Windows); open: night under-car flicker, building flicker
-- PC: F1 settings window (display, graphics, game options, controls), keyboard play, controller remapping
+- Speed: paced by the game's present interval (menus 60, races 30); race_60fps option (experimental)
+- Rendering, confirmed on Windows: car body, car shadow, fences/posts/signs, car selection (W-buffer and showroom
+  depth), under-car flicker much improved. To confirm: street light glows behind buildings. Open: night building
+  flicker (Edinburgh), remaining flicker
+- PC: F1 settings window (display, graphics, game options, controls), keyboard play, controller remapping (confirmed)
 - System link: works headless (scripts/linktest.sh); Windows to try
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
+- Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - documentation pass; PGR1 assessment
+
+Harry asked for the docs to cover the last days' findings and for a view on Project Gotham Racing 1.
+- FINDINGS.md (new): everything established so far by topic, each marked console (generic, SDK) or PGR2.
+- PGR1.md (new): the SDK, PC features, harness and scripts carry over as they are. The main new work is PGR1's
+  older XDK: a new xdk/<build>, its layout, and, the biggest risk, render state numbering that may differ from
+  5659/5849. PGR2's addresses do not carry over; the methods that found them do. A first-session plan is included.
+- README.md: features and status. WINDOWS.md: system link, game switches, the current test list. sdk README and
+  harness README: the runtime features and switches added in this work.
 
 ### 2026-10-20 - street light glows through buildings: W-buffer scale of pretransformed w
 

@@ -16,17 +16,38 @@ This port was created using the [Xbox XBE Recomp](https://github.com/TGP482/Xbox
 ## Features
 
 ### Display
-
+- **Display Modes** - Fullscreen, borderless window or window, at any resolution the monitor offers, applied at once.
+- **Widescreen** - The game's own 16:9 mode (wider field of view, HUD at the edges), chosen from the screen's shape or set to 4:3 or 16:9.
+- **Frame Pacing** - Runs at the game's own rate, menus at 60 and races at 30 as on the console, with vsync and a frame rate cap.
 
 ### Graphics
+- **Render Scale** - Renders at a percentage of the screen, from 25% to 200%.
+- **Anisotropic Filtering** - Up to 16x.
+- **Console Accurate Depth** - W-buffered depth as the Xbox does it, keeping car bodies, showroom cars and street lights right.
+- **Reflections** - Car paint and glass reflections from the game's environment cube.
 
 ### Controller
-Supports Xbox, PlayStation and Switch controllers, with hot plugging and rumble.
+Supports Xbox, PlayStation and Switch controllers, with hot plugging and rumble. Any console input can be mapped to any controller input.
+
+### Keyboard
+Plays as controller 1, with two keys for each console input, remappable in the settings window.
 
 ### General
+- **Settings Window** - Press F1 in game for display, graphics, game options and controls. Changes are saved to `pgr2.toml`.
+- **Saves** - Profiles, options and career progress are kept on an emulated hard disk beside the exe.
+- **System Link** - Plays over the LAN, or by connecting straight to a friend's IP address (`join_ip`).
+- **60 FPS Races** - `race_60fps` runs races at 60 frames a second with unchanged physics (experimental).
 
 ### Miscellaneous
 - **Boot Splash** - Place a `splash.png` (or `.bmp`) beside the exe to display a splash screen at launch.
+- **Diagnostics** - Logs to `logs\pgr2.log`, and offers frame captures (F3) and frame logs (F4). See [WINDOWS.md](WINDOWS.md).
+
+## Status
+
+Boots, plays the movies and menus, races in every mode tried, saves and plays system link. Known open issues are
+some remaining flicker on buildings at night, and sound effects (reverb, filters) that are not modelled. Progress is
+in [PROGRESS.md](PROGRESS.md), technical findings in [FINDINGS.md](FINDINGS.md), and what may carry over to
+Project Gotham Racing 1 in [PGR1.md](PGR1.md).
 
 ## System Requirements
 
@@ -54,4 +75,3 @@ Run `build.bat`. The first build recompiles the game and takes a while. The exe 
 - [Xbox XBE Recomp](https://github.com/TGP482/XboxXBE-Recomp), the recompiler and runtime this is built on.
 - [XenonRecomp](https://github.com/hedge-dev/XenonRecomp) for the overridable function layout and instruction hooks.
 - [Zydis](https://github.com/zyantific/zydis) for decoding x86 instructions, [toml++](https://github.com/marzer/tomlplusplus) for the configs, [Dear ImGui](https://github.com/ocornut/imgui) for the settings overlay and [SDL](https://github.com/libsdl-org/SDL) for the window, input and controllers.
-# pgr2-decomp
