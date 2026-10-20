@@ -24,6 +24,15 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - race_60fps slowdown in Hong Kong (Arcade race 1, after turn 3)
+
+Harry: drops to about 40 fps there with race_60fps on, fine without; MSAA, render scale and aspect make no
+difference (so not GPU fill). His frame logs (F4 before and after turn 3): 3395 draws a frame before, 5703 after (world
+geometry B0101B41 2367 -> 3906), at 60 a second 340k draws: CPU bound. His settings had draw distance 200%, which
+likely adds much of it. XBE_PERF's lines were info level and dropped from release logs: now report lines (sdk).
+Next: his perf lines at the spot (draw distance 100 and 200) to see whether the title thread or the draw recording
+holds it up.
+
 ### 2026-10-20 - ultrawide
 
 Aspect setting 3, "Fill the screen" (aspect = 'screen'): app::FrameAspect() is the screen's shape (at least 16:9).
