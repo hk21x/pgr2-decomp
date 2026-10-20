@@ -24,6 +24,20 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - sunlit shadow patches on the car (D3D12 W-buffer on D16); render scale with MSAA
+
+Harry: patches of shadow on the player's car in sunlit daytime races, MSAA or not; and with MSAA on the render scale
+cannot be changed (the game freezes).
+- The CPU renderer draws the Florence grid car clean with and without the car shadow filter (PGR2_NO_FILTER), so
+  neither the filter nor shared code. Daytime only points at the sun shadow map: a 1024x1024 LIN_D16 target the car
+  draws with ZENABLE 2 (W-buffered) and polygon offset 128, which the car body's shader compares against. D3D12 wrote
+  W depth as floor(w) / 2^24 whatever the format (D16 values 256 times too small) and added the offset converted to
+  24 bit units (256 times too big for D16). sdk: both in the guest format's own steps (1 / (zscale + 1), offset x
+  zscale / 2^24-1). The CPU renderer already kept depth in the format's units.
+- Render scale: a new value now applies once it has held for half a second; dragging the slider remade every
+  target, and with MSAA every twin, each frame.
+wincheck OK, smoke OK. Windows to check.
+
 ### 2026-10-20 - MSAA (Windows to test)
 
 sdk d3d12: antialiasing 2/3/4 is MSAA 2x/4x/8x. Colour targets at least 320x240 (the scene; not reflections, the
