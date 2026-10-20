@@ -24,6 +24,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-20 - race_60fps slowdown: reuse helped uploads, not time; per step timers
+
+Harry's second log at the spot: uploads 41 -> 21-23 MB a frame, reuse 77% of vertex constants, 37% of draw
+constants, 88% of tables; but host time unchanged (draw ~16.7 ms at 5500-6000 draws: assemble 2.8, bind 4.0, ~10
+unaccounted). Vertex data (about 20 MB a frame) is copied per draw; caching it on the GPU would need knowing when the
+title rewrites a buffer (it is marked dirty only on Lock), so not done blind. sdk: the draw path skips setting the
+pipeline, topology, viewport, scissor, blend factor and stencil reference when they equal the last draw's (every
+other setter forgets them), and the first perf line times each step of a draw (shaders, pso, consts, tables, setup,
+geometry). wincheck OK, smoke OK. Next: his log with the step times.
+
 ### 2026-10-20 - race_60fps slowdown: the render thread's per draw cost
 
 Harry's perf lines (Hong Kong arcade race 1, races at 60, draw distance 200, scale 100, MSAA off): at the slow spot
