@@ -17,11 +17,21 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
   achievements.toml); live: the 7 Kudos rank ones; medals and the rest need mapping (Harry's saves would help)
 - System link: works headless (scripts/linktest.sh); Windows to try
+- CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - CPU renderer: the black band near the camera fixed
+
+The reference renderer left the road nearest the camera black (about the bottom third in a Hong Kong race, larger
+with a wider field of view). A probe at 100,440 showed no road draw reaching the pixel; a new drawlog count
+(`nonfinite`) found 141-154 draws a frame losing triangles: those crossing the near plane get a clipped corner whose
+w, interpolated in float between -4139 and 32817, rounds to 0, so x / w is infinite. sdk: the corner keeps at least
+the near plane's w, and triangle setup and edge functions run in double (corners near the plane land around 1e25).
+Now 0 such draws and the road is whole to the camera. D3D12 clips on the GPU and never had this. Smoke OK.
 
 ### 2026-10-20 - sound effects: measured, not built
 
