@@ -33,6 +33,7 @@ Read `sdk/README.md`, `sdk/harness/README.md`, `PROGRESS.md` and `FINDINGS.md` a
      guest memory is at 0x100000000, guest esp is the dword at ctx+16.
 - Ghidra: `python3 sdk/tools/symbols/xbe2pe.py config/pgr2.toml .local/game.exe`, then
   `/opt/ghidra/support/analyzeHeadless ~/ghidra-projects pgr2 -import .local/game.exe` (add `-process`/scripts as needed).
+  Then `scripts/ghidra.sh Decomp|Disasm|FindOperand|Callers|DumpRange ...` runs the helper scripts in scripts/ghidra.
 
 ## Plan
 1. Extract the XBE's library versions. If the build is not 5849, create `sdk/xdk/<build>/`:
