@@ -122,7 +122,9 @@ Still to confirm:
 1. **Street lights at night**: glows hidden behind buildings, still visible where the lamp is in view.
 1a. **PC Settings in the game's menu**: Options > General Options > PC Settings opens the window over the page;
    close it (Start, F1 or the window's X) and the menu goes back to General Options on its own.
-1b. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with
+1b. **Achievements**: F1 > Achievements lists the Kudos rank ones; reaching Kudos Rank 5 (20,250 Kudos in total)
+   should pop up "Achievement unlocked" top right and write achievements.toml beside the exe.
+1c. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with
    it; skip intro (next start goes straight to the title); hide HUD in a race; field of view at 130% (is the road
    near the car drawn? the CPU renderer here leaves a band there at any setting); FXAA on and off; the counter; pause
    on alt-tab (sound stops too); a second monitor if you have one.

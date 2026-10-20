@@ -8,6 +8,7 @@ namespace pgr2 {
 extern bool skip_intro, hide_hud;
 extern uint32_t fov_percent;
 void SettingsEntryPad(int port, input::Pad& pad);  // src/game/settings_entry.cpp
+std::vector<achievements::Def> AchievementSet();    // src/game/achievement_set.cpp
 }
 
 namespace {
@@ -56,4 +57,5 @@ const app::GameInfo app::kGame = {
     .ui = nullptr,                        // ImGui drawing each frame
     .pad = pgr2::SettingsEntryPad,        // changes a polled pad: B back from PC Settings
     .rumble = nullptr,                    // changes a rumble before it is set
+    .achievements = pgr2::AchievementSet(),  // conditions on guest memory, checked each frame
 };

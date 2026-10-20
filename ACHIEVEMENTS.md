@@ -188,6 +188,15 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
 
 ## In the port
 
+Built (2026-10-20): `sdk/runtime/core/achievements.cpp` evaluates RetroAchievements-syntax conditions (memory sizes,
+delta and prior, add source, sub source, add address, and/or next, reset and pause ifs, hit counts, alternative
+groups) once a frame, waits for a condition to be unmet once before it can unlock, keeps unlocks in
+`achievements.toml` beside the exe, shows a pop-up and lists the set in the settings window's Achievements tab.
+`src/game/achievement_set.cpp` holds the mapped part of the set: the seven Kudos rank achievements.
+`PGR2_ACH_TEST=1` adds a test one that unlocks at a race's start (checked headless).
+
+The plan was:
+
 - The SDK gets a small achievement runtime:
   - It evaluates the set's conditions against guest memory once a frame, as RA's rcheevos library does. The
     library itself (MIT licence) is a candidate to embed, which would make the format exactly RA's.

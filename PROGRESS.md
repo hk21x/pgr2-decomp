@@ -14,13 +14,28 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   the 2026-10-20 options to confirm on Windows)
 - PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): works headless; Windows
   to confirm
-- Achievements: draft set in ACHIEVEMENTS.md (64, 780 points, RetroAchievements style); memory mapping not started
+- Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
+  achievements.toml); live: the 7 Kudos rank ones; medals and the rest need mapping (Harry's saves would help)
 - System link: works headless (scripts/linktest.sh); Windows to try
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-20 - achievements: memory mapped in part, runtime built
+
+- Tools: Ghidra helper scripts committed (scripts/ghidra, scripts/ghidra.sh); harness `memdump` file writes guest
+  memory (sdk).
+- Mapped (ACHIEVEMENTS.md): the live profile is static at 0x3665AC (Profile.Sav matches it but for the signature and
+  runtime-filled records); Kudos Tokens 0x366EBC; Total Kudos the sum of 8 dwords at 0x35D090 (stride 16, the
+  object 0x35BA78, 0xA66C0); cars owned by a bit per player at 0x35BAA4 + car x 0x1C (0xA63C0). Medals not yet: a
+  fresh profile has none to find, and the status page reading them was not found yet.
+- sdk core/achievements.cpp: RetroAchievements condition syntax (subset), checked each frame at Swap, armed only
+  after being unmet once, unlocks in achievements.toml, pop-up and settings tab (Windows). Headless: the test
+  achievement (PGR2_ACH_TEST=1, present interval at race start) unlocked at the race's start, not before; the rank
+  conditions parse. wincheck OK, smoke OK.
+Next: medals and race state (a saved profile with progress from Harry), then the rest of the set.
 
 ### 2026-10-20 - PC Settings in PGR2's own Options menu
 

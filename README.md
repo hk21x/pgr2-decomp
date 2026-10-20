@@ -43,6 +43,7 @@ Plays as controller 1, with two keys for each console input, remappable in the s
 - **Pause On Focus Loss** - The game and its sound stop while another window is in front.
 - **Saves** - Profiles, options and career progress are kept on an emulated hard disk beside the exe.
 - **System Link** - Plays over the LAN, or by connecting straight to a friend's IP address (`join_ip`).
+- **Achievements** - A first set (Kudos ranks) with pop-ups and a list in the settings window; the full draft is in [ACHIEVEMENTS.md](ACHIEVEMENTS.md).
 - **60 FPS Races** - `race_60fps` runs races at 60 frames a second with unchanged physics (experimental).
 
 ### Miscellaneous
