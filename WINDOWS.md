@@ -133,16 +133,8 @@ Confirmed on Windows so far: boot, movies, menus, races, saves, sound, reflectio
 shadow, fences and signs, car selection, the F1 window, the Direct3D 11 renderer (with MSAA), the PC Settings entry, the achievement pop-up.
 
 Still to confirm:
-1. **Street lights at night**: glows hidden behind buildings, still visible where the lamp is in view.
-1a. **PC Settings in the game's menu**: Options > General Options > PC Settings opens the window over the page;
-   close it (Start, F1 or the window's X) and the menu goes back to General Options on its own.
-1d. **Draw distance** (F1 > Game, experimental): try 200-400% in a city with long views (Sydney, Nürburgring);
-   in Hong Kong it changes nothing visible, the street ends first.
-1c. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with
-   it; skip intro (next start goes straight to the title); hide HUD in a race; field of view at 130% (is the road
-   near the car drawn? the CPU renderer here leaves a band there at any setting); FXAA on and off; the counter; pause
-   on alt-tab (sound stops too); a second monitor if you have one.
-2. **Flicker**: buildings at night (Edinburgh), kerbs, signs; the light patch under the car at night.
+1. **Trees** (2026-10-21): leafy trees in Sydney's terrace streets (point sprites), on D3D12 and D3D11.
+2. **Flicker**: kerbs, signs, anything left (the Edinburgh buildings and the under-car patch are fixed).
 3. **Keyboard and remapping**: drive a race on the keyboard; remap a key and a controller input, restart, check
    they were kept.
 4. **Display options**: each display mode and a resolution change while racing; aspect 4:3 and 16:9 (next start).

@@ -6,12 +6,12 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Milestone: 4 - races run under pad control; Windows: boots, movies, menus, races, saves, audio, reflections
 - XDK 5659: 191 of 250 functions, 13 of 13 data
 - Speed: paced by the game's present interval (menus 60, races 30); race_60fps option (experimental)
-- Rendering, confirmed on Windows: car body, car shadow, fences/posts/signs, car selection (W-buffer and showroom
-  depth), under-car flicker much improved. To confirm: street light glows behind buildings. Open: night building
-  flicker (Edinburgh), remaining flicker
+- Rendering, confirmed on Windows: car body, car shadow (sun and night), fences/posts/signs, car selection, street
+  light glows behind buildings, night building flicker (Edinburgh) gone, ultrawide with HUD, draw distance, MSAA,
+  render scale. To confirm: trees (point sprites, 2026-10-21)
 - PC: F1 / Back+Start settings window (display, monitor, graphics, FXAA, fps counter, pause on focus loss, game
-  options: skip intro, hide HUD, field of view, race_60fps; controls), keyboard play, remapping (window confirmed;
-  the 2026-10-20 options to confirm on Windows)
+  options: skip intro, hide HUD, field of view, draw distance, race_60fps, DLC cities; controls), keyboard play,
+  remapping; confirmed on Windows except keyboard play and remapping across a restart
 - PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): confirmed on Windows
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
   achievements.toml); all 64 live (2026-10-21); the pop-up confirmed on Windows

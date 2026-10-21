@@ -158,7 +158,7 @@ Each item is marked:
 
 ## Still open
 
-- Night building flicker (Edinburgh) and the remaining flicker on Windows.
+- Any remaining flicker on Windows (the Edinburgh night buildings and the under-car patch are fixed).
 - The CPU reference renderer's random spike pattern in single snaps.
 - START during the second intro movie hung the player earlier. It now skips, but this was not root-caused.
 - Sound effects (reverb, filters) are not modelled.
