@@ -116,14 +116,12 @@ Please note for each: works / wrong (how) / not reached, and send `logs\pgr2.log
 for a flicker, a frame log (F4 with `XBE_FRAMELOG=60`) at the spot.
 
 Confirmed on Windows so far: boot, movies, menus, races, saves, sound, reflections, the player's car body, the car
-shadow, fences and signs, car selection, the F1 window, the Direct3D 11 renderer (with MSAA).
+shadow, fences and signs, car selection, the F1 window, the Direct3D 11 renderer (with MSAA), the PC Settings entry, the achievement pop-up.
 
 Still to confirm:
 1. **Street lights at night**: glows hidden behind buildings, still visible where the lamp is in view.
 1a. **PC Settings in the game's menu**: Options > General Options > PC Settings opens the window over the page;
    close it (Start, F1 or the window's X) and the menu goes back to General Options on its own.
-1b. **Achievements**: F1 > Achievements lists the Kudos rank ones; reaching Kudos Rank 5 (20,250 Kudos in total)
-   should pop up "Achievement unlocked" top right and write achievements.toml beside the exe.
 1d. **Draw distance** (F1 > Game, experimental): try 200-400% in a city with long views (Sydney, Nürburgring);
    in Hong Kong it changes nothing visible, the street ends first.
 1c. **New options** (F1): Back + Start from a controller (Xbox and PlayStation pads) and navigating the window with

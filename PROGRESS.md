@@ -14,7 +14,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   the 2026-10-20 options to confirm on Windows)
 - PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): confirmed on Windows
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
-  achievements.toml); all 64 live (2026-10-21); the pop-up to check on Windows (PGR2_ACH_TEST=1)
+  achievements.toml); all 64 live (2026-10-21); the pop-up confirmed on Windows
 - System link: works headless (scripts/linktest.sh); Windows to try
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
@@ -25,6 +25,11 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - achievement pop-up confirmed on Windows
+
+Harry: the pop-up shows (the test achievement at a race's start). So the earlier unseen pop-ups were unlocks already
+in achievements.toml. Still to see in real play: the five new ones (Style Points the easiest).
 
 ### 2026-10-21 - achievements: the last five mapped, all 64 live
 
