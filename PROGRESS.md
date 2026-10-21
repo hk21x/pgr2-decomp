@@ -21,11 +21,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
-- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 1 of 3 built (device, swap chain, F1 window; no 3D
-  drawn yet); Windows to confirm. Steps 2 (drawing) and 3 (read-backs, MSAA, ultrawide) to do
+- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 1 of 3 confirmed on Windows (device at feature
+  level 11_1, swap chain, F1 window; no 3D drawn yet). Steps 2 (drawing) and 3 (read-backs, MSAA, ultrawide) to do
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Direct3D 11 step 1 confirmed on Windows
+
+Harry: F1 works, black screen, as expected. Log: `D3D11 adapter: AMD Radeon RX 7900 XT, feature level B100`,
+settings window opened and closed, clean exit. Next: step 2, drawing.
 
 ### 2026-10-21 - North American release: same code; Windows build fix for D3D11
 
