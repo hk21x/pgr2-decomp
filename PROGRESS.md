@@ -29,6 +29,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - DLC: the magenta sky and the Windows crash were the packs' boats
+
+Harry's D3D12 capture of the Paris flyover (16:9): the sky draw (2847, vs B0101BE1, its 1024x512 DXT1 panorama) is
+fine; draws 3781-3793 have garbage vertices (-2.6e14, 1.5e-33, 197554 ...) and pixel constant c0 = (1, 0, 1), huge
+triangles over half the screen (magenta, white under the letterbox's tint). The CPU renderer drops non-finite and huge
+triangles, so headless looked right. The packs' boat01.pak and boat02.pak are not in the disc's object pak layout
+(an INDX chunk index, then WMSH, MAT, GPUD; theirs open with a zlib compressed WMSH chunk, the title update's layout):
+the disc build reads them as garbage meshes, and on Windows the process died 2 to 4 s into the flyover with no log
+line (the render thread reading those vertices, likely). dlc.cpp now puts the disc's river boats in their place
+(StockholmBoat1.pak, boatBig.pak from D:\Cache\Objects) when a pack's object pak does not open with INDX.
+Headless: both swapped, the Paris flyover and race clean. Smoke OK. Windows to confirm.
+
 ### 2026-10-21 - DLC on Windows: Paris in the menus; night races; fatal errors logged
 
 Harry (Windows, PGR2_DLC=1 from PowerShell with $env:): Paris shows in Time Attack and Instant Action; the flyover

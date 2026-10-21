@@ -142,6 +142,23 @@ X86_FUNC(sub_001572F0) {
         }
         if (ext != ".pak" || !e.is_regular_file(ec)) continue;
         fs::path dest = to / e.path().filename();
+        // the disc's object paks open with an INDX chunk index (then WMSH, MAT, GPUD ...); the packs' boats are in the
+        // title update's layout (a zlib compressed WMSH chunk first), which the disc build reads as garbage meshes (huge
+        // triangles over the sky, a crash reading their vertices): one of the disc's river boats goes in their place
+        char magic[4] = {};
+        std::ifstream(e.path(), std::ios::binary).read(magic, 4);
+        if (std::memcmp(magic, "INDX", 4) != 0) {
+            static const char* kBoats[] = {"StockholmBoat1.pak", "boatBig.pak"};
+            static int next = 0;
+            const char* boat = kBoats[next++ % 2];
+            std::vector<uint8_t> disc;
+            if (kernel::ReadGameFile(std::string("D:\\Cache\\Objects\\") + boat, disc)) {
+                std::ofstream(dest, std::ios::binary).write(reinterpret_cast<const char*>(disc.data()), std::streamsize(disc.size()));
+                LOGR("pgr2: %s from %s is not in the disc's pak layout: the disc's %s stands in", name.c_str(),
+                     folder.c_str(), boat);
+            }
+            continue;
+        }
         if (fs::exists(dest, ec) && fs::file_size(dest, ec) == e.file_size(ec)) continue;
         fs::copy_file(e.path(), dest, fs::copy_options::overwrite_existing, ec);
         LOGR("pgr2: %s from %s copied to Z:\\Cars%s", e.path().filename().string().c_str(), folder.c_str(),
