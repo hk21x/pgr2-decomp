@@ -12,8 +12,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - PC: F1 / Back+Start settings window (display, monitor, graphics, FXAA, fps counter, pause on focus loss, game
   options: skip intro, hide HUD, field of view, race_60fps; controls), keyboard play, remapping (window confirmed;
   the 2026-10-20 options to confirm on Windows)
-- PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): works headless; Windows
-  to confirm
+- PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): confirmed on Windows
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
   achievements.toml); live: 59; five feats still to map (race Kudos, Expert Overtake, contact, lap records)
 - System link: works headless (scripts/linktest.sh); Windows to try
@@ -26,6 +25,14 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Windows: under-car flicker fixed, PC Settings entry confirmed; pop-up unseen
+
+Harry: the flicker under the car is fixed (with the shadow nudge off since W-buffering), the PC Settings entry works.
+The achievement pop-up has not been seen. The unlock path reads right (Frame after each Present, Recent read by
+DrawHud, the same ImGui path as the fps counter, which shows); likely nothing new was unlocked: unlocks already in
+achievements.toml never pop again. To check on Windows: achievements.toml and the F1 Achievements tab, and
+PGR2_ACH_TEST=1 (a test achievement at a race's start). Mapping the last five achievements is under way.
 
 ### 2026-10-21 - Direct3D 11 complete; Renderer in the settings window
 
