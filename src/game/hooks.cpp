@@ -276,6 +276,8 @@ X86_FUNC(sub_00116C20) {
 // PGR2_NIGHT=1 (experiment): every race at night. The conditions are picked in 0x0F14E0 (it writes 0x383188 itself,
 // found with a watchpoint); night is set right after, before the race copies it and loads the city's night set.
 // PGR2_ROUTE=N (test): the race is on route N
+// PGR2_CAR=N (test): player 1 drives car N (the car table 0x3109F0, 0x270 bytes from 0x3109F4; the players' cars at
+// 0x39B318 + player x 0x2498, which 0x17C50 reads when it builds the car)
 X86_EXTERN_FUNC(__imp__sub_000F14E0);
 X86_FUNC(sub_000F14E0) {
     static const long route = [] {
@@ -294,7 +296,15 @@ X86_FUNC(sub_000F14E0) {
         kernel::W32(0x383180, uint32_t(route));
         kernel::W32(0x38317C, kernel::R32(0x30DEA4 + uint32_t(route) * 0x20));
     }
+    static const long car = [] {
+        const char* e = std::getenv("PGR2_CAR");
+        long c = e && *e ? std::strtol(e, nullptr, 0) : -1;
+        if (c >= 0) LOGR("pgr2: PGR2_CAR=%ld, player 1 drives that car", c);
+        return c;
+    }();
+    if (car >= 0 && uint32_t(car) < kernel::R32(0x3109F0) && !kernel::G<uint8_t>(ctx.ecx + 0x6D4)) kernel::W32(0x39B318, uint32_t(car));
     __imp__sub_000F14E0(ctx, base);
+    if (car >= 0) LOGR("pgr2: player 1's car %u", kernel::R32(0x39B318));
     if (route >= 0) LOGR("pgr2: race setup on route %u, city %u", kernel::R32(0x383180), kernel::R32(0x38317C));
     static const bool night = [] {
         const char* e = std::getenv("PGR2_NIGHT");

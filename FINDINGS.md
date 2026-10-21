@@ -127,6 +127,18 @@ Each item is marked:
   (a zlib compressed WMSH chunk first, where the disc's open with an INDX index: read as garbage meshes), materials
   whose bucket is past the city draw list's 106 (0x11B210, table 0x457188: a null write), and night or overcast sets
   (the packs hold the day set). PGR2 draws an object it cannot set up with its error material, pixel constant 0 magenta.
+- **[PGR2]** Paks: the disc's layout opens with INDX (tag, 0, offset of END - 12, count), then 16 byte entries (tag, 0,
+  size, offset - 12), each chunk's data 16 byte aligned, the file ending with END's header (END, 0, 0). The title
+  update's has each chunk inline (tag, 0, size with 0x80000000 compressed and 0x40000000, data; compressed data a 4 byte
+  size and the game's own deflate stream). The chunks are byte for byte the same, so the layout converts losslessly
+  (ConvertPak in src/game/dlc.cpp; the boats and the 18 DLC car models).
+- **[PGR2]** The title update's 16 cars (its folder: cars.ini, CarColours.ini, Classes.ini, Manufacturers.ini, each
+  car's dcontentcarN.pak_hrd/_opn/_sft, dcontentcarN.ini handling, <AudioData>.dat/.xwb) load as a disc car pack
+  (category 1, 0x157180) once the models are converted. The INI loader's tables (handler 0x14DD80 by section type)
+  are fixed size: cars 0x3109F0 cap 200 (0x270 bytes each from 0x3109F4), colours 0x32F1F0 cap 600 (0x14A8C0; past it
+  a null write at 0x14E07C), windscreens 0x32F174 cap 10, classes (0x3103EC, 0x38 each) max 20, type 8 0x310884
+  max 45 (45 with the pack loaded; what it lists not yet known). The disc has 102 cars and 566 colours; the update's 48 colours do not fit.
+  Each player's car is 0x39B318 + player x 0x2498 (read by 0x17C50).
 - **[PGR2]** A fatal error goes through 0x1388F0(message): it formats the cache partition and stops; look for its
   caller (Audio::Manager::Setup when a city has no stereo.ini line).
 

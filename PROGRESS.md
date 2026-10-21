@@ -23,11 +23,31 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Direct3D 11 renderer: done and confirmed on Windows (drawing, MSAA; F1 > Graphics > Renderer, next start). Not
   under D3D11: F3 captures, the 8 bit target swizzle (logged if PGR2 needs it)
 - DLC cities (experimental, F1 > Game, `dlc`): Paris and Long Beach race on Windows (2026-10-21); a few objects left
-  out, day sets at night, Stockholm's boats; the 16 DLC cars need the title update (not ported)
+  out, day sets at night; boats converted from the title update's pak layout (2026-10-21, Windows to confirm)
+- DLC cars: the title update's 16 cars as a car pack built on first start (2026-10-21): load, count (118) and race
+  headless; 34 of their 48 own colours (the table holds 600); Windows to confirm
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - the title update's 16 cars, as a disc car pack
+
+The disc game loads car packs (category 1, 0x157180: cars.ini, CarColours, Classes, Manufacturers from the pack).
+src/game/dlc.cpp builds one, T:\$C\4d53004b0000FF01, from the title update's folder (uPAL or uNTSC copied into $C) on
+the first start with DLC on: the 18 models converted from the update's pak layout to the disc's (ConvertPak: same
+chunks, an INDX table instead of inline headers; byte-identical chunks checked), every car ShowroomFree, a city pack's
+ContentMeta.xbx with offer 0xFF01 and category 1, a stamp so it is made once. After the loader, 0x157180's hook
+copies the models into Z:\Cars and links the handling (D:\CarDynamics) and engine sounds (D:\data\audio).
+The first load crashed in CarColours.ini: the colour table (0x32F1F0) holds 600, the disc has 566 and the update 48;
+past the cap 0x14A8C0 returns null and 0x14E07C writes through it. The builder trims the update's own colours to the
+free slots (34), taken in turn across the cars; colours a DLC car shares with the disc cost nothing (67 of 84 colour
+choices kept). The other tables fit (classes 16 of 20, cars 118 of 200).
+Evidence (headless, KEEP_HDD, PGR2_SKIP_INTRO=1): "car pack T:\$C\4d53004b0000FF01 loaded"; memory: 118 cars, 600
+colours; Single Player shows "Car Challenges 0 / 118"; PGR2_CAR=102 (M3 CSL), 105 (356A), 111 (Atom 2), 117 (SR3)
+each race Florence with the right model, no faults. The Paris boats are now converted too, not Stockholm's.
+New test switch PGR2_CAR=N (player 1's car, 0x39B318).
+Next: Harry to try the cars on Windows (WINDOWS.md); the car class menus and the showroom not looked at headless.
 
 ### 2026-10-21 - steering wheel support with force feedback
 

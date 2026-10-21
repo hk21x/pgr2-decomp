@@ -120,19 +120,28 @@ Logitech G920/G923 (G29 and others should work through the settings). Logitech w
 To check: the wheel is found, steering and pedals respond (the Wheel tab's bars), the defaults' axes and buttons are
 right for the G920/G923, the forces feel right and stop in menus, nothing doubles up with a pad plugged in too.
 
-## Xbox Live DLC cities (experimental)
+## Xbox Live DLC cities and cars (experimental)
 
 Paris and Long Beach from the PGR2 booster packs, on the disc's game. Confirmed on Windows (2026-10-21): both race,
-a few of their objects are left out. The 16 DLC cars need the title update, not done.
+a few of their objects are left out. The 16 DLC cars (M3 CSL, Corvette C6, 250TR, ...) from the title update: headless
+they load, show in the car counts (Time Attack: 118 car challenges) and race (M3 CSL, 356A, Atom 2, SR3 seen); Windows
+to confirm.
 1. From your DLC files, copy the folders `content\c\4d53004b00000001` (Paris) and `4d53004b00000002` (Long Beach) into
    `out\build\release\hdd\E\TDATA\4d53004b\$C\` (make the `$C` folder), so that
    `hdd\E\TDATA\4d53004b\$C\4d53004b00000001\Paris.pak_day` exists.
+   For the cars, also copy the update folder `content\uPAL` (or `uNTSC`: the cars are the same) into that `$C`
+   folder, so that `hdd\E\TDATA\4d53004b\$C\uPAL\cars.ini` exists. The first start with DLC on makes a car pack
+   from it, `$C\4d53004b0000FF01` (the models converted, every DLC car free); the log says
+   `the title update's cars from ... made into the car pack` and then `car pack T:\$C\4d53004b0000FF01 loaded`.
 2. F1 > Game > **Xbox Live DLC cities**, then restart (or `dlc = true` in `pgr2.toml`; `PGR2_DLC=1` also works).
-3. Paris and Long Beach are in the city lists (Time Attack, Instant Action, race setup).
+3. Paris and Long Beach are in the city lists (Time Attack, Instant Action, race setup); the DLC cars are in the
+   classes "Paris Cars" and "Long Beach Cars".
 What differs from the console: night and overcast races use the daytime scenery (the packs hold the day set only);
-the river boats are Stockholm's (the packs' are in the title update's file layout); objects with title update
-materials are left out (PGR2 would draw them magenta). `PGR2_ROUTE=147` (Paris) or `155` (Long Beach) forces every race
-onto that route, for testing.
+the river boats and the cars' models are converted from the title update's file layout; objects with title update
+materials are left out (PGR2 would draw them magenta). The disc game holds 600 paint colours and has 566, so the DLC
+cars keep 34 of their own 48 (each car keeps some; colours shared with disc cars are all kept). `PGR2_ROUTE=147`
+(Paris) or `155` (Long Beach) forces every race onto that route, and `PGR2_CAR=102` to `117` puts player 1 in that DLC
+car, for testing.
 
 ## System link
 

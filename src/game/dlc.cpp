@@ -11,6 +11,8 @@
 #include <string>
 #include <system_error>
 #include <cctype>
+#include <map>
+#include <set>
 
 #include "core/log.h"
 #include "kernel/kernel.h"
@@ -47,6 +49,159 @@ void MergeStereo(const std::filesystem::path& pack_stereo) {
     LOGR("pgr2: %s added to the city ambience list", pack_stereo.string().c_str());
 }
 
+// A pak in the title update's layout (each chunk inline: tag, 0, size with 0x80000000 compressed and 0x40000000, its data)
+// into the disc's: an INDX chunk listing tag, 0, size and offset (from byte 12) for each, the data 16 byte aligned
+// after it, END last. The chunks themselves are the same (the same tags, order and fixed sizes; compressed ones stay as
+// they are: a 4 byte size, then the game's deflate stream). Empty when it is not one.
+std::vector<uint8_t> ConvertPak(const std::vector<uint8_t>& in) {
+    struct Chunk {
+        uint32_t tag, size;
+        size_t at;
+    };
+    std::vector<Chunk> chunks;
+    size_t o = 0;
+    auto u32 = [&](size_t at) {
+        uint32_t v;
+        std::memcpy(&v, &in[at], 4);
+        return v;
+    };
+    while (o + 12 <= in.size()) {
+        Chunk c{u32(o), u32(o + 8), o + 12};
+        size_t n = c.size & 0x3FFFFFFF;
+        if (c.at + n > in.size()) return {};
+        chunks.push_back(c);
+        o = c.at + n;
+        if (std::memcmp(&c.tag, "END", 3) == 0) break;
+    }
+    if (chunks.empty() || std::memcmp(&chunks.back().tag, "END", 3) != 0) return {};
+    std::vector<uint8_t> out;
+    auto put = [&](uint32_t v) { out.insert(out.end(), reinterpret_cast<uint8_t*>(&v), reinterpret_cast<uint8_t*>(&v) + 4); };
+    auto align = [](size_t v) { return (v + 15) & ~size_t(15); };
+    // the header and the table, then each chunk's data at the next 16 bytes; offsets count from byte 12
+    size_t at = align(16 + chunks.size() * 16);
+    std::vector<size_t> offsets;
+    for (const Chunk& c : chunks) {
+        offsets.push_back(at);
+        at = align(at + (c.size & 0x3FFFFFFF));
+    }
+    uint32_t indx;
+    std::memcpy(&indx, "INDX", 4);
+    put(indx);
+    put(0);
+    put(uint32_t(offsets.back() - 12));  // to END, as the disc's give it
+    put(uint32_t(chunks.size()));
+    for (size_t i = 0; i < chunks.size(); i++) {
+        put(chunks[i].tag);
+        put(0);
+        put(chunks[i].size);
+        put(uint32_t(offsets[i] - 12));
+    }
+    out.resize(at, 0);
+    for (size_t i = 0; i < chunks.size(); i++)
+        std::memcpy(&out[offsets[i]], &in[chunks[i].at], chunks[i].size & 0x3FFFFFFF);
+    // the file ends with END's own header (tag, 0, 0) where its entry points
+    put(chunks.back().tag);
+    put(0);
+    put(0);
+    return out;
+}
+
+// The packs' lists are UTF-16 with a byte order mark, every character ASCII: to and from narrow text
+std::string Narrow(const std::vector<uint8_t>& in) {
+    std::string out;
+    for (size_t i = (in.size() >= 2 && in[0] == 0xFF && in[1] == 0xFE) ? 2 : 0; i + 1 < in.size(); i += 2) out += char(in[i]);
+    return out;
+}
+
+std::vector<uint8_t> Wide(const std::string& in) {
+    std::vector<uint8_t> out = {0xFF, 0xFE};
+    for (char c : in) out.push_back(uint8_t(c)), out.push_back(0);
+    return out;
+}
+
+std::vector<std::string> Lines(const std::string& text) {
+    std::vector<std::string> lines;
+    size_t at = 0;
+    while (at < text.size()) {
+        size_t end = text.find('\n', at);
+        if (end == std::string::npos) end = text.size();
+        std::string line = text.substr(at, end - at);
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        lines.push_back(line);
+        at = end + 1;
+    }
+    return lines;
+}
+
+// The value of a "Key = value" line, quotes taken off, or empty when the line is another key's
+std::string Value(const std::string& line, const char* key) {
+    size_t n = std::strlen(key);
+    if (line.compare(0, n, key) != 0) return {};
+    size_t eq = line.find('=', n);
+    if (eq == std::string::npos || line.find_first_not_of(' ', n) != eq) return {};
+    std::string v = line.substr(eq + 1);
+    v.erase(0, v.find_first_not_of(" \t\""));
+    while (!v.empty() && (v.back() == ' ' || v.back() == '\t' || v.back() == '"')) v.pop_back();
+    return v;
+}
+
+// The disc's colour list (0x32F1F0) holds 600 (0x14A8C0; the section handler 0x14DD80 writes through the null it gives
+// past that): the disc has 566, the update 48 of its own. The update's cars keep as many of their colours as fit, taken
+// in turn so each car has some; cars.ini loses the colour lines left out and CarColours.ini their sections. Free: the slots left.
+void TrimColours(std::string& cars, std::string& colours, int free) {
+    std::set<std::string> own;  // the update's colours; the others a car names are the disc's, which take no slot
+    for (const std::string& l : Lines(colours))
+        if (std::string v = Value(l, "Name"); !v.empty()) own.insert(v);
+    std::vector<std::string> lines = Lines(cars);
+    std::vector<std::vector<std::string>> car_colours;
+    for (const std::string& l : lines) {
+        if (l == "[CAR]") car_colours.emplace_back();
+        std::string v = Value(l, "Colour");
+        if (!v.empty() && !car_colours.empty()) car_colours.back().push_back(v);
+    }
+    std::set<std::string> keep;
+    std::vector<size_t> taken(car_colours.size(), 0);
+    for (bool more = true; more;) {
+        more = false;
+        for (size_t c = 0; c < car_colours.size(); c++) {
+            if (taken[c] == car_colours[c].size()) continue;
+            const std::string& name = car_colours[c][taken[c]];
+            if (own.count(name) && !keep.count(name)) {
+                if (int(keep.size()) >= free) continue;
+                keep.insert(name);
+            }
+            taken[c]++;
+            more = true;
+        }
+    }
+    std::string out;
+    size_t car = 0, n = 0;
+    bool first = true;
+    for (const std::string& l : lines) {
+        if (l == "[CAR]") car = first ? 0 : car + 1, n = 0, first = false;
+        std::string v = Value(l, "Colour");
+        if (!v.empty() && !first && n++ >= taken[car]) continue;
+        out += l + "\r\n";
+    }
+    cars = out;
+    // CarColours.ini: a section runs from its [CAR COLOUR] to the next
+    out.clear();
+    std::string section;
+    bool kept = false;
+    auto flush = [&] {
+        if (kept || section.rfind("[CAR COLOUR]", 0) != 0) out += section;
+        section.clear();
+    };
+    for (const std::string& l : Lines(colours)) {
+        if (l == "[CAR COLOUR]") flush(), kept = false;
+        std::string v = Value(l, "Name");
+        if (!v.empty()) kept = keep.count(v) != 0;
+        section += l + "\r\n";
+    }
+    flush();
+    colours = out;
+}
+
 bool On() {
     static const bool on = [] {
         if (pgr2::dlc) LOGR("pgr2: DLC cities on, booster packs listed as city packs, content signatures not checked");
@@ -57,10 +212,116 @@ bool On() {
 
 }  // namespace
 
+// The title update's cars as a car pack. The update (T:\$U on a console, any folder in T:\$C here: the one holding its
+// cars.ini and dcontentcar paks) brings 16 cars: a cars.ini listing just them in the disc's format (FileName
+// DContentCarN, AudioData, colours, class "Paris Cars" ...), CarColours, Manufacturers and Classes, each car's model
+// (dcontentcarN.pak_hrd / _opn / _sft, in the update's pak layout), handling (dcontentcarN.ini, as the disc's
+// CarDynamics\<car>.ini) and engine sound (<AudioData>.dat / .xwb, _AI, _PCM). The disc build loads car packs, category 1
+// (0x157180: those four lists from the pack, each new car's record keeping the pack's folder): they are copied into one,
+// T:\$C\4d53004b0000FF01, the models converted, every car free in the showroom; its ContentMeta.xbx is a city pack's with
+// the offer and category changed (the signature checks are passed over). A stamp file keeps it from being made twice.
+void BuildCarPack() {
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    fs::path packs = kernel::ResolvePath("T:\\$C", 0);
+    if (packs.empty() || !fs::is_directory(packs, ec)) return;
+    auto lower = [](std::string v) {
+        for (char& c : v) c = char(std::tolower(static_cast<unsigned char>(c)));
+        return v;
+    };
+    fs::path source, meta;
+    for (const auto& d : fs::directory_iterator(packs, ec)) {
+        if (!d.is_directory(ec)) continue;
+        bool cars = false, models = false;
+        for (const auto& f : fs::directory_iterator(d.path(), ec)) {
+            std::string n = lower(f.path().filename().string());
+            cars |= n == "cars.ini";
+            models |= n.rfind("dcontentcar", 0) == 0 && n.find(".pak_") != std::string::npos;
+            if (n == "contentmeta.xbx" && lower(d.path().filename().string()).rfind("4d53004b0000000", 0) == 0) meta = f.path();
+        }
+        if (cars && models && lower(d.path().filename().string()) != "4d53004b0000ff01") source = d.path();
+    }
+    if (source.empty() || meta.empty()) {
+        if (!source.empty()) LOGR("pgr2: DLC cars found in %s, but no city pack to take a ContentMeta.xbx from", source.string().c_str());
+        return;
+    }
+    fs::path dest = packs / "4d53004b0000FF01";
+    std::string stamp = "pgr2 car pack 3 from " + source.filename().string();
+    {
+        std::ifstream in(dest / "pgr2_built.txt");
+        std::string have((std::istreambuf_iterator<char>(in)), {});
+        if (have == stamp) return;
+    }
+    fs::create_directories(dest, ec);
+    std::string content;
+    int converted = 0, cars = 0;
+    std::map<std::string, std::string> lists, names;
+    for (const auto& f : fs::directory_iterator(source, ec)) {
+        if (!f.is_regular_file(ec)) continue;
+        std::string name = f.path().filename().string(), n = lower(name);
+        // the update's own files, and lists the car loader does not read
+        if (n == "default.xbe" || n == "downloader.xbe" || n == "autoupdatemeta.xbx" || n == "contentmeta.xbx" ||
+            n == "content.txt" || n == "packid.txt" || n == "races.ini" || n.find("credits") != std::string::npos)
+            continue;
+        std::ifstream in(f.path(), std::ios::binary);
+        std::vector<uint8_t> bytes((std::istreambuf_iterator<char>(in)), {});
+        if (n.find(".pak") != std::string::npos && !(bytes.size() >= 4 && std::memcmp(bytes.data(), "INDX", 4) == 0)) {
+            std::vector<uint8_t> out = ConvertPak(bytes);
+            if (out.empty()) {
+                LOGW("pgr2: %s could not be converted, left out", name.c_str());
+                continue;
+            }
+            bytes = std::move(out);
+            converted++;
+        }
+        if (n == "cars.ini" || n == "carcolours.ini") {
+            lists[n] = Narrow(bytes);
+            names[n] = name;
+            continue;  // written below, once both are read
+        }
+        std::ofstream(dest / name, std::ios::binary).write(reinterpret_cast<const char*>(bytes.data()), std::streamsize(bytes.size()));
+        content += name + "\r\n";
+    }
+    if (lists.count("cars.ini")) {
+        std::string& list = lists["cars.ini"];
+        // every car owned from the start
+        for (size_t at; (at = list.find("ShowroomFree = \"0\"")) != std::string::npos; cars++) list[at + 16] = '1';
+        std::vector<uint8_t> disc;
+        kernel::ReadGameFile("D:\\Frontend\\CarColours.ini", disc);
+        size_t used = 0;
+        for (const std::string& l : Lines(Narrow(disc))) used += l == "[CAR COLOUR]";
+        int free = 600 - int(used);
+        if (lists.count("carcolours.ini")) TrimColours(list, lists["carcolours.ini"], free);
+        LOGR("pgr2: %zu car colours on the disc, the DLC cars keep %d", used, free);
+    }
+    for (const auto& [n, text] : lists) {
+        std::vector<uint8_t> bytes = Wide(text);
+        std::ofstream(dest / names[n], std::ios::binary).write(reinterpret_cast<const char*>(bytes.data()), std::streamsize(bytes.size()));
+        content += names[n] + "\r\n";
+    }
+    std::ifstream min(meta, std::ios::binary);
+    std::vector<uint8_t> m((std::istreambuf_iterator<char>(min)), {});
+    if (m.size() >= 0x34) {
+        uint32_t offer = 0xFF01, category = 1;  // ContentMeta.xbx: offer id's low dword +0x28, category +0x30
+        std::memcpy(&m[0x28], &offer, 4);
+        std::memcpy(&m[0x30], &category, 4);
+    }
+    std::ofstream(dest / "ContentMeta.xbx", std::ios::binary).write(reinterpret_cast<const char*>(m.data()), std::streamsize(m.size()));
+    std::ofstream(dest / "Content.txt", std::ios::binary) << content;
+    std::ofstream(dest / "PackID.txt", std::ios::binary) << "100";
+    std::ofstream(dest / "pgr2_built.txt", std::ios::binary) << stamp;
+    LOGR("pgr2: the title update's cars from %s made into the car pack %s (%d models converted, %d cars free)",
+         source.string().c_str(), dest.string().c_str(), converted, cars);
+}
+
 // XAPI's XFindFirstContent (0x192134: path, category mask, find data): the city pack listing (mask 2, 0x1574F0) also
 // takes the booster packs' category 0x10
 X86_EXTERN_FUNC(__imp__sub_00192134);
 X86_FUNC(sub_00192134) {
+    if (On()) {
+        static bool built = (BuildCarPack(), true);
+        (void)built;
+    }
     if (On() && kernel::R32(ctx.esp + 8) == 2) kernel::W32(ctx.esp + 8, 2 | 0x10);
     __imp__sub_00192134(ctx, base);
 }
@@ -145,20 +406,26 @@ X86_FUNC(sub_001572F0) {
         if (ext != ".pak" || !e.is_regular_file(ec)) continue;
         fs::path dest = to / e.path().filename();
         // the disc's object paks open with an INDX chunk index (then WMSH, MAT, GPUD ...); the packs' boats are in the
-        // title update's layout (a zlib compressed WMSH chunk first), which the disc build reads as garbage meshes (huge
-        // triangles over the sky, a crash reading their vertices): one of the disc's river boats goes in their place
+        // title update's layout (each chunk inline), which the disc build read as garbage meshes (huge triangles over the
+        // sky, a crash reading their vertices): converted to the disc's layout, or, failing that, one of the disc's
+        // river boats in their place
         char magic[4] = {};
         std::ifstream(e.path(), std::ios::binary).read(magic, 4);
         if (std::memcmp(magic, "INDX", 4) != 0) {
-            static const char* kBoats[] = {"StockholmBoat1.pak", "boatBig.pak"};
-            static int next = 0;
-            const char* boat = kBoats[next++ % 2];
-            std::vector<uint8_t> disc;
-            if (kernel::ReadGameFile(std::string("D:\\Cache\\Objects\\") + boat, disc)) {
-                std::ofstream(dest, std::ios::binary).write(reinterpret_cast<const char*>(disc.data()), std::streamsize(disc.size()));
-                LOGR("pgr2: %s from %s is not in the disc's pak layout: the disc's %s stands in", name.c_str(),
-                     folder.c_str(), boat);
+            std::ifstream f(e.path(), std::ios::binary);
+            std::vector<uint8_t> in((std::istreambuf_iterator<char>(f)), {});
+            std::vector<uint8_t> out = ConvertPak(in);
+            if (out.empty()) {
+                static const char* kBoats[] = {"StockholmBoat1.pak", "boatBig.pak"};
+                static int next = 0;
+                const char* boat = kBoats[next++ % 2];
+                if (kernel::ReadGameFile(std::string("D:\\Cache\\Objects\\") + boat, out))
+                    LOGR("pgr2: %s from %s could not be converted: the disc's %s stands in", name.c_str(), folder.c_str(), boat);
+            } else {
+                LOGR("pgr2: %s from %s converted from the title update's pak layout", name.c_str(), folder.c_str());
             }
+            if (!out.empty())
+                std::ofstream(dest, std::ios::binary).write(reinterpret_cast<const char*>(out.data()), std::streamsize(out.size()));
             continue;
         }
         if (fs::exists(dest, ec) && fs::file_size(dest, ec) == e.file_size(ec)) continue;
@@ -196,4 +463,44 @@ X86_FUNC(sub_0011B210) {
         if (kept != n) kernel::W16(count_at, uint16_t(kept));
     }
     __imp__sub_0011B210(ctx, base);
+}
+
+// PGR2: a car pack loaded (0x157180: metadata, pack folder, ...; 1 when loaded; each new car's record keeps the
+// folder). Where the disc's cars' files are found too: the models in the cache, Z:\Cars (copied there from
+// D:\Cache\Cars at boot), the handling in D:\CarDynamics, the engine sounds in D:\data\audio; the pack's are put there
+// as well (copied, linked), where the disc has none of that name
+X86_EXTERN_FUNC(__imp__sub_00157180);
+X86_FUNC(sub_00157180) {
+    uint32_t folder_va = kernel::R32(ctx.esp + 8);
+    __imp__sub_00157180(ctx, base);
+    if (!On() || !folder_va) return;
+    std::string folder;
+    for (uint32_t p = folder_va; kernel::G<uint8_t>(p) && folder.size() < 260; p++) folder += char(kernel::G<uint8_t>(p));
+    LOGR("pgr2: car pack %s %s", folder.c_str(), ctx.eax ? "loaded" : "refused");
+    if (!ctx.eax) return;
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    fs::path from = kernel::ResolvePath(folder, 0), cars = kernel::ResolvePath("Z:\\Cars", 0);
+    if (from.empty() || cars.empty()) return;
+    int models = 0, links = 0;
+    for (const auto& e : fs::directory_iterator(from, ec)) {
+        if (!e.is_regular_file(ec)) continue;
+        std::string name = e.path().filename().string(), lower = name;
+        for (char& c : lower) c = char(std::tolower(static_cast<unsigned char>(c)));
+        std::string ext = e.path().extension().string();
+        for (char& c : ext) c = char(std::tolower(static_cast<unsigned char>(c)));
+        if (ext.rfind(".pak", 0) == 0) {
+            fs::path dest = cars / name;
+            if (!(fs::exists(dest, ec) && fs::file_size(dest, ec) == e.file_size(ec)))
+                fs::copy_file(e.path(), dest, fs::copy_options::overwrite_existing, ec), models++;
+            continue;
+        }
+        std::string where;
+        if (ext == ".ini" && lower.rfind("dcontentcar", 0) == 0) where = "D:\\CarDynamics\\";
+        else if (ext == ".dat" || ext == ".xwb") where = "D:\\data\\audio\\";
+        if (where.empty() || kernel::GameFileExists(where + name)) continue;
+        kernel::CreateSymbolicLink("\\??\\" + where + name, "\\??\\" + folder + "\\" + name);
+        links++;
+    }
+    LOGR("pgr2: car pack %s: %d models copied to Z:\\Cars, %d handling and sound files linked", folder.c_str(), models, links);
 }
