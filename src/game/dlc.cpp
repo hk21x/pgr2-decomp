@@ -1,4 +1,4 @@
-// Xbox Live content packs on the disc's default.xbe (PGR2_DLC=1, an experiment). The Paris and Long Beach booster
+// Xbox Live content packs on the disc's default.xbe (the dlc setting or PGR2_DLC=1, an experiment). The Paris and Long Beach booster
 // packs (T:\$C\4d53004b0000000N) are category 0x10, made for the title update; the disc game lists category 1 (car)
 // and 2 (city) packs only. On a console the packs are signed when installed; the copies here are not, so with the
 // switch on the content signature checks are passed over.
@@ -15,6 +15,10 @@
 #include "core/log.h"
 #include "kernel/kernel.h"
 #include "xdk/hle.h"
+
+namespace pgr2 {
+extern bool dlc;  // the setting (src/common/game_info.cpp), or PGR2_DLC=1
+}
 
 namespace {
 
@@ -45,10 +49,8 @@ void MergeStereo(const std::filesystem::path& pack_stereo) {
 
 bool On() {
     static const bool on = [] {
-        const char* e = std::getenv("PGR2_DLC");
-        bool v = e && *e == '1';
-        if (v) LOGR("pgr2: PGR2_DLC=1, booster packs listed as city packs, content signatures not checked");
-        return v;
+        if (pgr2::dlc) LOGR("pgr2: DLC cities on, booster packs listed as city packs, content signatures not checked");
+        return pgr2::dlc;
     }();
     return on;
 }

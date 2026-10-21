@@ -103,18 +103,19 @@ Useful while testing:
 
 `release.bat` zips `PGR2.exe` with an empty `assets` folder; not needed yet.
 
-## Xbox Live DLC cities (experiment)
+## Xbox Live DLC cities (experimental)
 
-Paris and Long Beach from the PGR2 booster packs, on the disc's game (the 16 DLC cars need the title update, not done).
-1. From the DLC files, copy the two folders `content\c\4d53004b00000001` (Paris) and `4d53004b00000002` (Long Beach) into
-   `out\build\release\hdd\E\TDATA\4d53004b\$C\` (make the `$C` folder), so that e.g.
+Paris and Long Beach from the PGR2 booster packs, on the disc's game. Confirmed on Windows (2026-10-21): both race,
+a few of their objects are left out. The 16 DLC cars need the title update, not done.
+1. From your DLC files, copy the folders `content\c\4d53004b00000001` (Paris) and `4d53004b00000002` (Long Beach) into
+   `out\build\release\hdd\E\TDATA\4d53004b\$C\` (make the `$C` folder), so that
    `hdd\E\TDATA\4d53004b\$C\4d53004b00000001\Paris.pak_day` exists.
-2. In a Command Prompt: `set PGR2_DLC=1`, then start `PGR2.exe` from it. The log says `PGR2_DLC=1` and, at start,
-   `boat01.pak ... copied` and `stereo.ini added to the city ambience list`.
-3. Look for Paris and Long Beach in the city lists (Instant Action, Single Player race setup, Time Attack). To force a
-   race there: `set PGR2_ROUTE=147` (Paris) or `155` (Long Beach) before starting; every race then uses that route.
-Report: whether the cities show in the menus, how they look and sound, and any crash (Paris crashed now and then
-headless while streaming, about 30 s into a race).
+2. F1 > Game > **Xbox Live DLC cities**, then restart (or `dlc = true` in `pgr2.toml`; `PGR2_DLC=1` also works).
+3. Paris and Long Beach are in the city lists (Time Attack, Instant Action, race setup).
+What differs from the console: night and overcast races use the daytime scenery (the packs hold the day set only);
+the river boats are Stockholm's (the packs' are in the title update's file layout); objects with title update
+materials are left out (PGR2 would draw them magenta). `PGR2_ROUTE=147` (Paris) or `155` (Long Beach) forces every race
+onto that route, for testing.
 
 ## System link
 

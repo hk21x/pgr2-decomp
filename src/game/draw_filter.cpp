@@ -6,6 +6,10 @@
 #include "gpu/state.h"
 #include "gpu/texture.h"
 
+namespace pgr2 {
+extern bool dlc;  // src/common/game_info.cpp
+}
+
 namespace {
 
 // The car's shadow: a ground mesh around the car that the game builds each frame, drawn after the scene with the car's
@@ -65,11 +69,10 @@ void Filter(const gpu::State& s, gpu::DrawAdjust& adjust) {
 // called from the game's init (src/common/game_info.cpp): a static initializer here never ran in the Windows exe
 void InstallDrawFilter() {
     const char* nearer = std::getenv("PGR2_SHADOW_NEARER");
-    const char* dlc = std::getenv("PGR2_DLC");
     bool shadow = nearer && *nearer == '1';
-    g_skip_error_material = dlc && *dlc == '1';
+    g_skip_error_material = pgr2::dlc;
     if (!shadow && !g_skip_error_material) return;  // the game's draws as they come
     gpu::g_draw_filter = Filter;
     if (shadow) LOGR("pgr2: PGR2_SHADOW_NEARER=1, draw filter installed (car shadow pass nearer)");
-    if (g_skip_error_material) LOGR("pgr2: PGR2_DLC=1, draws with PGR2's error material are left out");
+    if (g_skip_error_material) LOGR("pgr2: DLC cities on, draws with PGR2's error material are left out");
 }

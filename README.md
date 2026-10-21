@@ -101,6 +101,7 @@ mapped to any controller input in Controls.
 
 ### Graphics
 - **Render Scale** - Renders at a percentage of the screen, from 25% to 200%.
+- **Xbox Live DLC cities** (experimental) - Paris and Long Beach from your own booster pack files; see WINDOWS.md.
 - **Renderer** - Direct3D 12 (default) or Direct3D 11, at the next start; 11 for GPUs or drivers where 12 runs badly.
   Without Direct3D 12 the game starts on 11 by itself.
 - **Anisotropic Filtering** - Up to 16x.

@@ -120,6 +120,10 @@ Each item is marked:
   (0x19144B / 0x191366) and each file's against the metadata's table (0x156F00); community copies are unsigned
   until a console installs them. PGR2_DLC=1 lists them, passes the checks and puts the pack's object paks, audio
   files and ambience lines where the disc build reads them (src/game/dlc.cpp).
+- **[PGR2]** What the disc build cannot take from the booster packs (title update data): object paks in the newer layout
+  (a zlib compressed WMSH chunk first, where the disc's open with an INDX index: read as garbage meshes), materials
+  whose bucket is past the city draw list's 106 (0x11B210, table 0x457188: a null write), and night or overcast sets
+  (the packs hold the day set). PGR2 draws an object it cannot set up with its error material, pixel constant 0 magenta.
 - **[PGR2]** A fatal error goes through 0x1388F0(message): it formats the cache partition and stops; look for its
   caller (Audio::Manager::Setup when a city has no stereo.ini line).
 

@@ -5,7 +5,7 @@
 void InstallDrawFilter();  // src/game/draw_filter.cpp
 
 namespace pgr2 {
-extern bool skip_intro, hide_hud;
+extern bool skip_intro, hide_hud, dlc;
 extern uint32_t fov_percent, draw_distance_percent;
 void SettingsEntryPad(int port, input::Pad& pad);  // src/game/settings_entry.cpp
 std::vector<achievements::Def> AchievementSet();    // src/game/achievement_set.cpp
@@ -14,11 +14,12 @@ std::vector<achievements::Def> AchievementSet();    // src/game/achievement_set.
 namespace {
 // PGR2_SKIP_INTRO=1, PGR2_HIDE_HUD=1 and PGR2_FOV=percent set those options without a settings file (the headless harness has none)
 void Init() {
-    InstallDrawFilter();
     if (const char* e = std::getenv("PGR2_SKIP_INTRO"); e && *e == '1') pgr2::skip_intro = true;
+    if (const char* e = std::getenv("PGR2_DLC"); e && *e == '1') pgr2::dlc = true;
     if (const char* e = std::getenv("PGR2_HIDE_HUD"); e && *e == '1') pgr2::hide_hud = true;
     if (const char* e = std::getenv("PGR2_FOV")) pgr2::fov_percent = uint32_t(std::atoi(e));
     if (const char* e = std::getenv("PGR2_DRAW")) pgr2::draw_distance_percent = uint32_t(std::atoi(e));
+    InstallDrawFilter();  // after the options: the DLC setting picks its part
 }
 }  // namespace
 
@@ -28,6 +29,7 @@ bool skip_intro = false;  // no intro movies at start (src/game/hooks.cpp)
 bool hide_hud = false;    // no race HUD, for screenshots (src/game/hooks.cpp)
 uint32_t fov_percent = 100;  // the race cameras' field of view, percent of the console's (src/game/hooks.cpp)
 uint32_t draw_distance_percent = 100;  // how far the race cameras see, percent of the console's (src/game/hooks.cpp)
+bool dlc = false;  // the Xbox Live city packs in T:\$C, on the disc's game (src/game/dlc.cpp)
 }
 
 // PGR2 asks for one vertical blank a frame in its menus and two in its races (D3D_PresentInterval), and steps its
@@ -51,7 +53,9 @@ const app::GameInfo app::kGame = {
                 {"draw_distance_percent", nullptr, &pgr2::draw_distance_percent, "Draw distance (%)",
                  "100 is the console's; 25 to 400, from the next race. Experimental: most streets end before it."},
                 {"race_60fps", &pgr2::race_60fps, nullptr, "Races at 60 frames a second (experimental)",
-                 "Same physics, sampled twice as often; at the next start."}},
+                 "Same physics, sampled twice as often; at the next start."},
+                {"dlc", &pgr2::dlc, nullptr, "Xbox Live DLC cities (experimental)",
+                 "Paris and Long Beach from your packs in hdd\\E\\TDATA\\4d53004b\\$C (WINDOWS.md); at the next start."}},
     .load = nullptr,                      // reads more from the settings file's toml::table
     .save = nullptr,                      // writes more into it
     .init = Init,                         // after the settings load, before the window and boot

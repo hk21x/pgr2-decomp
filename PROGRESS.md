@@ -22,12 +22,19 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
 - Direct3D 11 renderer: done and confirmed on Windows (drawing, MSAA; F1 > Graphics > Renderer, next start). Not
   under D3D11: F3 captures, the 8 bit target swizzle (logged if PGR2 needs it)
-- DLC (experiment, PGR2_DLC=1): the Paris and Long Beach booster packs load on the disc build and race headless;
-  a rare crash streaming Paris (3 of ~12 runs); the 16 DLC cars need the title update (not ported). Windows to try
+- DLC cities (experimental, F1 > Game, `dlc`): Paris and Long Beach race on Windows (2026-10-21); a few objects left
+  out, day sets at night, Stockholm's boats; the 16 DLC cars need the title update (not ported)
 - Next after DLC: steering wheel support (Harry, 2026-10-21)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - DLC cities work on Windows; a setting
+
+Harry: Paris and Long Beach both race, the left out objects are hardly noticeable. The DLC switch is now a game option
+(`dlc` in pgr2.toml, F1 > Game "Xbox Live DLC cities", next start; PGR2_DLC=1 still sets it). WINDOWS.md has the steps
+and the differences from the console; README lists it. The headless Paris streaming crash (3 of ~12 runs, before the
+boat and bucket fixes) was likely the same garbage meshes; not seen since. Next: steering wheel support.
 
 ### 2026-10-21 - DLC: Paris turn 1 crash, the draw list's material buckets
 
