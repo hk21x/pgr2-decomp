@@ -47,7 +47,8 @@ Evidence (headless, KEEP_HDD, PGR2_SKIP_INTRO=1): "car pack T:\$C\4d53004b0000FF
 colours; Single Player shows "Car Challenges 0 / 118"; PGR2_CAR=102 (M3 CSL), 105 (356A), 111 (Atom 2), 117 (SR3)
 each race Florence with the right model, no faults. The Paris boats are now converted too, not Stockholm's.
 Time Attack > Car Challenge lists the classes "Paris Cars" and "Long Beach Cars" above Ultimate, 8 cars each, none
-locked; the car screen opens for them (Subaru 22B STi on Hong Kong's Cotton Tree Drive).
+locked; the car screen opens for them (Subaru 22B STi on Hong Kong's Cotton Tree Drive). In the M3 CSL's race the
+game opens DContentCar13.ini/.pak_hrd from the pack and M3CSL.xwb / M3CSL_PCM.dat through the D:\data\audio links.
 New test switch PGR2_CAR=N (player 1's car, 0x39B318).
 Next: Harry to try the cars on Windows (WINDOWS.md): the showroom, engine sounds, the colours.
 
