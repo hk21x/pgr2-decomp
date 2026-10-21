@@ -29,6 +29,15 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - DLC: Paris turn 1 crash, the draw list's material buckets
+
+Harry: the magenta is gone (four error material draws left out, vertex shader B0101C91), then a crash at Paris turn 1:
+a write to guest 0 on the game's main thread in 0x11B210, called from the city's render (0x117C40). 0x11B210 sorts the
+city's draw list (8 byte entries from +0x7750, count +0x1EF24) into 106 material buckets whose write pointers are the
+table 0x457188-0x457330; an entry's bucket is the byte at +2 of its material. A title update material's bucket past
+the table read a null pointer from beyond it. With PGR2_DLC=1 such entries are now taken out of the list first
+(logged with their bucket number). Not reproduced headless (the pad car never reaches turn 1). Smoke OK.
+
 ### 2026-10-21 - DLC: Paris runs on Windows; PGR2's error material left out
 
 Harry: with the boats swapped Paris no longer crashes, but a big magenta triangle remains (race capture 214426). Draws

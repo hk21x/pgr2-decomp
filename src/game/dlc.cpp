@@ -165,3 +165,33 @@ X86_FUNC(sub_001572F0) {
              ec ? " FAILED" : "");
     }
 }
+
+// The city's draw list sorted into its 106 material buckets (0x11B210, ecx the city renderer: entries of 8 bytes from
+// +0x7750, their count at +0x1EF24, an entry's first dword a pointer to its material, whose byte at +2 is the bucket; the
+// buckets' write pointers are the table 0x457188, 106 dwords). The packs' title update materials have bucket numbers
+// past the table: the sort read a null pointer from beyond it and wrote through it (Harry, Paris turn 1). With
+// PGR2_DLC=1 such entries leave the list first (their objects are not drawn, as their error material draws are not).
+X86_EXTERN_FUNC(__imp__sub_0011B210);
+X86_FUNC(sub_0011B210) {
+    if (On()) {
+        constexpr uint32_t kBuckets = (0x457330 - 0x457188) / 4;
+        uint32_t list = ctx.ecx + 0x7750, count_at = ctx.ecx + 0x1EF24;
+        uint32_t n = kernel::G<uint16_t>(count_at), kept = 0;
+        for (uint32_t i = 0; i < n; i++) {
+            uint32_t e = list + i * 8, material = kernel::R32(e);
+            uint32_t bucket = material ? kernel::G<uint8_t>(material + 2) : kBuckets;
+            if (bucket >= kBuckets) {
+                static int said = 0;
+                if (said++ < 8) LOGR("pgr2: a draw list entry with material bucket %u (of %u) left out", bucket, kBuckets);
+                continue;
+            }
+            if (kept != i) {
+                kernel::W32(list + kept * 8, kernel::R32(e));
+                kernel::W32(list + kept * 8 + 4, kernel::R32(e + 4));
+            }
+            kept++;
+        }
+        if (kept != n) kernel::W16(count_at, uint16_t(kept));
+    }
+    __imp__sub_0011B210(ctx, base);
+}
