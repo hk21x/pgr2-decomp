@@ -137,7 +137,5 @@ Still to confirm:
 2. **Flicker**: kerbs, signs, anything left (the Edinburgh buildings and the under-car patch are fixed).
 3. **Keyboard and remapping**: drive a race on the keyboard; remap a key and a controller input, restart, check
    they were kept.
-4. **Display options**: each display mode and a resolution change while racing; aspect 4:3 and 16:9 (next start).
 5. **System link**: two PCs, or two copies with `--instance`.
-6. **race_60fps**: feel, replays and ghosts recorded at 60.
 7. **Sound**: music volume in the menus, the engine, anything missing (reverb and filters are not modelled).

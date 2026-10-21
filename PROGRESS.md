@@ -29,6 +29,11 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - display modes and race_60fps confirmed; wheel support next
+
+Harry: display modes and resolution changes mid-race work; races at 60 work, replays and ghosts included. Trees and the
+DLC setting to check tomorrow. Next: steering wheel support, the Logitech G920/G923 as the base, force feedback wanted.
+
 ### 2026-10-21 - trees: point sprites
 
 Harry: every tree is bare (the DLC aside): Sydney's terrace street has leafy trees on the Xbox, none here. The foliage is
