@@ -4,7 +4,7 @@ Everything below runs on your PC; nothing here touches the Linux VM. FINDINGS.md
 
 ## What you need
 
-- Windows 10 or 11, 64 bit, a GPU with Direct3D 12.
+- Windows 10 or 11, 64 bit, a GPU with Direct3D 12 or 11.
 - Visual Studio 2022 Community with **Desktop development with C++**. `build.bat` offers to add the two extra
   components it needs (**C++ Clang tools for Windows**, **C++ CMake tools for Windows**) through the Visual Studio
   Installer; say Y, or add them by hand under Modify, Individual components.
@@ -47,7 +47,7 @@ Settings** (it replaces Screen Center; closing the window returns to General Opt
 A selects, B goes back). Tabs:
 - Display: monitor (with more than one), display mode, resolution, vsync, aspect ratio (Fill the screen: ultrawide).
 - Graphics: render scale, anisotropic filtering, frame rate cap, antialiasing (FXAA, MSAA 2x/4x/8x), frames-a-second
-  counter.
+  counter, renderer (Direct3D 12 or 11, next start).
 - Game: skip intro movies, hide the race HUD, race camera field of view (%), races at 60 (experimental).
 - General: pause when the window is not in front.
 - Controls: keys and controller remapping.
@@ -116,7 +116,7 @@ Please note for each: works / wrong (how) / not reached, and send `logs\pgr2.log
 for a flicker, a frame log (F4 with `XBE_FRAMELOG=60`) at the spot.
 
 Confirmed on Windows so far: boot, movies, menus, races, saves, sound, reflections, the player's car body, the car
-shadow, fences and signs, car selection, the F1 window.
+shadow, fences and signs, car selection, the F1 window, the Direct3D 11 renderer (with MSAA).
 
 Still to confirm:
 1. **Street lights at night**: glows hidden behind buildings, still visible where the lamp is in view.
@@ -137,7 +137,3 @@ Still to confirm:
 5. **System link**: two PCs, or two copies with `--instance`.
 6. **race_60fps**: feel, replays and ghosts recorded at 60.
 7. **Sound**: music volume in the menus, the engine, anything missing (reverb and filters are not modelled).
-8. **Direct3D 11**: `renderer = 'd3d11'` in `pgr2.toml` (next start; the log says `d3d11: drawing renderer`).
-   Confirmed: menus, races, night lights, car selection, shadow, mini map, render scale, ultrawide. To try: MSAA
-   2x/4x/8x (the log says `d3d11: MSAA 4x`), and a render scale change while it is on. Not under D3D11: F3 captures.
-   `renderer = 'd3d12'` goes back.

@@ -21,13 +21,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
-- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 2 confirmed on Windows (2026-10-21: street lights,
-  car selection, shadow, mini map, ultrawide HUD, render scale all match D3D12; Hong Kong turn 3 fine; D3D12 unchanged
-  after the d3d_common move). Step 3: MSAA built (twins as D3D12), Windows to confirm; F3 captures not under
-  D3D11 Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
+- Direct3D 11 renderer: done and confirmed on Windows (drawing, MSAA; F1 > Graphics > Renderer, next start). Not
+  under D3D11: F3 captures, the 8 bit target swizzle (logged if PGR2 needs it)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Direct3D 11 complete; Renderer in the settings window
+
+Harry: MSAA 2x/4x/8x under D3D11 works, with render scale changes too. The renderer is now a choice in F1 > Graphics
+(Direct3D 12 or 11, next start) and in the README; WINDOWS.md lists it as confirmed. A PC whose GPU cannot start
+Direct3D 12 could not reach F1 to switch: when the chosen renderer's Init fails, d3d8.cpp now drops it and starts
+Direct3D 11 (`CreateFallbackBackend`; the log says so). Smoke OK.
 
 ### 2026-10-21 - Direct3D 11 step 3: MSAA
 

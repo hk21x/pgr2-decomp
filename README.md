@@ -5,7 +5,7 @@
 An unofficial native PC port of the original Xbox version of Project Gotham Racing 2, with extended graphics options
 and other enhancements. The game's own x86 code is statically recompiled into a Windows executable with the
 [Xbox XBE Recomp](https://github.com/TGP482/XboxXBE-Recomp) tool; the Xbox's graphics, sound and system libraries are
-reimplemented for Windows (Direct3D 12, XAudio2, SDL). It is not an emulator.
+reimplemented for Windows (Direct3D 12 or 11, XAudio2, SDL). It is not an emulator.
 
 > [!NOTE]
 > This project does not include any game assets. You must provide the files from your own legally acquired copy of
@@ -28,7 +28,7 @@ example) has not been checked and the game asks before starting it.
 ## Getting Started
 
 ### Requirements
-- Windows 10 or 11, 64 bit, and a GPU with Direct3D 12.
+- Windows 10 or 11, 64 bit, and a GPU with Direct3D 12 or 11.
 - [Git](https://git-scm.com/download/win).
 - Visual Studio 2022 (Community is fine) with **Desktop development with C++**. `build.bat` offers to add
   **C++ Clang tools for Windows** and **C++ CMake tools for Windows** if they are missing.
@@ -101,6 +101,8 @@ mapped to any controller input in Controls.
 
 ### Graphics
 - **Render Scale** - Renders at a percentage of the screen, from 25% to 200%.
+- **Renderer** - Direct3D 12 (default) or Direct3D 11, at the next start; 11 for GPUs or drivers where 12 runs badly.
+  Without Direct3D 12 the game starts on 11 by itself.
 - **Anisotropic Filtering** - Up to 16x.
 - **Antialiasing** - MSAA 2x, 4x or 8x on the 3D scene, or FXAA on the finished frame; render scale above 100% supersamples.
 - **Field of View** - Widens or narrows the race cameras, 50% to 200% of the console's.
