@@ -39,12 +39,37 @@ void CarShadowNearer(const gpu::State& s, gpu::DrawAdjust& adjust) {
     }
 }
 
+// PGR2's error material: an object whose material the engine cannot set up is drawn with a pixel shader and its
+// combiner constant 0 magenta (ARGB 0x00FF00FF). The DLC city packs' meshes in the title update's layout come out that
+// way on the disc build, with garbage vertices too: huge magenta triangles over the sky and the HUD (Harry's captures,
+// 2026-10-21: draws with pixel shader and c0 = 1 0 1 0, the later fixed function draws only inherit the constant)
+constexpr uint32_t kErrorMagenta = 0x00FF00FF;
+bool g_skip_error_material = false;
+
+void Filter(const gpu::State& s, gpu::DrawAdjust& adjust) {
+    if (g_skip_error_material && s.ps && s.simple[gpu::kMPsConstant0 >> 2] == kErrorMagenta) {
+        static std::atomic<int> said{0};
+        if (said++ < 4) LOGR("pgr2: a draw with PGR2's error material (magenta) left out, vertex shader %08X", s.vs_handle);
+        adjust.skip = true;
+        return;
+    }
+    static const bool nearer = [] {
+        const char* e = std::getenv("PGR2_SHADOW_NEARER");
+        return e && *e == '1';
+    }();
+    if (nearer) CarShadowNearer(s, adjust);
+}
+
 }  // namespace
 
 // called from the game's init (src/common/game_info.cpp): a static initializer here never ran in the Windows exe
 void InstallDrawFilter() {
-    const char* e = std::getenv("PGR2_SHADOW_NEARER");
-    if (!e || *e != '1') return;  // the game's draws as they come
-    gpu::g_draw_filter = CarShadowNearer;
-    LOGR("pgr2: PGR2_SHADOW_NEARER=1, draw filter installed (car shadow pass nearer)");
+    const char* nearer = std::getenv("PGR2_SHADOW_NEARER");
+    const char* dlc = std::getenv("PGR2_DLC");
+    bool shadow = nearer && *nearer == '1';
+    g_skip_error_material = dlc && *dlc == '1';
+    if (!shadow && !g_skip_error_material) return;  // the game's draws as they come
+    gpu::g_draw_filter = Filter;
+    if (shadow) LOGR("pgr2: PGR2_SHADOW_NEARER=1, draw filter installed (car shadow pass nearer)");
+    if (g_skip_error_material) LOGR("pgr2: PGR2_DLC=1, draws with PGR2's error material are left out");
 }

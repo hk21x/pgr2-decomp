@@ -29,6 +29,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - DLC: Paris runs on Windows; PGR2's error material left out
+
+Harry: with the boats swapped Paris no longer crashes, but a big magenta triangle remains (race capture 214426). Draws
+3655 and 3656 (vertex shader B0101B41, pixel shader B01020A0, texture 81B57000, as 3781-3784 in the flyover capture)
+have pixel constant c0 = 0x00FF00FF: PGR2's error material, which the engine uses for an object it cannot set up (here
+more title update meshes inside the city paks); the following fixed function draws only inherit the constant. With
+PGR2_DLC=1 draw_filter.cpp leaves out a draw that has a pixel shader and c0 exactly 0x00FF00FF (logged, first four).
+Not exercised headless (the pad race never draws one; a Hong Kong race draws none). Windows to confirm.
+The packs that vanished from the harness disk twice: scripts/smoke.sh (and any run without KEEP_HDD) starts from an
+empty disk; the game deletes nothing (deletions are logged now and none was).
+
 ### 2026-10-21 - DLC: the magenta sky and the Windows crash were the packs' boats
 
 Harry's D3D12 capture of the Paris flyover (16:9): the sky draw (2847, vs B0101BE1, its 1024x512 DXT1 panorama) is
