@@ -21,12 +21,19 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
-- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 2 built (drawing: targets, textures, shaders,
-  state, constants, W-buffer, clears, copies, read-backs, visibility tests, gamma, render scale, ultrawide); Windows to
-  confirm. Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
+- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 2 draws on Windows (2026-10-21; detailed checks
+  and the speed comparison with D3D12 to come). Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Direct3D 11 draws on Windows
+
+Harry's first step 2 run was black: build.bat never updated the SDK submodule, so `git pull` built the step 1
+renderer. build.bat now runs `git submodule update --init sdk`, and the D3D11 renderer logs `d3d11: drawing renderer`.
+After updating, Harry: "D3D11 working". Next: his checks (night lights, car selection, mini map, render scale,
+ultrawide), D3D12 still the same after the d3d_common move, and the speed at Hong Kong turn 3 on both; then step 3
+(MSAA, captures).
 
 ### 2026-10-21 - Direct3D 11 renderer, step 2: drawing
 
