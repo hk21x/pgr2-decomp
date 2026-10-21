@@ -62,4 +62,7 @@ const app::GameInfo app::kGame = {
     .pad = pgr2::SettingsEntryPad,        // changes a polled pad: B back from PC Settings
     .rumble = nullptr,                    // changes a rumble before it is set
     .achievements = pgr2::AchievementSet(),  // conditions on guest memory, checked each frame
+    // the North American release (region NA+Japan, version 5): its default.xbe differs from the PAL one (version 2)
+    // only in the signature and certificate, every section byte for byte the same
+    .same_code = {"ec6e902fc167de349f1dc1838a7441dfff932c62"},
 };

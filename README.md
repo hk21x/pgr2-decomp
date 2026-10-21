@@ -13,10 +13,17 @@ reimplemented for Windows (Direct3D 12, XAudio2, SDL). It is not an emulator.
 
 ## Supported Version
 
-The European (PAL) Xbox release of Project Gotham Racing 2: `default.xbe` with SHA-1
-`676895b86f01938804c5f1cdcad8b44044295cb4` (title id 4D53004B). The executable is recompiled from that exact file
-and checks it at start; another release (US or Japanese) has different code and needs its own configuration, which
-does not exist yet. The log (`logs\pgr2.log`) names the SHA-1 of the `default.xbe` it found.
+The European (PAL) and North American (NTSC) Xbox releases of Project Gotham Racing 2 (title id 4D53004B):
+
+| Release | `default.xbe` SHA-1 |
+| --- | --- |
+| Europe (PAL), version 2 | `676895b86f01938804c5f1cdcad8b44044295cb4` |
+| North America (NTSC), version 5 | `ec6e902fc167de349f1dc1838a7441dfff932c62` |
+
+The executable is recompiled from the PAL file. The North American `default.xbe` differs from it only in its signature
+and certificate (region, version, signing keys); every byte of code and data is the same, so the same executable runs
+it. The log (`logs\pgr2.log`) names the SHA-1 of the `default.xbe` it found. Any other release (the Japanese one, for
+example) has not been checked and the game asks before starting it.
 
 ## Getting Started
 
@@ -26,7 +33,7 @@ does not exist yet. The log (`logs\pgr2.log`) names the SHA-1 of the `default.xb
 - Visual Studio 2022 (Community is fine) with **Desktop development with C++**. `build.bat` offers to add
   **C++ Clang tools for Windows** and **C++ CMake tools for Windows** if they are missing.
 - About 15 GB free for the build.
-- Your PAL disc's files: `default.xbe` and its folders (`Cache`, `CarDynamics`, `data`, `Frontend`, `Game`, `media`,
+- Your disc's files (PAL or NTSC): `default.xbe` and its folders (`Cache`, `CarDynamics`, `data`, `Frontend`, `Game`, `media`,
   ...), or an `.iso` image of the disc.
 
 ### 1. Clone the repository, with its SDK

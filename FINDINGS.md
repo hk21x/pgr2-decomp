@@ -7,6 +7,11 @@ Each item is marked:
 
 ## The image
 
+- **[PGR2]** Releases: the North American `default.xbe` (region NA+Japan, version 5, SHA-1 ec6e902f...) differs from
+  the PAL one (region rest of world, version 2, SHA-1 676895b8...) in 531 bytes, all in the signature (0x4-0x103)
+  and the certificate (time stamp, region, ratings, version, signing keys). Every section is byte for byte the same,
+  so every address in this project holds for both; the NTSC disc runs the smoke test unchanged. The signing keys
+  differ, so a save signed by one release may not be accepted by the other.
 - **[PGR2]** XDK 1.0.5659 for every library (XAPILIB, D3D8, D3DX8, XGRAPHC, DSOUND, XBOXKRNL, XMV, XONLINES, XVOICE,
   LIBCMT, LIBCPMT). XNet is linked inside XONLINES. The movies are XMV (42 files); there is no Bink.
 - **[PGR2]** Push buffers: there is no CreatePushBuffer or RunPushBuffer, and the XPR bundles hold only textures.

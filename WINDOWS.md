@@ -10,7 +10,7 @@ Everything below runs on your PC; nothing here touches the Linux VM. FINDINGS.md
   Installer; say Y, or add them by hand under Modify, Individual components.
 - Git for Windows: https://git-scm.com/download/win
 - 7-Zip on the PATH, only for `release.bat`.
-- Your PGR2 disc's files: `default.xbe` with the folders beside it (Cache, CarDynamics, data, Frontend, Game,
+- Your PGR2 disc's files (PAL or NTSC, both run from the same build): `default.xbe` with the folders beside it (Cache, CarDynamics, data, Frontend, Game,
   media, ...), exactly as they are in the VM's `assets` folder. An .iso of the disc also works.
 - About 15 GB free: the generated C++ alone is around 100 MB, the object files several GB.
 

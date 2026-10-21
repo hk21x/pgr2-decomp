@@ -20,11 +20,27 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
+- Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
 - Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 1 of 3 built (device, swap chain, F1 window; no 3D
   drawn yet); Windows to confirm. Steps 2 (drawing) and 3 (read-backs, MSAA, ultrawide) to do
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - North American release: same code; Windows build fix for D3D11
+
+Harry's NTSC disc (PGR2_USA.iso, a whole disc dump: game partition at 0x18300000). A full extract-xiso filled /tmp
+("write error: Success"), so only default.xbe was read out (to assets/us/). It is the PAL file's size and differs in
+531 bytes, all in the signature and certificate (region 3 vs 4, version 5 vs 2, keys, time stamp): no code or data
+byte differs, so no per-release address table is needed. `GameInfo::same_code` lists its SHA-1, which skips the
+"different release" question; the harness now boots from a disc image (`GAME=path.iso scripts/harness.sh`), and
+`GAME=/home/harry/PGR2_USA.iso scripts/smoke.sh` printed SMOKE OK (menu, Instant Action, race), as did the PAL smoke.
+Open: saves are signed with the certificate's key, which differs, so a PAL save may not load in NTSC and vice versa.
+
+Harry's Windows build of D3D11 step 1 failed: d3d11.cpp included windows.h without NOMINMAX and the Windows SDK's
+min/max macros broke x86_ops.h. wincheck missed it (it defined NOMINMAX itself, and mingw's headers leave min/max
+alone in C++); it now defines only what the real build does and fails any file that includes windows.h without
+NOMINMAX before it (memory.cpp and threads.cpp got it too). Fixed, with the overlay's `100%` format warning.
 
 ### 2026-10-21 - Direct3D 11 renderer, step 1: plumbing
 
