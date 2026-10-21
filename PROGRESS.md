@@ -21,11 +21,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
-- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 2 draws on Windows (2026-10-21; detailed checks
-  and the speed comparison with D3D12 to come). Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
+- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 2 confirmed on Windows (2026-10-21: street lights,
+  car selection, shadow, mini map, ultrawide HUD, render scale all match D3D12; Hong Kong turn 3 fine; D3D12 unchanged
+  after the d3d_common move). Step 3: MSAA Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Direct3D 11 step 2 confirmed
+
+Harry: every check matches D3D12 (night street lights, car selection, car shadow, mini map, ultrawide HUD bars,
+render scale mid-race), the Hong Kong turn 3 spot is fine on D3D11, and D3D12 works as before after the d3d_common
+move. Next: step 3, MSAA under D3D11.
 
 ### 2026-10-21 - Direct3D 11 draws on Windows
 
