@@ -137,3 +137,6 @@ Still to confirm:
 5. **System link**: two PCs, or two copies with `--instance`.
 6. **race_60fps**: feel, replays and ghosts recorded at 60.
 7. **Sound**: music volume in the menus, the engine, anything missing (reverb and filters are not modelled).
+8. **Direct3D 11 (step 1 of 3)**: set `renderer = 'd3d11'` in `pgr2.toml` and start. Expected: the log says
+   `D3D11 adapter: ...`, the screen is black (nothing 3D is drawn yet) but the frames counter and F1 work, the
+   game's music plays and pressing through the menus blind does not crash. Set `renderer = 'd3d12'` to go back.

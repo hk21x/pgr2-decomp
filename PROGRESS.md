@@ -20,9 +20,25 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
+- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 1 of 3 built (device, swap chain, F1 window; no 3D
+  drawn yet); Windows to confirm. Steps 2 (drawing) and 3 (read-backs, MSAA, ultrawide) to do
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Direct3D 11 renderer, step 1: plumbing
+
+Harry asked for DX11. Plan in three steps: (1) the setting, the device, the swap chain, presenting and the F1 window;
+(2) drawing: targets, textures, the generated shaders, input layouts, constants, blend/depth/stencil, render scale,
+W-buffer; (3) read-backs, copies, cube reflections, visibility tests, gamma, ultrawide, MSAA. Step 1 done:
+`renderer = "d3d11"` in pgr2.toml (settings file only until it draws; applies at the next start) makes
+`CreateBackend` return `sdk/runtime/gpu/d3d11.cpp`: a D3D11 device on the high performance adapter (11_1 or 11_0),
+a flip-model swap chain with tearing when vsync is off, resizing, and ImGui's DX11 backend for the counter and the
+settings window. Draws and clears are dropped; copies run on guest memory and visibility tests answer at once with no
+pixels, as the headless renderer does, so the game runs but the screen is black apart from the overlay. The log says
+`D3D11 adapter: ...`. Syntax-checked against the Windows headers (wincheck), smoke OK (the headless path is
+unchanged). Next: Harry checks it starts, F1 works and a race runs blind; then step 2, sharing the renderer-independent
+parts of d3d12.cpp (constants, shader classes, HUD squeeze, stretch) rather than copying them.
 
 ### 2026-10-20 - repository public
 
