@@ -82,6 +82,9 @@ Each item is marked:
 
 ## Rendering: PGR2's own techniques
 
+- **Trees** are point sprites: a vertex program sets each point's size (oPts, console pixels, 2 to 64) and the sprite
+  supplies the texture coordinates; drawn as single pixels until 2026-10-21, every tree looked bare.
+
 - **Car shadow.** The car's 1024x1024 D16 shadow map is projected onto a ground mesh built each frame
   (vs B0101931) with a polygon offset and no depth writes. With a Z buffer it failed the road's depth test by up to
   4096 units and flickered; `src/game/draw_filter.cpp` drew it 4096 units nearer. Since W-buffering that nudge is a

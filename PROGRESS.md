@@ -29,6 +29,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - trees: point sprites
+
+Harry: every tree is bare (the DLC aside): Sydney's terrace street has leafy trees on the Xbox, none here. The foliage is
+point sprites: headless, every point list draw had D3DRS_POINTSPRITEENABLE 1, a vertex program writing oPts
+(438.7 / w + 8, console pixels), size min 2, max 64, a texture on stage 0 and no texture coordinates from the program;
+both renderers drew each point as one console pixel. sdk: the vertex shaders pass oPts on (TEXCOORD7; 0 under the
+fixed function, which takes D3DRS_POINTSIZE), DrawConstants::pts carries sprite on, min, max and the render state's
+size, and PointHlsl makes a sprite a square of that size, every stage's coordinates 0 to 1 across it. The CPU renderer
+does the same (two triangles a point, never culled). Generated HLSL checked with DXC (-HV 2018) for the geometry, fixed
+function, program and pixel shaders. Headless Sydney route 119 (PGR2_ROUTE): leafy trees by the terraces. Smoke OK.
+Windows to confirm (D3D12 and D3D11).
+
 ### 2026-10-21 - DLC cities work on Windows; a setting
 
 Harry: Paris and Long Beach both race, the left out objects are hardly noticeable. The DLC switch is now a game option
