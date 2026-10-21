@@ -46,8 +46,10 @@ choices kept). The other tables fit (classes 16 of 20, cars 118 of 200).
 Evidence (headless, KEEP_HDD, PGR2_SKIP_INTRO=1): "car pack T:\$C\4d53004b0000FF01 loaded"; memory: 118 cars, 600
 colours; Single Player shows "Car Challenges 0 / 118"; PGR2_CAR=102 (M3 CSL), 105 (356A), 111 (Atom 2), 117 (SR3)
 each race Florence with the right model, no faults. The Paris boats are now converted too, not Stockholm's.
+Time Attack > Car Challenge lists the classes "Paris Cars" and "Long Beach Cars" above Ultimate, 8 cars each, none
+locked; the car screen opens for them (Subaru 22B STi on Hong Kong's Cotton Tree Drive).
 New test switch PGR2_CAR=N (player 1's car, 0x39B318).
-Next: Harry to try the cars on Windows (WINDOWS.md); the car class menus and the showroom not looked at headless.
+Next: Harry to try the cars on Windows (WINDOWS.md): the showroom, engine sounds, the colours.
 
 ### 2026-10-21 - steering wheel support with force feedback
 
