@@ -1,6 +1,7 @@
 #include <cstdlib>
 
 #include "app/app.h"
+#include "core/input.h"
 
 void InstallDrawFilter();  // src/game/draw_filter.cpp
 
@@ -9,6 +10,7 @@ extern bool skip_intro, hide_hud, dlc;
 extern uint32_t fov_percent, draw_distance_percent;
 void SettingsEntryPad(int port, input::Pad& pad);  // src/game/settings_entry.cpp
 std::vector<achievements::Def> AchievementSet();    // src/game/achievement_set.cpp
+void WheelFeel(input::WheelFeel& feel);             // src/game/wheel_feel.cpp
 }
 
 namespace {
@@ -69,4 +71,5 @@ const app::GameInfo app::kGame = {
     // the North American release (region NA+Japan, version 5): its default.xbe differs from the PAL one (version 2)
     // only in the signature and certificate, every section byte for byte the same
     .same_code = {"ec6e902fc167de349f1dc1838a7441dfff932c62"},
+    .wheel = pgr2::WheelFeel,  // a steering wheel's force feedback follows the player's car
 };

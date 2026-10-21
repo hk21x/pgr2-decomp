@@ -103,6 +103,23 @@ Useful while testing:
 
 `release.bat` zips `PGR2.exe` with an empty `assets` folder; not needed yet.
 
+## Steering wheel (new, 2026-10-21)
+
+A DirectInput steering wheel plays as controller 1 (with the keyboard and any pad), with force feedback. Built for the
+Logitech G920/G923 (G29 and others should work through the settings). Logitech wheels need G HUB installed.
+- F1 > **Wheel**: the wheel's name and force feedback effects, live steering (degrees), pedals and raw axes, buttons.
+  - Steering: axis (Detect: click, turn the wheel right), wheel rotation (900 as in G HUB), steering lock (degrees of
+    turn for the game's full lock; 360 by default), dead zone.
+  - Pedals: throttle, brake (and clutch, unused by the game): Detect, let the pedal rest, click, press it fully.
+  - Force feedback: strength, road and impacts; Push left / Push right test it.
+  - Buttons: A B X Y, paddles as RB/LB (Black/White), Menu/View as Start/Back, the hat as the d-pad; each can be set by
+    clicking it and pressing a wheel button. Back + Start (View + Menu) opens the settings window.
+- Forces: centring that firms up with speed while racing, a light damper, and the game's rumble as a shake (kerbs,
+  gravel, impacts). G HUB's own centring spring is turned off while the game has the wheel.
+- The log says `wheel: <name> (USB vid:pid), N axes, N buttons, N hats, force feedback on: spring, damper, ...`.
+To check: the wheel is found, steering and pedals respond (the Wheel tab's bars), the defaults' axes and buttons are
+right for the G920/G923, the forces feel right and stop in menus, nothing doubles up with a pad plugged in too.
+
 ## Xbox Live DLC cities (experimental)
 
 Paris and Long Beach from the PGR2 booster packs, on the disc's game. Confirmed on Windows (2026-10-21): both race,

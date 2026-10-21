@@ -24,10 +24,26 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   under D3D11: F3 captures, the 8 bit target swizzle (logged if PGR2 needs it)
 - DLC cities (experimental, F1 > Game, `dlc`): Paris and Long Beach race on Windows (2026-10-21); a few objects left
   out, day sets at night, Stockholm's boats; the 16 DLC cars need the title update (not ported)
-- Next after DLC: steering wheel support (Harry, 2026-10-21)
+- Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - steering wheel support with force feedback
+
+Base: Logitech G920/G923, force feedback wanted. SDL could not do it as set up: its DirectInput force feedback needs
+its DirectInput joysticks on, which (XInput being off) take the Xbox pads from Windows.Gaming.Input and merge their
+triggers; its HIDAPI Logitech driver covers G29/G27/G25 but not the Xbox wheels. So sdk core/wheel.cpp opens the first
+DirectInput driving device (or one named wheel/racing) itself: exclusive in front, axes -32768 to 32767, the wheel's
+autocentre off; spring, damper, constant force and sine effects on X. input.cpp merges it into controller 1 (its own
+button map; Back + Start works), leaves SDL wheels alone, and feeds it the game's rumble; GameInfo::wheel gives the
+feel (src/game/wheel_feel.cpp: racing from 0x38384C, 0x383814 and the lap, speed from 0x298D50 + car x 0x6990).
+Forces: spring 0.25 in menus, 0.15 + 0.65 x speed/40 m/s racing; damper 0.10-0.22; rumble as a sine (60 ms low motor,
+25 ms high), x road; all x strength. Settings (pgr2.toml, F1 > Wheel): steering axis and invert, rotation 900,
+lock 360, dead zone, pedals [axis, rest, full] with Detect, ffb_strength 70, ffb_road 50, wheel_buttons (G920 order:
+A B X Y RB LB Menu View RSB LSB). Defaults: steering X, throttle Y, brake Rz, clutch slider 1, pedals released at the
+top. wincheck OK, smoke OK; no wheel here, so untested: Harry to try (WINDOWS.md). Next: self-aligning torque from the
+car's slip once its physics values are found.
 
 ### 2026-10-21 - display modes and race_60fps confirmed; wheel support next
 
