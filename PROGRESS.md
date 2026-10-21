@@ -21,11 +21,29 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
 - Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
-- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 1 of 3 confirmed on Windows (device at feature
-  level 11_1, swap chain, F1 window; no 3D drawn yet). Steps 2 (drawing) and 3 (read-backs, MSAA, ultrawide) to do
+- Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 2 built (drawing: targets, textures, shaders,
+  state, constants, W-buffer, clears, copies, read-backs, visibility tests, gamma, render scale, ultrawide); Windows to
+  confirm. Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Direct3D 11 renderer, step 2: drawing
+
+First the renderer-independent half of d3d12.cpp moved to `sdk/runtime/gpu/d3d_common.{h,cpp}` (a move: state
+translation, PsoKey and BuildPipelineKey, shader classification and keys, every Fill*Constants, StageSampler, the
+blit/depth HLSL, guest rect lists, XStretch, HudSqueeze; the D3D12 members that read backend state now pass it in and
+stay as one-line wrappers). Every line removed from d3d12.cpp was checked to reappear unchanged apart from those
+signatures. Then d3d11.cpp got the console path on top of it: targets (colour BGRA, depth R24G8 with DSV and SRV,
+smaller depth targets, CPU write reloads), guest textures (2D, cube, volume, P8 palettes, BC padding, cube faces from
+targets), the generated shaders with input layouts, blend/depth/rasterizer state per PsoKey, the two constant buffers
+updated only on change, dynamic vertex and index rings, viewport and scissor, points through the geometry shader,
+W-buffer depth, clears (whole: Clear*View; rects: a full screen pass per rect), CopyRects (region copy or drawn),
+depth copies, Sync read-backs, NOOVERWRITE locks (staging copies collected without waiting, delivered from the CPU),
+occlusion queries for visibility tests, gamma, FXAA, render scale and aspect changes, ultrawide stretch and HUD squeeze.
+Not yet: MSAA (logged), F3 captures, the 8 bit target swizzle (logged when PGR2 samples one), the perf report.
+wincheck clean, d3d11.cpp and d3d_common.cpp clean with -Wall -Wextra, smoke OK. Nothing here has drawn a pixel: Harry
+tests on Windows (menus, a race, render scale, ultrawide), then compares speed at Hong Kong turn 3 with D3D12.
 
 ### 2026-10-21 - Direct3D 11 step 1 confirmed on Windows
 
