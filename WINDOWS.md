@@ -137,7 +137,7 @@ Still to confirm:
 5. **System link**: two PCs, or two copies with `--instance`.
 6. **race_60fps**: feel, replays and ghosts recorded at 60.
 7. **Sound**: music volume in the menus, the engine, anything missing (reverb and filters are not modelled).
-8. **Direct3D 11 (step 2 of 3, drawing)**: set `renderer = 'd3d11'` in `pgr2.toml` and start. The log says
-   `D3D11 adapter: ...`. Check the menus, a race (day and night), car selection, the mini map, render scale changes
-   and ultrawide; compare the frame rate at Hong Kong turn 3 with D3D12 (`show_fps = true`). Not in it yet: MSAA,
-   F3 captures. Set `renderer = 'd3d12'` to go back.
+8. **Direct3D 11**: `renderer = 'd3d11'` in `pgr2.toml` (next start; the log says `d3d11: drawing renderer`).
+   Confirmed: menus, races, night lights, car selection, shadow, mini map, render scale, ultrawide. To try: MSAA
+   2x/4x/8x (the log says `d3d11: MSAA 4x`), and a render scale change while it is on. Not under D3D11: F3 captures.
+   `renderer = 'd3d12'` goes back.

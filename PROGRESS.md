@@ -23,10 +23,21 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
 - Direct3D 11 renderer (`renderer = "d3d11"`, next start): step 2 confirmed on Windows (2026-10-21: street lights,
   car selection, shadow, mini map, ultrawide HUD, render scale all match D3D12; Hong Kong turn 3 fine; D3D12 unchanged
-  after the d3d_common move). Step 3: MSAA Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
+  after the d3d_common move). Step 3: MSAA built (twins as D3D12), Windows to confirm; F3 captures not under
+  D3D11 Not yet: MSAA, F3 captures, 8 bit target swizzle, perf report
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - Direct3D 11 step 3: MSAA
+
+MSAA under D3D11 as under D3D12: an eligible colour target (at least 320x240) and the depth drawn with it get
+multisampled twins that draws go to. Settle resolves a dirty twin before anything reads res (colour:
+ResolveSubresource; depth: a pass writing each pixel's first sample from a Texture2DMS view), Refresh refills a stale
+twin from res (colour: blit; depth: the depth copy pass), Wrote marks the twin behind when res is written by an
+upload, a copy or a partial clear; whole clears clear both. Changing antialiasing settles and drops every twin; so does
+a render scale or shape change. Occlusion counts divide by the samples. wincheck and -Wall clean, smoke OK. Next:
+Harry tries MSAA 2x/4x/8x under D3D11, with a render scale change while it is on.
 
 ### 2026-10-21 - Direct3D 11 step 2 confirmed
 
