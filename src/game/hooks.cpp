@@ -274,10 +274,27 @@ X86_FUNC(sub_00116C20) {
 }
 
 // PGR2_NIGHT=1 (experiment): every race at night. The conditions are picked in 0x0F14E0 (it writes 0x383188 itself,
-// found with a watchpoint); night is set right after, before the race copies it and loads the city's night set
+// found with a watchpoint); night is set right after, before the race copies it and loads the city's night set.
+// PGR2_ROUTE=N (test): the race is on route N
 X86_EXTERN_FUNC(__imp__sub_000F14E0);
 X86_FUNC(sub_000F14E0) {
+    static const long route = [] {
+        const char* e = std::getenv("PGR2_ROUTE");
+        long r = e && *e ? std::strtol(e, nullptr, 0) : -1;
+        if (r >= 0) LOGR("pgr2: PGR2_ROUTE=%ld, every race on that route", r);
+        return r;
+    }();
+    // race setup (ecx the race object 0x383178) works from its event, [ecx+0x20] into the event table 0x33BEAC (0x68
+    // bytes each, the route at +0x10 as the frontend's 0x52262 sets it); the route 0x383180 and its city 0x38317C (the
+    // route table's first dword, 0x30DEA4 + route x 0x20) as 0x522AB sets them
+    if (route >= 0) {
+        uint32_t event = kernel::R32(ctx.ecx + 0x20);
+        kernel::W32(0x33BEAC + event * 0x68 + 0x10, uint32_t(route));
+        kernel::W32(0x383180, uint32_t(route));
+        kernel::W32(0x38317C, kernel::R32(0x30DEA4 + uint32_t(route) * 0x20));
+    }
     __imp__sub_000F14E0(ctx, base);
+    if (route >= 0) LOGR("pgr2: race setup on route %u, city %u", kernel::R32(0x383180), kernel::R32(0x38317C));
     static const bool night = [] {
         const char* e = std::getenv("PGR2_NIGHT");
         bool on = e && *e == '1';

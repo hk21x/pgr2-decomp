@@ -22,9 +22,34 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
 - Direct3D 11 renderer: done and confirmed on Windows (drawing, MSAA; F1 > Graphics > Renderer, next start). Not
   under D3D11: F3 captures, the 8 bit target swizzle (logged if PGR2 needs it)
+- DLC (experiment, PGR2_DLC=1): the Paris and Long Beach booster packs load on the disc build and race headless;
+  a rare crash streaming Paris (3 of ~12 runs); the 16 DLC cars need the title update (not ported). Windows to try
+- Next after DLC: steering wheel support (Harry, 2026-10-21)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - DLC: Paris and Long Beach race on the disc build (PGR2_DLC=1)
+
+With Harry's go-ahead to pass over the content signature checks, src/game/dlc.cpp (all behind PGR2_DLC=1):
+- XFindFirstContent (0x192134): the city pack listing (mask 2) also takes category 0x10, the booster packs'.
+- 0x191366 (XAPI: a content header's keyed signature) answers with the header's own, and PGR2's per-file check
+  0x156F00 passes: the packs are unsigned until a console's installer signs them.
+- After a city pack loads (0x1572F0): its plain .pak files (Paris's boat01/boat02, river boats the city loads as objects
+  from Z:\Cars, where the disc's are copied from D:\Cache\Objects at boot) are copied to Z:\Cars; its .ini and .xwb
+  files the disc has no file of that name for are linked into D:\data\audio (ParisRefs, ParisMono, Paris_dry...); its
+  stereo.ini (the city's ambience lines) is added to the disc's in T:\$PGR2\stereo.ini, linked over
+  D:\data\audio\stereo.ini (Audio::Manager::Setup stopped the game, 0x12C1DF, with no line for the city).
+- sdk: symbolic links match the longest prefix (a link to one file wins over its drive's); kernel::GameFileExists;
+  XBE_FILES_LOG=1 logs every open and miss; the harness logs a crash's address and backtrace (run.out).
+- PGR2_ROUTE=N (test, hooks.cpp): every race on route N, written into the event (+0x10) before race setup 0xF14E0,
+  with the route 0x383180 and its city 0x38317C. New routes: Paris 146-153 (city 17), Long Beach 154-162 (city 18).
+Headless (second boot with the packs on the disk): 19 cities and 163 routes; Paris raced (snap: its boulevards, the
+start gantry, the Paris radio stations and river ambience), the attract demo too; Long Beach raced twice, clean.
+Paris crashed 3 times in about 12 runs, about 30 s into the race, always the same place: the streaming thread's
+read completion (0x1362F0 -> 0x1004A0 -> 0x1003E0 -> zlib inflate 0x136E70 / 0x1D33C9) with a block source
+far past physical memory; not seen in 4 runs with a diagnostic logging the slots, so timing dependent. Not found yet.
+Not done: the cities in the game's menus (only reached here with PGR2_ROUTE), the DLC cars (title update).
 
 ### 2026-10-21 - DLC city packs on the disc build: why they are refused
 

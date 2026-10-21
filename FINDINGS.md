@@ -111,6 +111,18 @@ Each item is marked:
   (0x116C20). The log line `pgr2: area loads with time of day T, weather W` shows the choice. `PGR2_NIGHT=1`
   forces night (an experiment).
 
+## Xbox Live content
+
+- **[PGR2]** Content packs are listed from T:\$C\<offer id> by XAPI's XFindFirstContent (0x192134) with a category
+  mask: the disc build asks for 1 (car packs, 0x157180) and 2 (city packs, 0x1572F0: the pack's cities.ini and
+  Routes.ini); the Paris and Long Beach booster packs are category 0x10 (ContentMeta.xbx +0x30), made for the title
+  update (T:\$U, version 0x202, a different build). Each pack's header is checked against a keyed signature
+  (0x19144B / 0x191366) and each file's against the metadata's table (0x156F00); community copies are unsigned
+  until a console installs them. PGR2_DLC=1 lists them, passes the checks and puts the pack's object paks, audio
+  files and ambience lines where the disc build reads them (src/game/dlc.cpp).
+- **[PGR2]** A fatal error goes through 0x1388F0(message): it formats the cache partition and stops; look for its
+  caller (Audio::Manager::Setup when a city has no stereo.ini line).
+
 ## System link
 
 - **[console]** XNetGetConnectStatus must answer CONNECTED. The library's own version answers LOST when its network
