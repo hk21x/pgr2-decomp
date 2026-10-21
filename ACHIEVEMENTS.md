@@ -126,7 +126,7 @@ Points: 70.
 | Untouchable | Win a Kudos World Series race at Expert without touching a wall or a car | 25 |
 | Lap of Honour | Set a lap record in Time Attack on 10 different routes | 10 |
 
-Points: 70. The thresholds are guesses, to be tuned once real values can be read from memory during play.
+Points: 70. The Kudos thresholds are guesses, to be tuned against real races.
 
 ### Geometry Wars (4)
 | Title | Description | Points |
@@ -215,9 +215,32 @@ Found with the harness's `memdump` (guest memory against a saved Profile.Sav) an
   mph); 0x39B0D0 / 0x39B0D4 are the odometer. Compared by its bits (positive floats order as integers).
 - **Player racing**: 0x38384C is 0 and race type 0x383814 above 0 (the attract demo drives car 0 with 0x38384C set
   and type 0; the HUD checks the same byte).
-- To find: Time Attack challenges (92 circuit, 102 car), the race's own Kudos, tokens spent; the player index
-  (0x366800) that picks the car ownership bit, from a real save. A profile with progress (Harry's saves)
-  is the quickest way for the medals.
+- **The race object** (from 0x383178): challenge type 0x383178 (the type table 0x30CEEC, 0x40 bytes each: 1 Time
+  Attack, 4 Street Race, 7 One on One, 9 Timed Run, 11 Hot Lap, 16 Speed Camera, 17 Overtake, 21 Cone Challenge, ...),
+  route 0x383180, group 0x383190 (3 Kudos World Series), level 0x383194, event 0x383198 (also the medal record's
+  index), the win rule's target 0x38385C, difficulty 0x383868 (1 Novice to 5 Expert: the medal a success earns, the
+  results screen 0xE2F10 names it). Each event's type: int16 at 0x33BEB4 + event x 0x68; the Kudos World Series'
+  Overtakes are events 8, 20, 28, 45, 58, 64, 67, 91, 100, 105, 110, 114, 126, 130 and 138.
+- **The race's end**: 0xF2650 decides the result into the success byte 0x383A58 (+ car) and sets 0x383984 (results
+  done), which race setup 0xF14E0 clears. An Overtake is won by passing the target (0x39B340 >= 0x38385C), not by
+  position. In the Kudos World Series and Arcade (group kind 2, 0x34C2A8 + group x 0x4C) a success only raises the
+  medal (`if medal < difficulty`), which answers whether a record keeps the best medal.
+- **Kudos in the race**: int32 0x39D3DC + car x 0x2498, the banked Kudos the race HUD shows (+0x78 of the Kudos
+  object 0x39D364, read by 0xED0A0; 0xECC10 adds each banked combo; 0xEC900 zeroes it at race setup). Categories at
+  +0x3C..+0x70 of the object (7 overtakes, 5 the clean section bonus). The race's final total, with the bonuses, is
+  int32 0x3839A0 for car 0 (0xF2650, read by the results screen).
+- **Contact**: 0xF0C50, reached only from the collision response 0x2EDE0 through 0xF3170 when the impact passes
+  [0x291AA0] in a running race: it drops the combo, clears the byte 0x39D550 + car x 0x2498 (1 from race setup 0xF0520,
+  the race is still clean), adds to the section's contact float 0x39D54C (zeroed each section; a section ending at 0
+  earns the clean section bonus) and to the Kudos lost, 0x39D3E0.
+- **Time Attack records**: route r's record is 0x50 bytes from 0x3609B4 (r below 146, 0x30DE90): +4 car, +8 best lap
+  in ms (plus penalty seconds x 1000), +0xC a byte set once there is a record (0xA6830, from 0xEFD90 at a race's end
+  after a new best lap, 0x383ACC). 92 routes are circuit challenges, the game's own "n / 92" count (0x62F36). Car
+  Challenge records are dword 0x35BAB4 + car x 0x1C with the byte 0x35BAB8.
+- Found (2026-10-21) from the code and the type and route tables, checked live in headless races (type, group,
+  event, difficulty, the Kudos and contact values of the AI cars and the pad car); results, medals and records at a
+  race's end are read from the code (the pad car cannot finish a race).
+- To find: tokens spent; the player index (0x366800) that picks the car ownership bit, from a real save.
 
 ## In the port
 
@@ -225,10 +248,12 @@ Built (2026-10-20): `sdk/runtime/core/achievements.cpp` evaluates RetroAchieveme
 delta and prior, add source, sub source, add address, and/or next, reset and pause ifs, hit counts, alternative
 groups) once a frame, waits for a condition to be unmet once before it can unlock, keeps unlocks in
 `achievements.toml` beside the exe, shows a pop-up and lists the set in the settings window's Achievements tab.
-`src/game/achievement_set.cpp` holds the mapped part of the set: 59 achievements (Kudos World Series 5, classes 28,
-Arcade 7, Kudos ranks 7, Geometry Wars 4, garage 5, Ton Up, Flat Out, First Past the Post). Still to map: Style
-Points and Showboat (the race's Kudos), Traffic Control (Expert Overtake), Untouchable (contact), Lap of Honour (lap
-records). The draft's Speed Camera wording became any race, and Clean Sweep (Expert One on One) became First Past
+`src/game/achievement_set.cpp` holds the whole set, 64 achievements (Kudos World Series 5, classes 28, Arcade 7,
+Kudos ranks 7, Geometry Wars 4, garage 5, and the 8 single-event feats). Style Points and Showboat read the race's
+Kudos while racing; Traffic Control is a Platinum medal on any Overtake event (Expert, so existing saves count);
+Untouchable is the moment a Kudos World Series race at Expert is won with the clean byte still set; Lap of Honour adds
+the 92 circuit routes' record bytes. Checked headless by writing the values into a race (the harness `poke` file): each
+unlocked, Showboat stayed locked at 2,500 Kudos, and a plain race unlocks none. The draft's Speed Camera wording became any race, and Clean Sweep (Expert One on One) became First Past
 the Post (any win), so they need no event type. Checked headless by writing Steel into races 1-7 mid-race: Pocket Rocket unlocked, nothing
 else did.
 `PGR2_ACH_TEST=1` adds a test one that unlocks at a race's start (checked headless).

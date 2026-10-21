@@ -71,6 +71,56 @@ const int* AllCars() {
 #define PGR2_RACING "0xH38384c=0_0xX383814>0_"
 #define PGR2_SPEED "0xX298d50<h80000000_0xX298d50>="
 
+// Kudos earned in the race: what the race HUD shows, the banked Kudos int32 at 0x39D3DC + car x 0x2498 (+0x78 of the
+// Kudos object 0x39D364, read by 0xED0A0; 0xECC10 adds each banked combo, 0xEC900 zeroes it at race setup)
+#define PGR2_RACE_KUDOS "0xX39d3dc>="
+
+// The race object from 0x383178: challenge type 0x383178 (the type table 0x30CEEC: 4 Street Race, 17 Overtake ...),
+// group 0x383190 (3 Kudos World Series), difficulty 0x383868 (1 Novice to 5 Expert, the medal a success earns). At a
+// race's end 0xF2650 decides the result into the success byte 0x383A58 and sets 0x383984 (results done; race setup
+// 0xF14E0 clears it): this matches the moment a Kudos World Series race at Expert is won.
+#define PGR2_KWS_EXPERT_WON "0xX383190=3_0xX383868=5_0xH383a58=1_d0xH383984=0_0xH383984=1"
+// 0x39D550 + car x 0x2498: 1 from race setup (0xF0520) until the car's first contact with a wall or a car (0xF0C50,
+// from the collision response 0x2EDE0 through 0xF3170)
+#define PGR2_CLEAN "0xH39d550=1_"
+
+// The Kudos World Series' Overtake events (each event's type: int16 at 0x33BEB4 + event x 0x68); an Overtake is won by
+// passing the target number of cars (0x39B340 >= 0x38385C), its medal then raised to the difficulty
+constexpr int kOvertakes[15] = {8, 20, 28, 45, 58, 64, 67, 91, 100, 105, 110, 114, 126, 130, 138};
+
+// any of the events with at least that medal: one alternative group each, the core always true
+const char* AnyMedal(const int* events, int count, int medal) {
+    static std::deque<std::string> kept;
+    std::string c = "1=1";
+    for (int i = 0; i < count; i++) {
+        char b[32];
+        std::snprintf(b, sizeof b, "S0xX%x>=%d", 0x35DD88 + events[i] * 0x1C, medal);
+        c += b;
+    }
+    return kept.emplace_back(std::move(c)).c_str();
+}
+
+// Time Attack's circuit routes with a record: route r's record is 0x50 bytes from 0x3609B4 (+8 best lap in ms, +0xC a
+// byte set once there is one; written by 0xA6830 at a race's end after a new best lap, 0xEFD90). These 92 are the
+// circuit challenges (route info 0x30DEA4 + r x 0x20), the game's own "n / 92" count (0x62F36) adds the same bytes.
+constexpr int kCircuits[92] = {1,   2,   3,   4,   5,   6,   7,   11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  23,  24,
+                               25,  26,  27,  28,  29,  30,  31,  32,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,
+                               50,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  75,  76,  77,  78,  79,  80,  84,  85,
+                               86,  87,  88,  89,  90,  93,  94,  95,  96,  97,  98,  99,  100, 103, 104, 105, 106, 107, 108,
+                               109, 110, 111, 112, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126};
+
+// at least n routes with a record
+const char* RouteRecords(int n) {
+    static std::deque<std::string> kept;
+    std::string c;
+    for (int i = 0; i < 92; i++) {
+        char b[32];
+        std::snprintf(b, sizeof b, "%s0xH%x%s", i + 1 < 92 ? "A:" : "", 0x3609C0 + kCircuits[i] * 0x50, i + 1 < 92 ? "_" : "");
+        c += b;
+    }
+    return kept.emplace_back(c + ">=" + std::to_string(n)).c_str();
+}
+
 }  // namespace
 
 std::vector<achievements::Def> AchievementSet() {
@@ -127,6 +177,12 @@ std::vector<achievements::Def> AchievementSet() {
         {"speed175", "Flat Out", "Reach 175 mph in a race", 10, PGR2_RACING PGR2_SPEED "h429c6e39"},
         {"win", "First Past the Post", "Win a race", 5,
          PGR2_RACING "0xX39b33c=0_0x 39b334<h8000_0x 39b334>=0xX383830"},
+        {"kudos2000", "Style Points", "Earn 2,000 Kudos in a single race", 3, PGR2_RACING PGR2_RACE_KUDOS "2000"},
+        {"kudos10000", "Showboat", "Earn 10,000 Kudos in a single race", 10, PGR2_RACING PGR2_RACE_KUDOS "10000"},
+        {"overtake_expert", "Traffic Control", "Win an Expert Overtake event", 5, AnyMedal(kOvertakes, 15, 5)},
+        {"untouchable", "Untouchable", "Win a Kudos World Series race at Expert without touching a wall or a car", 25,
+         PGR2_CLEAN PGR2_KWS_EXPERT_WON},
+        {"lap_records", "Lap of Honour", "Set a lap record in Time Attack on 10 different routes", 10, RouteRecords(10)},
         // Geometry Wars in the garage (0x145990 draws its text): score 0x45A308, hi-score 0x45A314, bombs 0x45A304,
         // state 0x45A300 (1 game over)
         {"gw_play", "Insert Coin", "Score in Geometry Wars", 1, "0xX45a308>0"},

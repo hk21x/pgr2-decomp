@@ -14,7 +14,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   the 2026-10-20 options to confirm on Windows)
 - PC Settings entry in PGR2's menu (Options > General Options, replacing Screen Center): confirmed on Windows
 - Achievements: draft set in ACHIEVEMENTS.md (64, 780 points); runtime built (RA-syntax conditions, pop-up, tab,
-  achievements.toml); live: 59; five feats still to map (race Kudos, Expert Overtake, contact, lap records)
+  achievements.toml); all 64 live (2026-10-21); the pop-up to check on Windows (PGR2_ACH_TEST=1)
 - System link: works headless (scripts/linktest.sh); Windows to try
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
@@ -25,6 +25,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-21 - achievements: the last five mapped, all 64 live
+
+An agent traced them (Ghidra and headless races; ACHIEVEMENTS.md has the map): the race object from 0x383178 (type,
+group, difficulty 0x383868), the race's Kudos 0x39D3DC (what the HUD shows), the result at a race's end (success
+0x383A58, results done 0x383984, both from 0xF2650), the clean-race byte 0x39D550 (cleared by the contact handler
+0xF0C50), the Overtake events (type 17) and the 92 Time Attack circuit records (0x3609C0 + route x 0x50). Added Style
+Points, Showboat, Traffic Control, Untouchable, Lap of Honour. sdk harness: a `poke` file in the run folder writes
+guest memory at the next frame (gdb cannot attach here, ptrace_scope 1). Headless: writing 2,500 Kudos, a Platinum
+on Overtake event 8, ten route records, then an Expert Kudos World Series win with the clean byte, unlocked Style
+Points, Traffic Control, Lap of Honour and Untouchable; Showboat stayed locked; the smoke race unlocks nothing.
+wincheck OK, smoke OK. Not seen live: a real finish (the pad car cannot win), so Harry's play confirms them.
 
 ### 2026-10-21 - Windows: under-car flicker fixed, PC Settings entry confirmed; pop-up unseen
 
