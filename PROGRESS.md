@@ -26,6 +26,26 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - Xbox Live DLC: what Harry's packs are and what the disc game does with them
+
+Harry's DLC is a community installer (a CDX menu XBE, not needed) around `content/`: two packs for T:\$C
+(4d53004b00000001 Paris, 4d53004b00000002 Long Beach: city paks, Cities.Ini, Routes.Ini, CarKeys.Ini, ContentMeta.xbx)
+and a title update for T:\$U in PAL and NTSC builds (uPAL, uNTSC): default.xbe version 0x202 (PAL; NTSC 0x205),
+built 2004-05-21, 16 KB larger than the disc's version 2, with the 16 new cars (dcontentcar*.pak_*, .dat, .xwb), a
+new cars.ini, races.ini, classes.ini, manufacturers.ini, credits and downloader.xbe. Nothing is committed; the files
+stay in /home/harry/dlc.
+- The disc XBE has content pack support (T:\$C\%08X%08X, each pack's Content.txt, cars.ini, CarColours.ini,
+  Manufacturers.ini, Classes.ini, Routes.ini, cities.ini) and checks t:\$u\contentmeta.xbx at boot (on an Xbox a
+  title update there is launched in place of the disc's XBE). Only the update reads T:\$U (cars, races, credits) and
+  CarKeys.Ini.
+- Headless with both packs in hdd/E/TDATA/4d53004b/$C: the disc game opens each pack's ContentMeta.xbx three times
+  and reads nothing else from it (a failed signature check, or a pack that asks for the update).
+- The update XBE: XDK 5659 for every library, but its D3D section is 0x50 bytes larger (a patched D3D8); the scan finds
+  144 of 250 functions and 8 of 13 data (the disc: 191 and 13). Every game address moves.
+Options for Harry: (a) the disc build with the city packs (why they are refused, then Paris and Long Beach without the
+new cars); (b) the update recompiled as a second image, run as the Xbox runs it (the cars, the cities, the update's
+fixes), which means mapping its XDK functions and moving every game hook and the achievement map to its addresses.
+
 ### 2026-10-21 - achievement pop-up confirmed on Windows
 
 Harry: the pop-up shows (the test achievement at a race's start). So the earlier unseen pop-ups were unlocks already
