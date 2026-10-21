@@ -29,6 +29,22 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - DLC on Windows: Paris in the menus; night races; fatal errors logged
+
+Harry (Windows, PGR2_DLC=1 from PowerShell with $env:): Paris shows in Time Attack and Instant Action; the flyover
+shows Paris with the right two thirds of the sky magenta (3440x1440, aspect screen, D3D11, MSAA 8x, render 64%,
+draw distance 200%), then the game stops.
+- PGR2's fatal error 0x1388F0 is now logged with its message and caller (`pgr2: fatal error "..." from ...`); it
+  formats the cache partition and shows "There's a problem with the disc you're using" (seen headless).
+- A night race in Paris stopped the game: the packs hold the day set only (Paris.pak_day, .pvs_Day) and the area
+  loader (0x116D7B) asks for .pak_night: missing night and overcast sets are now linked to the day set (races run in
+  daylight). PGR2_ROUTE no longer touches the attract demo (+0x6D4), which picks its own city (forcing it loaded
+  Edinburgh's paks against a Paris route: "BizFile::SkipBytes SetFilePointer").
+- File deletions are logged (`files: ... deleted`): the packs vanished from TDATA once headless, cause not seen again.
+- Magenta sky: the CPU renderer draws the flyover's sky right at 4:3 and 2.39 with 200% draw distance; no magenta in
+  our GPU code, so a draw the GPU renderers treat differently (alpha test or blend of a pink keyed texture is a guess).
+  Needs Harry's A/B (D3D12, MSAA off, 16:9) and a D3D12 F3 capture.
+
 ### 2026-10-21 - DLC: Paris and Long Beach race on the disc build (PGR2_DLC=1)
 
 With Harry's go-ahead to pass over the content signature checks, src/game/dlc.cpp (all behind PGR2_DLC=1):

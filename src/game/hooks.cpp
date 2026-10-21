@@ -287,7 +287,8 @@ X86_FUNC(sub_000F14E0) {
     // race setup (ecx the race object 0x383178) works from its event, [ecx+0x20] into the event table 0x33BEAC (0x68
     // bytes each, the route at +0x10 as the frontend's 0x52262 sets it); the route 0x383180 and its city 0x38317C (the
     // route table's first dword, 0x30DEA4 + route x 0x20) as 0x522AB sets them
-    if (route >= 0) {
+    // not the attract demo (+0x6D4, 0x38384C, set before setup): it picks its own city and loads it from that
+    if (route >= 0 && !kernel::G<uint8_t>(ctx.ecx + 0x6D4)) {
         uint32_t event = kernel::R32(ctx.ecx + 0x20);
         kernel::W32(0x33BEAC + event * 0x68 + 0x10, uint32_t(route));
         kernel::W32(0x383180, uint32_t(route));
@@ -407,4 +408,15 @@ X86_FUNC(sub_001654D0) {
                  kernel::G<uint8_t>(p + 0x74), kernel::G<uint8_t>(p + 0x76), kernel::G<uint8_t>(p + 0x2DAC));
     }
     __imp__sub_001654D0(ctx, base);
+}
+
+// PGR2's fatal error (0x1388F0(message): formats the cache partition, then the "problem with the disc" screen): the
+// message and the caller in the log
+X86_EXTERN_FUNC(__imp__sub_001388F0);
+X86_FUNC(sub_001388F0) {
+    std::string msg;
+    for (uint32_t p = kernel::R32(ctx.esp + 4); p && kernel::G<uint8_t>(p) && msg.size() < 200; p++) msg += char(kernel::G<uint8_t>(p));
+    LOGE("pgr2: fatal error \"%s\" from %08X", msg.c_str(), kernel::R32(ctx.esp));
+    logx::Flush();
+    __imp__sub_001388F0(ctx, base);
 }

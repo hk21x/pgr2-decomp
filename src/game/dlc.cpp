@@ -105,6 +105,23 @@ X86_FUNC(sub_001572F0) {
     fs::path from = kernel::ResolvePath(folder, 0);
     fs::path to = kernel::ResolvePath("Z:\\Cars", 0);
     if (from.empty() || to.empty()) return;
+    // the packs hold their city's day set only (Paris.pak_day, Paris.pvs_Day): a night or overcast race (0x383188,
+    // 0x383184) asks for .pak_night / .pak_overcast and the area loader stops the game (0x116D7B) without them; those
+    // missing are linked to the day set, so such races run in daylight
+    for (const auto& e : fs::directory_iterator(from, ec)) {
+        std::string file = e.path().filename().string(), lower = file;
+        for (char& c : lower) c = char(std::tolower(static_cast<unsigned char>(c)));
+        for (const char* day : {".pak_day", ".pvs_day"}) {
+            size_t n = std::strlen(day);
+            if (lower.size() <= n || lower.compare(lower.size() - n, n, day) != 0) continue;
+            std::string stem = file.substr(0, file.size() - n), kind = std::string(day).substr(0, 5);  // .pak_ or .pvs_
+            for (const char* when : {"night", "overcast", "Night", "Overcast"}) {
+                std::string other = stem + kind + when;
+                if (!kernel::GameFileExists(folder + "\\" + other))
+                    kernel::CreateSymbolicLink("\\??\\" + folder + "\\" + other, "\\??\\" + folder + "\\" + file);
+            }
+        }
+    }
     for (const auto& e : fs::directory_iterator(from, ec)) {
         std::string ext = e.path().extension().string();
         for (char& c : ext) c = char(std::tolower(static_cast<unsigned char>(c)));
@@ -117,7 +134,8 @@ X86_FUNC(sub_001572F0) {
         }
         // the city's sound (its Refs, Mono, Night and Rain settings, its dry and wet banks) is read from
         // D:\data\audio as the disc cities' is: linked there, where the disc has no file of that name
-        if ((ext == ".ini" || ext == ".xwb") && e.is_regular_file(ec)) {
+        bool pack_ini = lower == "cities.ini" || lower == "routes.ini" || lower == "carkeys.ini";  // the pack's own
+        if ((ext == ".ini" || ext == ".xwb") && !pack_ini && e.is_regular_file(ec)) {
             std::string audio = "D:\\data\\audio\\" + name;
             if (!kernel::GameFileExists(audio)) kernel::CreateSymbolicLink("\\??\\" + audio, "\\??\\" + folder + "\\" + name);
             continue;
