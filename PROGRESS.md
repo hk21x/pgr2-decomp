@@ -26,6 +26,22 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-21 - DLC city packs on the disc build: why they are refused
+
+Traced headless ([xbe] trace, not committed) with both packs in hdd/E/TDATA/4d53004b/$C:
+- PGR2 lists packs with XAPI's XFindFirstContent (0x192134) three times: category 0x80000000, 1 (car packs, loaded by
+  0x157180) and 2 (city packs, 0x1572F0: cities.ini and Routes.ini from the pack, 0x1574F0 lists both kinds). Its
+  metadata reader 0x191F83 needs ContentMeta.xbx's XCSF magic, flag bit 0 and the category (header +0x30) in the mask:
+  both booster packs are category 0x10, which the disc build never asks for, so it returns 0 for each.
+- With the copies' category set to 2, both packs are listed and the city loader runs, but 0x191B03 (XAPI: open the
+  pack's metadata, 0x19199B) returns null: 0x19144B compares a keyed signature of the header (0x191366) with the
+  header's first 20 bytes, and these packs have zeros there (the community installer signs them on the console at
+  install time). Past that, 0x156F00 checks every file's keyed signature (XCalculateSignature, 0x155510) against the
+  metadata's file table (0x191BA2).
+So the disc build would load the two cities only if the packs were signed as a console's installer signs them, or
+those checks were passed over; stopped here for Harry to decide (the permission check refused a hook that passes over
+the signature checks).
+
 ### 2026-10-21 - Xbox Live DLC: what Harry's packs are and what the disc game does with them
 
 Harry's DLC is a community installer (a CDX menu XBE, not needed) around `content/`: two packs for T:\$C
