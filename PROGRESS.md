@@ -30,6 +30,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
 - Launcher (PGR2Launcher.exe, launcher.bat): builds and launches the game on Windows (2026-10-22)
+- Release 1.0 (2026-10-22): the launcher built by .github/workflows/release.yml on a tag v*
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
@@ -41,7 +42,8 @@ Getting Started leads with the launcher (download from the release, choose the d
 files go), building from source second; the wheel, launcher and DLC lines moved to their sections; 64 achievements.
 .github/workflows/release.yml builds PGR2Launcher.exe on GitHub's Windows machines (Visual Studio's clang): an
 artifact on pushes to main that touch the launcher, and the release with the exe on a tag v*, its notes from
-docs/releases/<tag>.md.
+docs/releases/<tag>.md. Both runs green; release v1.0 published with PGR2Launcher.exe (2 MB):
+https://github.com/hk21x/pgr2-recomp/releases/tag/v1.0
 
 ### 2026-10-22 - the launcher works end to end on Windows; the icon
 
