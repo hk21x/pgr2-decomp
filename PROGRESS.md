@@ -47,6 +47,16 @@ swizzled or linear) gives the console's bytes (depth's top byte in alpha, the st
 compare. The HLSL checked with DXC (-HV 2018), wincheck clean, SMOKE OK. Windows to confirm: a replay or the attract
 demo with the background soft and the car sharp.
 
+### 2026-10-22 - ultrawide menus stretched: the title screens draw their 2D with depth on
+
+Harry's log (the squeeze notes): every frame has 2D on the back buffers W-buffered (ZENABLE 2) with LESSEQUAL, which
+the squeeze took for depth tested glows and left wide. Headless: the title screen and its menu draw all their 2D that
+way (vs 144, z=2 zf=203), Kudos World Series and deeper with depth off: hence stretched at the start, right deeper in,
+stretched again back at the start. Their vertices sit at rhw 0.5 to 1 (w 1 to 2), light glows at rhw about 0.01.
+sdk: a depth tested pretransformed draw is squeezed where its vertices have rhw 0.25 or more (the vertex shader, hud.z);
+the squeeze log says each target and outcome once. Generated vertex shaders checked with DXC, SMOKE OK. Windows to
+confirm: the title and its menus at 16:9 in ultrawide, glows still on their lamps.
+
 ### 2026-10-22 - ultrawide menus stretched after going back (investigating)
 
 Harry: in ultrawide the menus are stretched at first, kept at 16:9 deeper in, and stretched again after going back to
