@@ -31,6 +31,20 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - the remaining micro-stutter: a visibility report read waited for the render thread
+
+Harry's XBE_PERF log (race, D3D12, 3440x1440, draw distance 200%): 60 fps on average, but in most 10 s spans 75-272
+frames over 25 ms; the title thread waited 4-9 ms a frame on average in "flush" (0.5-0.9 waits a frame); host
+renderer 9-12 ms a frame on the render thread, no shader or pipeline compiles. Headless (no render thread) PGR2 asks
+for one visibility report a frame (0x80FFF000: it resets it to pending, time 0 count 0 status FFFFFFFF, then
+EndVisibilityTest) and reads it straight after; the null backend writes it at once. On Windows the report sits
+behind the render thread's queue, so the read's D3D_SetFence flushed: the title waited for the frame so far, about
+9 ms, every other frame: 26-30 ms frames, then a short one. sdk: the backends note each report's count as they write
+it (gpu::NoteReport) and xdk/d3d8.cpp answers a report at once with the last count for that address (one frame late:
+the sun and light occlusion), the GPU's own value written over it later; the first report still waits.
+XBE_REPORTS_EXACT=1 keeps the old wait. Smoke OK, wincheck OK. Next: Harry's XBE_PERF log again: flush waits near 0,
+the slow-frame lines near 0; the sun flare and light glows still fade behind buildings.
+
 ### 2026-10-22 - micro-stutter since the wheel support: DirectInput off the game's threads
 
 Harry: trees, DLC setting, DLC cars, boats and system link work on Windows; no flicker; but the game micro-stutters
