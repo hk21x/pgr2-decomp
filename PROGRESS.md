@@ -25,7 +25,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - DLC cities (experimental, F1 > Game, `dlc`): Paris and Long Beach race on Windows (2026-10-21); a few objects left
   out, day sets at night; boats converted from the title update's pak layout (2026-10-21, Windows to confirm)
 - DLC cars: the title update's 16 cars as a car pack built on first start (2026-10-21): load, count (118) and race
-  headless; 34 of their 48 own colours (the table holds 600); Windows to confirm
+  headless; 34 of their 48 own colours (the table holds 600); confirmed on Windows (2026-10-22), DLC off clean
 - Stutter (2026-10-22): wheel scan and the visibility report fence stalls fixed; slow frames 0-3 per 10 s on
   Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
@@ -41,7 +41,7 @@ disc game lists category 1 packs whatever the setting, so with DLC off it checke
 bypassed then) and called it damaged. Reproduced headless (category 1, DLC off, START: the screen); fixed: the pack
 is category 0x20, which the car pack listing takes only with DLC on (mask 1 | 0x20), and is named "PGR2 DLC Cars
 (title update)". The stamp changed, so the pack is made again at the next start with DLC on. Headless: DLC on, the
-pack loads; DLC off, straight to the title menu. Smoke OK.
+pack loads; DLC off, straight to the title menu. Smoke OK. Confirmed on Windows by Harry the same day.
 
 ### 2026-10-22 - stutter, second pass: the fence after a report no longer waits
 
