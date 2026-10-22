@@ -29,10 +29,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Stutter (2026-10-22): wheel scan and the visibility report fence stalls fixed; slow frames 0-3 per 10 s on
   Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
-- Launcher (PGR2Launcher.exe, launcher.bat): written 2026-10-22, its steps tested on Linux; Windows to try
+- Launcher (PGR2Launcher.exe, launcher.bat): builds and launches the game on Windows (2026-10-22)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-22 - the launcher works end to end on Windows; the icon
+
+Harry: the launcher built the game with the portable kit and launched it ("Launched and working"). An icon for both:
+launcher/icon.ico (the launcher's CMake already embeds it); the game's CMakeLists now embeds it too as resource 1,
+which the window class loads. Waiting on the file itself (not in the repository yet).
 
 ### 2026-10-22 - launcher, first run on Windows: the kit works, two SDK header installers were missing
 

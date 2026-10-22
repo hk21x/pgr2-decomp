@@ -38,3 +38,10 @@ endif()
 # target name = GAME_EXE in build.bat, xbe = GAME_XBE
 # config/pgr2.toml holds the hand-kept entries and includes the generated config/game.toml
 add_xbe_image(PGR2 default.xbe pgr2.toml ${GAME_PARTITIONS} game)
+
+# launcher/icon.ico, when there is one: the game's icon too (resource 1, which the window class loads), as the
+# launcher's
+if(WIN32 AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/launcher/icon.ico)
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/pgr2_icon.rc "1 ICON \"${CMAKE_CURRENT_SOURCE_DIR}/launcher/icon.ico\"\n")
+    target_sources(PGR2 PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/pgr2_icon.rc)
+endif()
