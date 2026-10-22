@@ -31,6 +31,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - stutter, second pass: the fence after a report no longer waits
+
+Harry's log with the last-count answer: slow frames down from 75-272 to 1-7 per 10 s, but the title still waited
+about 9 ms a frame in "flush" for 20 s spans. Headless, PGR2's reports walk a ring of 4096 slots (0x80FF0000 up, about
+three a frame after the first second), so a cache by address missed until the ring wrapped (and then answered with
+another test's count). And the flush came from Swap (0x1C55D0 calls D3D_SetFence every frame), not from a read:
+the emulation flushed on any fence after a report was asked for. PGR2 reads its tests later. sdk 1d264f6: such a
+fence kicks the render thread (Backend::Kick: its Flush op, the title not waiting; reports written once the GPU is
+past them); the address cache is gone. XBE_REPORTS_EXACT=1 waits as before. Smoke OK. Next: Harry's XBE_PERF log:
+"flush" near 0 throughout; the sun flare and light glows still hide behind buildings.
+
 ### 2026-10-22 - the remaining micro-stutter: a visibility report read waited for the render thread
 
 Harry's XBE_PERF log (race, D3D12, 3440x1440, draw distance 200%): 60 fps on average, but in most 10 s spans 75-272
