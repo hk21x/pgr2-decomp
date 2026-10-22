@@ -33,7 +33,9 @@ Read `sdk/README.md`, `sdk/harness/README.md`, `PROGRESS.md` and `FINDINGS.md` a
      guest memory is at 0x100000000, guest esp is the dword at ctx+16.
 - Ghidra: `python3 sdk/tools/symbols/xbe2pe.py config/pgr2.toml .local/game.exe`, then
   `/opt/ghidra/support/analyzeHeadless ~/ghidra-projects pgr2 -import .local/game.exe` (add `-process`/scripts as needed).
-  Then `scripts/ghidra.sh Decomp|Disasm|FindOperand|Callers|DumpRange ...` runs the helper scripts in scripts/ghidra.
+  Then `scripts/ghidra.sh Decomp|Disasm|FindOperand|Callers|DumpRange ...` runs the helper scripts in sdk/scripts/ghidra.
+- `scripts/*.sh` are one-line wrappers for the shared scripts in `sdk/scripts` (also used by PGR1); this game's values
+  (log name, build target, smoke menu window, soak pad generator) are in `scripts/game.env`.
 
 ## Plan
 1. Extract the XBE's library versions. If the build is not 5849, create `sdk/xdk/<build>/`:
@@ -54,5 +56,7 @@ Read `sdk/README.md`, `sdk/harness/README.md`, `PROGRESS.md` and `FINDINGS.md` a
 - Run `scripts/smoke.sh` (headless: title -> Instant Action -> race, about 4 minutes) before every fast-forward of
   `main`; it must print SMOKE OK. It fails on traps, on missing the race, or on frames stopping.
 - Work on one branch per task. When the task ends and everything builds, fast-forward `main` to it
-  (`git merge --ff-only`) and push both. SDK work goes on a branch of the fork (hk21x/XboxXBE-Recomp).
+  (`git merge --ff-only`) and push both. SDK work goes on a task branch of the fork (hk21x/XboxXBERecomp),
+  fast-forwarded into the fork's `main`, the one SDK line PGR2 and PGR1 both track (2026-10-22: `pgr2-xdk5659` is
+  frozen). An SDK change must keep both games' smoke tests passing.
 - Never force-push. Never rewrite history.

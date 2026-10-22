@@ -35,6 +35,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - phase 0 for PGR1: one SDK line, shared scripts, a fuller template
+
+The fork's main fast-forwarded to pgr2-xdk5659 (now frozen) and the 11 merged task branches deleted; this repo's
+submodule tracks main (.gitmodules branch). The scripts both games use moved into sdk/scripts (harness, smoke, soak,
+linktest, wincheck, shadercheck, recompile, linux-tools, Ghidra helpers, framelog, wavstats); scripts/ here are
+one-line wrappers and scripts/game.env holds PGR2's values (log, target, Ghidra project, smoke's menu window, the
+soak pad generator scripts/soak_pad.py, the link pads). savetest.sh and the pads stay here. The template gained the
+launcher files, launcher.bat, the release workflow, the scripts and CLAUDE/PROGRESS/FINDINGS skeletons.
+Checks through the shared scripts: SMOKE OK, LINKTEST OK, SAVETEST OK, a one minute soak with no traps, wincheck clean.
+PGR1.md rewritten from the disc review (title 4D530003, XDK 3911-3950, Bink, GOTHPOK data, no XNet). PGR1's skeleton
+is /home/harry/pgr1-recomp (not a repository yet).
+
 ### 2026-10-22 - release 1.0
 
 The repository is hk21x/pgr2-recomp now (the old name redirects): game.json, README and WINDOWS.md use it. README:
