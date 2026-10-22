@@ -35,6 +35,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - the replay depth of field fix never ran on Windows (corrected)
+
+The PGR1 session's review of 48aa102: both renderers find a sampled texture's target by the read format's depth flag,
+so the depth buffer read through LIN_A8B8G8R8 (a colour format) missed its target (kept under the depth key), fell
+to guest memory (where the GPU renderers never write depth) and kTexDepthBytes never applied: 1.0.1 shipped with the
+replay blur unchanged on Windows (its notes say fixed). sdk 34f1fd8: the lookup tries the depth key for the colour
+formats DepthBytesOrder names; X8R8G8B8 read from depth gets alpha 1; the programmable path converts each stage right
+after its fetch (a later texbem/texm3x stage reads the converted value); the reference renderer squeezes depth
+tested 2D at the near plane as the renderers do. SMOKE OK, wincheck clean, shaders compile. Windows to confirm: a
+replay or the attract demo with the car sharp; then 1.0.2.
+
 ### 2026-10-22 - release 1.0.1
 
 Since 1.0: rigs of several DirectInput devices and H-pattern shifters, the ultrawide title menus at 16:9, the replay
