@@ -162,8 +162,7 @@ Plays as controller 1, with two keys for each console input, remappable in the s
 Boots, plays the movies and menus, races in every mode tried, saves and plays system link; flicker fixed, ultrawide,
 MSAA and the settings window in. Open: sound effects (reverb, filters) are not modelled, and races at 60 can dip
 below 60 in the busiest streets. Progress is
-in [PROGRESS.md](PROGRESS.md), technical findings in [FINDINGS.md](FINDINGS.md), and what may carry over to
-Project Gotham Racing 1 in [PGR1.md](PGR1.md).
+in [PROGRESS.md](PROGRESS.md), and technical findings in [FINDINGS.md](FINDINGS.md).
 
 ## Troubleshooting
 

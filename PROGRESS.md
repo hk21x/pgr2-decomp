@@ -18,7 +18,7 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - System link: works headless (scripts/linktest.sh); Windows to try
 - CPU renderer: near-camera band fixed (2026-10-20)
 - Checks: scripts/smoke.sh before main; scripts/linktest.sh, savetest.sh, soak.sh
-- Docs: FINDINGS.md (what is established, by topic), PGR1.md (what carries over to PGR1), WINDOWS.md (testing)
+- Docs: FINDINGS.md (what is established, by topic), WINDOWS.md (testing)
 - Releases: PAL and NTSC (same code; NTSC smoke OK from its disc image)
 - Direct3D 11 renderer: done and confirmed on Windows (drawing, MSAA; F1 > Graphics > Renderer, next start). Not
   under D3D11: F3 captures, the 8 bit target swizzle (logged if PGR2 needs it)
@@ -35,17 +35,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
-### 2026-10-22 - phase 0 for PGR1: one SDK line, shared scripts, a fuller template
+### 2026-10-22 - shared scripts in the SDK; the SDK on the fork's main
 
 The fork's main fast-forwarded to pgr2-xdk5659 (now frozen) and the 11 merged task branches deleted; this repo's
-submodule tracks main (.gitmodules branch). The scripts both games use moved into sdk/scripts (harness, smoke, soak,
+submodule tracks main (.gitmodules branch). The generic scripts moved into sdk/scripts (harness, smoke, soak,
 linktest, wincheck, shadercheck, recompile, linux-tools, Ghidra helpers, framelog, wavstats); scripts/ here are
 one-line wrappers and scripts/game.env holds PGR2's values (log, target, Ghidra project, smoke's menu window, the
-soak pad generator scripts/soak_pad.py, the link pads). savetest.sh and the pads stay here. The template gained the
-launcher files, launcher.bat, the release workflow, the scripts and CLAUDE/PROGRESS/FINDINGS skeletons.
+soak pad generator scripts/soak_pad.py, the link pads). savetest.sh and the pads stay here. The SDK's game template
+gained the launcher files, launcher.bat, the release workflow, the scripts and CLAUDE/PROGRESS/FINDINGS skeletons.
 Checks through the shared scripts: SMOKE OK, LINKTEST OK, SAVETEST OK, a one minute soak with no traps, wincheck clean.
-PGR1.md rewritten from the disc review (title 4D530003, XDK 3911-3950, Bink, GOTHPOK data, no XNet). PGR1's skeleton
-is /home/harry/pgr1-recomp (not a repository yet).
+Then all PGR1 material left this repository (PGR1.md, the plan, references): it is its own project.
 
 ### 2026-10-22 - release 1.0
 
