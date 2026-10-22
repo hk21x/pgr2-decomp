@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#30343b"/>
+      <stop offset=".48" stop-color="#101216"/>
+      <stop offset="1" stop-color="#050608"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".35" stop-color="#cfd2d7"/>
+      <stop offset=".58" stop-color="#777d86"/>
+      <stop offset="1" stop-color="#f5f5f5"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff3b32"/>
+      <stop offset=".55" stop-color="#d90018"/>
+      <stop offset="1" stop-color="#79000b"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#555b64"/>
+      <stop offset="1" stop-color="#17191e"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dy="3"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".7"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="round"><rect x="8" y="8" width="240" height="240" rx="34"/></clipPath>
+  </defs>
+  <g clip-path="url(#round)">
+    <rect width="256" height="256" fill="url(#bg)"/>
+    <path d="M0 48 L256 8 M0 78 L256 38 M0 108 L256 68" stroke="#a90016" stroke-width="7" opacity=".6"/>
+    <path d="M0 256 L98 118 L158 118 L256 256Z" fill="url(#road)"/>
+    <path d="M126 256 L132 202 L128 170 L137 142" fill="none" stroke="#f4c928" stroke-width="3" stroke-dasharray="12 10" opacity=".95"/>
+    <path d="M0 256 L104 122" fill="none" stroke="#d5d8dc" stroke-width="2" opacity=".6"/>
+    <path d="M256 256 L152 122" fill="none" stroke="#d5d8dc" stroke-width="2" opacity=".6"/>
+    <!-- stylised rear view of a racing coupe -->
+    <g filter="url(#shadow)" transform="translate(0 5)">
+      <path d="M69 151 L79 128 Q83 120 96 118 L160 118 Q173 120 178 129 L188 151 L184 180 Q182 188 172 190 L84 190 Q74 188 72 180Z" fill="#08090b" stroke="#8c929b" stroke-width="2"/>
+      <path d="M88 130 Q92 124 101 124 L155 124 Q164 125 169 132 L175 146 L81 146Z" fill="#252a31" stroke="#aeb4bd" stroke-width="1.5"/>
+      <path d="M94 129 L162 129 L169 143 L87 143Z" fill="#11151a"/>
+      <path d="M77 151 L96 149 L101 160 L78 160Z" fill="url(#red)" stroke="#ff8179" stroke-width="1"/>
+      <path d="M155 160 L160 149 L179 151 L178 160Z" fill="url(#red)" stroke="#ff8179" stroke-width="1"/>
+      <rect x="106" y="160" width="44" height="15" rx="2" fill="#d7d9dc" stroke="#555a62"/>
+      <text x="128" y="171" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="900" text-anchor="middle" fill="#17191e">PGR 2</text>
+      <path d="M72 151 L184 151 L190 146 L187 142 L69 142 L66 146Z" fill="#090a0c" stroke="#aab0b8" stroke-width="2"/>
+      <path d="M92 188 L88 196 L101 196 L104 189 M151 189 L155 196 L168 196 L163 188" fill="#08090b" stroke="#717780" stroke-width="2"/>
+      <path d="M101 196 L108 196 M149 196 L156 196" stroke="#c2c6cc" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <!-- shield badge -->
+    <g filter="url(#shadow)">
+      <path d="M26 25 Q61 10 96 25 L92 69 Q88 91 61 105 Q34 91 30 69Z" fill="#090a0c" stroke="url(#metal)" stroke-width="4"/>
+      <path d="M33 31 Q61 19 89 31 L86 66 Q82 84 61 96 Q40 84 36 66Z" fill="url(#red)" stroke="#ffb1a8" stroke-width="1.5"/>
+      <text x="61" y="62" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="25" font-style="italic" font-weight="900" fill="url(#metal)" stroke="#111" stroke-width="1.3" paint-order="stroke">PGR</text>
+    </g>
+    <!-- title strip -->
+    <g filter="url(#shadow)">
+      <path d="M108 28 L235 28 L235 65 L101 65Z" fill="#08090b" stroke="#b8bdc5" stroke-width="1.5"/>
+      <text x="171" y="43" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="800" letter-spacing="1.3" fill="#d9dde2">PROJECT GOTHAM</text>
+      <text x="171" y="60" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="20" font-weight="900" font-style="italic" fill="url(#red)" stroke="#f4f4f4" stroke-width=".7" paint-order="stroke">RACING 2</text>
+    </g>
+    <path d="M12 220 L244 220" stroke="#e20b20" stroke-width="4"/>
+    <text x="128" y="239" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="900" letter-spacing="3" fill="#f3f3f3">NATIVE PC PORT</text>
+  </g>
+  <rect x="8.75" y="8.75" width="238.5" height="238.5" rx="33" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="1.5"/>
+</svg>

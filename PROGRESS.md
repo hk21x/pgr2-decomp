@@ -38,7 +38,9 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 Harry: the launcher built the game with the portable kit and launched it ("Launched and working"). An icon for both:
 launcher/icon.ico (the launcher's CMake already embeds it); the game's CMakeLists now embeds it too as resource 1,
-which the window class loads. Waiting on the file itself (not in the repository yet).
+which the window class loads. Harry's drawing (.local/win/pgr2-launcher.icon, an SVG of his own) is launcher/icon.svg;
+launcher/icon.ico is rendered from it with cairosvg at 256 (PNG), 128, 64, 48, 32, 24 and 16 px (ImageMagick's own
+SVG renderer dropped its gradients and clipping).
 
 ### 2026-10-22 - launcher, first run on Windows: the kit works, two SDK header installers were missing
 
