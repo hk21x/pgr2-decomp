@@ -26,6 +26,8 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   out, day sets at night; boats converted from the title update's pak layout (2026-10-21, Windows to confirm)
 - DLC cars: the title update's 16 cars as a car pack built on first start (2026-10-21): load, count (118) and race
   headless; 34 of their 48 own colours (the table holds 600); Windows to confirm
+- Stutter (2026-10-22): wheel scan and the visibility report fence stalls fixed; slow frames 0-3 per 10 s on
+  Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
@@ -41,6 +43,9 @@ the emulation flushed on any fence after a report was asked for. PGR2 reads its 
 fence kicks the render thread (Backend::Kick: its Flush op, the title not waiting; reports written once the GPU is
 past them); the address cache is gone. XBE_REPORTS_EXACT=1 waits as before. Smoke OK. Next: Harry's XBE_PERF log:
 "flush" near 0 throughout; the sun flare and light glows still hide behind buildings.
+Result (Harry, XBE_PERF, same race): "flush" 0.00 ms in every second; slow frames 0-3 per 10 s (the race load, a
+93 ms fence wait right after it, odd single frames). The render thread's host time is 10-14 ms of 16.7 (bind about
+4 ms): the next limit, as steady "next frame" waits, if a heavier scene goes past it. Flares to confirm.
 
 ### 2026-10-22 - the remaining micro-stutter: a visibility report read waited for the render thread
 
