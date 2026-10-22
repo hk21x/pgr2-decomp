@@ -102,6 +102,12 @@ Each item is marked:
 - **Car lighting.** The body's sun term is c56 = sun colour x the car's brightness (0x1F036). The brightness eases
   to 0.25 per wheel standing on an unflagged track triangle (bit 7 of the triangle's flag byte means shade). The
   data, the query and the test all agree with the console's code.
+- **Depth of field (replays, the attract demo).** PGR2 copies the frame into a 640x480 target (0x03595000, read as
+  LIN_X8R8G8B8), then draws it back over the frame (ONE, INVSRCALPHA) reading its depth buffer 0x03B20000 as a colour
+  texture, LIN_A8B8G8R8 (format 0x3F): the console gives the D24S8 word's bytes there, depth's top byte in alpha, and
+  the blur follows them. The renderers sampled every depth target as a shadow map (a comparison), so every pixel read
+  as far and the whole picture blurred (Harry, 2026-10-22); a depth target read through a 32 bit colour format now
+  gives its bytes (kTexDepthBytes).
 - **Widescreen.** PGR2 reads XGetVideoFlags: widescreen renders anamorphic 16:9 into 640x480, with a wider field of
   view and the HUD moved out. It has no HD mode. More pixels come from the runtime's render scale.
 

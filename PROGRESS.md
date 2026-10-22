@@ -35,6 +35,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - replays blurred all over: the depth buffer read as colour
+
+Reports (Harry's screenshot of the attract replay): the whole picture blurred, the car too. Headless (CPU renderer:
+sharp) the frame ends with PGR2's depth of field: draw 10910 copies the back buffer 03D78000 (read as LIN_X8R8G8B8)
+into 03595000, then draw 10917 blends over the frame with ONE / INVSRCALPHA reading the depth buffer 03B20000 as
+LIN_A8B8G8R8 (0x3F). The harness draw lists now give each draw's depth target and each texture's data address,
+which showed it. Both Windows renderers sampled any depth target as a shadow map (a depth comparison, alpha 1): the
+blur saw every pixel as far. sdk: a depth target read through a 32 bit colour format (A8R8G8B8, X8R8G8B8, A8B8G8R8,
+swizzled or linear) gives the console's bytes (depth's top byte in alpha, the stencil byte 0); depth formats still
+compare. The HLSL checked with DXC (-HV 2018), wincheck clean, SMOKE OK. Windows to confirm: a replay or the attract
+demo with the background soft and the car sharp.
+
 ### 2026-10-22 - ultrawide menus stretched after going back (investigating)
 
 Harry: in ultrawide the menus are stretched at first, kept at 16:9 deeper in, and stretched again after going back to

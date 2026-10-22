@@ -184,6 +184,9 @@ Confirmed on Windows so far: boot, movies, menus, races, saves, sound, reflectio
 shadow, fences and signs, car selection, the F1 window, the Direct3D 11 renderer (with MSAA), the PC Settings entry, the achievement pop-up.
 
 Still to confirm:
+- **Replays and the attract demo** (2026-10-22): the depth of field keeps the car sharp and only the distance soft
+  (was: everything blurred). **Ultrawide menus**: if any still show stretched, send the log: it now has
+  `ultrawide: 2D on target ...` lines saying why.
 1. **Trees** (2026-10-21): leafy trees in Sydney's terrace streets (point sprites), on D3D12 and D3D11.
 2. **Flicker**: kerbs, signs, anything left (the Edinburgh buildings and the under-car patch are fixed).
 3. **Keyboard and remapping**: drive a race on the keyboard; remap a key and a controller input, restart, check
