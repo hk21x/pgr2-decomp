@@ -35,6 +35,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - ultrawide menus stretched after going back (investigating)
+
+Harry: in ultrawide the menus are stretched at first, kept at 16:9 deeper in, and stretched again after going back to
+the start (the same Kudos World Series screen both ways). Headless, the screen's draws are the same both visits: 31
+pretransformed draws, depth off, on the back buffers (03D78000 and 03EA4000 alternating), then PGR2's own two-draw copy
+to 03C4C000; the squeeze's conditions (pretransformed, not depth tested, a 480 line target) hold both times. So the
+difference is in the Windows renderers' targets. sdk: the release log notes each target's squeeze decision when it
+changes (`ultrawide: 2D on target ...`: size, host width, stretch, depth state, squeezed or why not); the harness draw
+lists give the depth comparison. Next: Harry's log from going in, back and in again.
+
 ### 2026-10-22 - wheels: any DirectInput devices, several at once; H-pattern shifters
 
 Harry's rig was not found: a Simucube OSW base, Leo Bodnar BU0836-LC pedals, an SLI-PRO button box and a Thrustmaster
