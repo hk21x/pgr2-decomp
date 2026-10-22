@@ -126,8 +126,9 @@ it on whichever device it is on.
   in neutral nothing happens. With an automatic gearbox the shifter does nothing. The tab shows the lever's gear and
   the car's.
 - **Raw input**: each device's axes and held buttons, to see what Windows reports.
-- Without any binding set up, the first driving device (else the first with force feedback) is used with the G920
-  layout (steering X, throttle Y, brake Rz, clutch slider 1), as before.
+- Without any binding set up, the first device reporting itself as a driving device is used with the G920 layout
+  (steering X, throttle Y, brake Rz, clutch slider 1). Anything else (a Simucube base, pedal and button boxes, a pad
+  with rumble) is only used once bound in the Wheel tab.
 To check (Harry's rig: Simucube OSW, Leo Bodnar BU0836-LC pedals, SLI-PRO buttons, Thrustmaster TH8A): all four listed
 in the log and the tab; steering bound to the Simucube with force feedback on it; the three pedals from the BU0836-LC;
 buttons from the SLI-PRO; the TH8A's gears in a manual car; nothing doubles up with a pad plugged in.
