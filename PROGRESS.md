@@ -30,10 +30,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
 - Launcher (PGR2Launcher.exe, launcher.bat): builds and launches the game on Windows (2026-10-22)
-- Release 1.0 (2026-10-22): the launcher built by .github/workflows/release.yml on a tag v*
+- Release 1.0 (2026-10-22): the launcher built by .github/workflows/release.yml on a tag v*; 1.0.1 the same day
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-22 - release 1.0.1
+
+Since 1.0: rigs of several DirectInput devices and H-pattern shifters, the ultrawide title menus at 16:9, the replay
+depth of field, the MSAA render scale crash (sdk ab282ad), more diagnostics. Notes in docs/releases/v1.0.1.md; the tag
+v1.0.1 builds and publishes the launcher (.github/workflows/release.yml). Harry confirmed the ultrawide menus.
 
 ### 2026-10-22 - replays blurred all over: the depth buffer read as colour
 

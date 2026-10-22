@@ -134,7 +134,9 @@ mapped to any controller input in Controls.
 ### Controller
 Supports Xbox, PlayStation and Switch controllers, with hot plugging and rumble. Any console input can be mapped to any controller input.
 
-**Steering wheels** - DirectInput wheels (Logitech G920/G923, G29 ...) with force feedback, set up in F1 > Wheel.
+**Steering wheels and rigs** - any DirectInput wheel, pedal box, button box or shifter, also spread over several USB
+devices; each control bound in F1 > Wheel by moving or pressing it, force feedback on the steering's device, and
+H-pattern shifters with a manual gearbox.
 
 ### Keyboard
 Plays as controller 1, with two keys for each console input, remappable in the settings window.
