@@ -105,6 +105,15 @@ Each item is marked:
 - **Widescreen.** PGR2 reads XGetVideoFlags: widescreen renders anamorphic 16:9 into 640x480, with a wider field of
   view and the HUD moved out. It has no HD mode. More pixels come from the runtime's render scale.
 
+## The gearbox
+
+- **[PGR2]** The player's gear is the signed byte at 0x29DACA + car x 0x6990 (the gearbox 0x29DAB0, +0x1A; -1 reverse,
+  1 first; there is no neutral). The car record is 0x2973B0 + car x 0x6990 (speed at +0x19A0); the gearbox's
+  +0x24 points to it. Shifts go through 0x19EB0 (up) and 0x19F60 (down) from 0x1A7B0: the automatic logic 0x1A580 when
+  0x16520 says automatic, and the car's requests +0x1BC4 (up) / +0x1BC5 (down), which the pad's B and X set.
+  Automatic: the byte 0x39B320 + player x 0x2498 (set at Select Transmission: Auto), or the car's mode +0x19C8 or the
+  dword 0x39B31C + player x 0x2498 being 1 or 2. Measured headless with gdb watchpoints and shift logging, 2026-10-22.
+
 ## Time of day and weather
 
 - **[PGR2]** Conditions are picked in FUN_000F14E0 (race setup) from per-city tables, after a rand() call. Night is

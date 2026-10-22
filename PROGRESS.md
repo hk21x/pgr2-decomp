@@ -35,6 +35,21 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - wheels: any DirectInput devices, several at once; H-pattern shifters
+
+Harry's rig was not found: a Simucube OSW base, Leo Bodnar BU0836-LC pedals, an SLI-PRO button box and a Thrustmaster
+TH8A shifter, four USB devices, none a Logitech. The wheel code took the first "driving" device (or one named wheel or
+racing) and read everything from it. sdk core/wheel.cpp now opens every DirectInput game controller but Xbox pads
+(their device path names IG_; SDL keeps them), logs each, and reads each control from the device its binding names
+(settings: { device, guid, axis or button, rest, full, invert }, older files still read); bindings are made in F1 >
+Wheel by turning, pressing or moving the control on any device. The forces go to the steering's device and axis
+(exclusive there, the others read in the background). The game threads never read the settings' strings: the
+settings window hands the wheel thread a copy (WheelSetup). An H-pattern shifter (Reverse, 1 to 7) presses the game's
+shift inputs until the car's gear matches, when the game reports the gear (GameInfo::wheel: WheelFeel.gear,
+shift_up/shift_down). PGR2's gear and its manual shifts found headless (FINDINGS, the gearbox): the byte 0x29DACA +
+car x 0x6990, B up and X down, only in manual. The harness pad scripts gained BLACK and WHITE.
+wincheck clean, SMOKE OK; nothing of the wheel code runs headless: Harry's rig to try.
+
 ### 2026-10-22 - shared scripts in the SDK; the SDK on the fork's main
 
 The fork's main fast-forwarded to pgr2-xdk5659 (now frozen) and the 11 merged task branches deleted; this repo's

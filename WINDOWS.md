@@ -103,22 +103,34 @@ Useful while testing:
 
 `release.bat` zips `PGR2.exe` with an empty `assets` folder; not needed yet.
 
-## Steering wheel (new, 2026-10-21)
+## Steering wheels and rigs (2026-10-22: any DirectInput devices, several at once)
 
-A DirectInput steering wheel plays as controller 1 (with the keyboard and any pad), with force feedback. Built for the
-Logitech G920/G923 (G29 and others should work through the settings). Logitech wheels need G HUB installed.
-- F1 > **Wheel**: the wheel's name and force feedback effects, live steering (degrees), pedals and raw axes, buttons.
-  - Steering: axis (Detect: click, turn the wheel right), wheel rotation (900 as in G HUB), steering lock (degrees of
-    turn for the game's full lock; 360 by default), dead zone.
-  - Pedals: throttle, brake (and clutch, unused by the game): Detect, let the pedal rest, click, press it fully.
-  - Force feedback: strength, road and impacts; Push left / Push right test it.
-  - Buttons: A B X Y, paddles as RB/LB (Black/White), Menu/View as Start/Back, the hat as the d-pad; each can be set by
-    clicking it and pressing a wheel button. Back + Start (View + Menu) opens the settings window.
-- Forces: centring that firms up with speed while racing, a light damper, and the game's rumble as a shake (kerbs,
-  gravel, impacts). G HUB's own centring spring is turned off while the game has the wheel.
-- The log says `wheel: <name> (USB vid:pid), N axes, N buttons, N hats, force feedback on: spring, damper, ...`.
-To check: the wheel is found, steering and pedals respond (the Wheel tab's bars), the defaults' axes and buttons are
-right for the G920/G923, the forces feel right and stop in menus, nothing doubles up with a pad plugged in too.
+Every DirectInput game controller is opened (wheel bases, pedal boxes, button boxes, shifters, as separate USB devices
+or one), except Xbox pads, which stay with the controller support. They play together as controller 1, with the
+keyboard and any pad. Each control is bound to one device: in F1 > **Wheel**, click a control, then turn, press or move
+it on whichever device it is on.
+- **Devices**: every device found, with its axes, buttons, hats and whether it offers force feedback ("in use": the
+  forces go there). The log lists them at start: `wheel: <name> (USB vid:pid, type), N axes, N buttons, N hats, force
+  feedback offered/none`.
+- **Steering**: click, then turn the wheel to the right (it finds the device and the axis, and the direction). Wheel
+  rotation as set in the wheel's own software (Simucube True Drive, G HUB ...; up to 2880), steering lock (degrees of
+  wheel for the game's full lock, 360 by default), dead zone.
+- **Pedals**: throttle, brake (and clutch, unused by the game): let the pedal rest, click, press it fully.
+- **Force feedback**: on the device the steering is bound to, on the steering's axis (the pedal and button boxes are
+  only read). Strength, road and impacts; Push left / Push right test it. The device's own centring spring is turned
+  off while the game has it.
+- **Buttons**: each console button (A B X Y, Black/White, Start/Back, the sticks' clicks, the d-pad) from a button on any
+  device. The steering device's hat is the d-pad. Back + Start opens the settings window.
+- **H-pattern shifter**: bind Reverse and gears 1 to 7 to the shifter's positions. With a manual gearbox (chosen at
+  Select Transmission), moving the lever presses the game's own shift up (B) and down (X) until the car is in that gear;
+  in neutral nothing happens. With an automatic gearbox the shifter does nothing. The tab shows the lever's gear and
+  the car's.
+- **Raw input**: each device's axes and held buttons, to see what Windows reports.
+- Without any binding set up, the first driving device (else the first with force feedback) is used with the G920
+  layout (steering X, throttle Y, brake Rz, clutch slider 1), as before.
+To check (Harry's rig: Simucube OSW, Leo Bodnar BU0836-LC pedals, SLI-PRO buttons, Thrustmaster TH8A): all four listed
+in the log and the tab; steering bound to the Simucube with force feedback on it; the three pedals from the BU0836-LC;
+buttons from the SLI-PRO; the TH8A's gears in a manual car; nothing doubles up with a pad plugged in.
 
 ## The launcher (for players without Visual Studio)
 
