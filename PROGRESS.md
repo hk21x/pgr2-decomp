@@ -34,6 +34,15 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - release 1.0
+
+The repository is hk21x/pgr2-recomp now (the old name redirects): game.json, README and WINDOWS.md use it. README:
+Getting Started leads with the launcher (download from the release, choose the disc, Build, Play, Update, where its
+files go), building from source second; the wheel, launcher and DLC lines moved to their sections; 64 achievements.
+.github/workflows/release.yml builds PGR2Launcher.exe on GitHub's Windows machines (Visual Studio's clang): an
+artifact on pushes to main that touch the launcher, and the release with the exe on a tag v*, its notes from
+docs/releases/<tag>.md.
+
 ### 2026-10-22 - the launcher works end to end on Windows; the icon
 
 Harry: the launcher built the game with the portable kit and launched it ("Launched and working"). An icon for both:

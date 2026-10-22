@@ -27,44 +27,66 @@ example) has not been checked and the game asks before starting it.
 
 ## Getting Started
 
-### Requirements
+There are two ways to get the game running. Both build it on your own PC from your own disc: the game's code is
+never downloaded, only the tools and this project's source.
+
+### The launcher (recommended)
+
+`PGR2Launcher.exe` does everything for you: no Visual Studio, no Git, no command line, nothing installed in Windows
+and no admin rights needed.
+
+**You need:**
 - Windows 10 or 11, 64 bit, and a GPU with Direct3D 12 or 11.
-- [Git](https://git-scm.com/download/win).
-- Visual Studio 2022 (Community is fine) with **Desktop development with C++**. `build.bat` offers to add
-  **C++ Clang tools for Windows** and **C++ CMake tools for Windows** if they are missing.
-- About 15 GB free for the build.
-- Your disc's files (PAL or NTSC): `default.xbe` and its folders (`Cache`, `CarDynamics`, `data`, `Frontend`, `Game`, `media`,
-  ...), or an `.iso` image of the disc.
+- Your own copy of the game (PAL or NTSC): an `.iso` image of your disc, or a folder with the disc's files.
+- About 15 GB free, and an internet connection for about 1.4 GB of build tools.
 
-### 1. Clone the repository, with its SDK
-```
-git clone --recurse-submodules https://github.com/hk21x/pgr2-decomp.git
-cd pgr2-decomp
-```
-Cloned without `--recurse-submodules`? Run `git submodule update --init`.
+**Steps:**
+1. Download `PGR2Launcher.exe` from the [latest release](https://github.com/hk21x/pgr2-recomp/releases/latest).
+2. Put it in a folder of its own (for example `C:\Games\PGR2`) and run it. Everything it makes goes in a `PGR2`
+   folder beside it. Windows may warn about an unrecognised app: choose **More info**, then **Run anyway**.
+3. **Your game:** choose your disc image or the folder with the disc's files. The launcher checks that it is a
+   supported release.
+4. **Build:** accept the license terms for Microsoft's C++ libraries and Windows SDK (the build uses them), then press
+   **Build**. It downloads portable build tools (Clang, CMake, Ninja, Git and Microsoft's libraries), this project's
+   source, and builds the game. The first build takes 30 to 90 minutes. You can stop it at any time; it carries on
+   where it left off.
+5. **Play:** press **Play**. The first start sets up the emulated hard disk and copies the game's cache while the intro
+   movies play (about two minutes); later starts are quick.
 
-### 2. Add your game files
-Put them in the `assets` folder: `assets\default.xbe` with the game's folders beside it. With an `.iso`, put the
-`.iso` in `assets` and also copy `default.xbe` out of it into `assets` (the build recompiles from that file).
+When this project is updated the launcher shows **Update**: press it, then Play. **Remove the build files** frees
+about 10 GB once the game is built (an update then builds everything again).
 
-### 3. Build
-Run `build.bat` from Explorer or a command prompt. The first build recompiles the game and compiles everything,
-which takes 30 to 90 minutes; later builds are quicker. The executable is `out\build\release\PGR2.exe`. Do not run
-`xbe_symbols` or edit `config\game.toml`: the committed configuration is the one for the supported release.
+Files, all under the `PGR2` folder beside the launcher:
+- `play\` the game: `PGR2.exe`, `pgr2.toml` (settings), `hdd\` (profiles, saves and caches), `logs\pgr2.log` (the game's
+  log), `achievements.toml`
+- `launcher.log` the launcher's log (send it with any problem building)
+- `tools\` and `source\` the build tools and the source
 
-### 4. Play
-Answer Y to "Play now?", or run `out\build\release\PGR2.exe`. The first start sets up the emulated hard disk and
-copies the game's cache while the intro movies play (about two minutes); later starts are quick.
+To remove everything, delete the launcher and its `PGR2` folder (keep `play\hdd` if you want your saves).
 
-`PGR2.exe` finds the `assets` folder beside itself or in any folder above it, so it can also be run from a copy of
-`out\build\release` with an `assets` folder next to it.
+### Building from source (developers)
 
-Files the game writes beside the exe:
-- `pgr2.toml` settings (the settings window writes it)
-- `hdd\` the emulated hard disk: profiles, saves and caches (delete it to start again from a first boot)
-- `logs\pgr2.log` the log of the last run (send it with any problem report)
-- `achievements.toml` achievements unlocked
-- `CrashDumps\` a minidump if it crashes
+**You need:** Windows 10 or 11 (64 bit), [Git](https://git-scm.com/download/win), Visual Studio 2022 (Community is
+fine) with **Desktop development with C++** (`build.bat` offers to add **C++ Clang tools for Windows** and **C++ CMake
+tools for Windows**), about 15 GB free, and your disc's files: `default.xbe` and its folders (`Cache`, `CarDynamics`,
+`data`, `Frontend`, `Game`, `media`, ...), or an `.iso` image of the disc.
+
+1. Clone the repository with its SDK:
+   ```
+   git clone --recurse-submodules https://github.com/hk21x/pgr2-recomp.git
+   cd pgr2-recomp
+   ```
+   Cloned without `--recurse-submodules`? Run `git submodule update --init`.
+2. Put your game files in the `assets` folder: `assets\default.xbe` with the game's folders beside it. With an `.iso`,
+   put the `.iso` in `assets` and also copy `default.xbe` out of it into `assets` (the build recompiles from that file).
+3. Run `build.bat` from Explorer or a command prompt. The first build takes 30 to 90 minutes; later builds are quicker.
+   Do not run `xbe_symbols` or edit `config\game.toml`: the committed configuration is the one for the supported release.
+4. Answer Y to "Play now?", or run `out\build\release\PGR2.exe`. It finds the `assets` folder beside itself or in any
+   folder above it.
+
+`launcher.bat` builds `PGR2Launcher.exe` itself. Files the game writes beside the exe: `pgr2.toml` (settings), `hdd\`
+(saves and caches; delete it to start again from a first boot), `logs\pgr2.log`, `achievements.toml`, and
+`CrashDumps\` if it crashes.
 
 ## Controls and Settings
 
@@ -101,10 +123,6 @@ mapped to any controller input in Controls.
 
 ### Graphics
 - **Render Scale** - Renders at a percentage of the screen, from 25% to 200%.
-- **Steering wheels** - DirectInput wheels (Logitech G920/G923, G29 ...) with force feedback; F1 > Wheel.
-- **Launcher** - `PGR2Launcher.exe`: choose your disc image, Build, Play; portable build tools, nothing installed (see WINDOWS.md).
-- **Xbox Live DLC cities and cars** (experimental) - Paris, Long Beach and the 16 DLC cars from your own booster pack and
-  title update files; see WINDOWS.md.
 - **Renderer** - Direct3D 12 (default) or Direct3D 11, at the next start; 11 for GPUs or drivers where 12 runs badly.
   Without Direct3D 12 the game starts on 11 by itself.
 - **Anisotropic Filtering** - Up to 16x.
@@ -116,17 +134,22 @@ mapped to any controller input in Controls.
 ### Controller
 Supports Xbox, PlayStation and Switch controllers, with hot plugging and rumble. Any console input can be mapped to any controller input.
 
+**Steering wheels** - DirectInput wheels (Logitech G920/G923, G29 ...) with force feedback, set up in F1 > Wheel.
+
 ### Keyboard
 Plays as controller 1, with two keys for each console input, remappable in the settings window.
 
 ### General
+- **Launcher** - `PGR2Launcher.exe`: choose your disc, Build, Play, Update; portable build tools, nothing installed.
+- **Xbox Live DLC** (experimental) - Paris, Long Beach and the 16 DLC cars from your own booster pack and title update
+  files (F1 > Game); see [WINDOWS.md](WINDOWS.md).
 - **Settings Window** - Press F1, Back + Start on a controller, or choose Options > General Options > PC Settings in the game's menus, for display, graphics, game options and controls. Changes are saved to `pgr2.toml`.
 - **Skip Intro** - Goes straight to the title screen.
 - **Hide HUD** - Clears the race HUD for screenshots and replays.
 - **Pause On Focus Loss** - The game and its sound stop while another window is in front.
 - **Saves** - Profiles, options and career progress are kept on an emulated hard disk beside the exe.
 - **System Link** - Plays over the LAN, or by connecting straight to a friend's IP address (`join_ip`).
-- **Achievements** - 59 achievements (Kudos World Series and class medals, Arcade, Kudos ranks, the garage, speed, wins, Geometry Wars) with pop-ups and a list in the settings window, written in RetroAchievements' condition format; the set and its memory map are in [ACHIEVEMENTS.md](ACHIEVEMENTS.md).
+- **Achievements** - 64 achievements (Kudos World Series and class medals, Arcade, Kudos ranks, the garage, speed, wins, Geometry Wars) with pop-ups and a list in the settings window, written in RetroAchievements' condition format; the set and its memory map are in [ACHIEVEMENTS.md](ACHIEVEMENTS.md).
 - **60 FPS Races** - "Races at 60 frames a second" in the settings window, with unchanged physics (experimental: the busiest streets need a fast CPU to hold 60).
 - **Draw Distance** - 25% to 400% of the console's (experimental: most streets end before the console's distance).
 
@@ -147,8 +170,11 @@ Project Gotham Racing 1 in [PGR1.md](PGR1.md).
 - Something wrong: the first lines of `logs\pgr2.log` list the settings, the GPU and any `XBE_*` or `PGR2_*`
   environment variables; leftover ones from experiments change how the game draws. [WINDOWS.md](WINDOWS.md) lists
   the diagnostic switches (frame captures with F3, frame logs with F4, `XBE_PERF` timings).
-- "Another release" in the log, or the game not starting: the `default.xbe` in `assets` is not the supported PAL one.
-- A first boot again (the cache, the intro movies): delete `out\build\release\hdd`.
+- The launcher's build failing: send `PGR2\launcher.log` (its Details section shows the same). Press Build again
+  after a network problem: it carries on where it stopped.
+- "Another release" in the log, or the game not starting: the `default.xbe` is not one of the supported releases.
+- A first boot again (the cache, the intro movies): delete the `hdd` folder beside `PGR2.exe` (`PGR2\play\hdd` with
+  the launcher, `out\build\release\hdd` when built from source).
 - Races at 60 frames a second dipping below 60: it is experimental; the console's 30 is the default.
 
 ## Credits

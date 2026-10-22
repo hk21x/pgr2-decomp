@@ -18,8 +18,8 @@ Everything below runs on your PC; nothing here touches the Linux VM. FINDINGS.md
 
 1. Clone with the SDK (both repositories are public, no sign-in needed).
    ```
-   git clone --recurse-submodules https://github.com/hk21x/pgr2-decomp.git
-   cd pgr2-decomp
+   git clone --recurse-submodules https://github.com/hk21x/pgr2-recomp.git
+   cd pgr2-recomp
    ```
    Already cloned before the SDK moved? Run `git pull`, then `git submodule sync`, then
    `git submodule update --init`.

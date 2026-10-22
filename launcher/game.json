@@ -7,7 +7,7 @@
         "676895b86f01938804c5f1cdcad8b44044295cb4": "PAL (Europe)",
         "ec6e902fc167de349f1dc1838a7441dfff932c62": "NTSC (USA)"
     },
-    "repo": "https://github.com/hk21x/pgr2-decomp.git",
+    "repo": "https://github.com/hk21x/pgr2-recomp.git",
     "branch": "main",
-    "toolchain": "https://raw.githubusercontent.com/hk21x/pgr2-decomp/main/launcher/toolchain.json"
+    "toolchain": "https://raw.githubusercontent.com/hk21x/pgr2-recomp/main/launcher/toolchain.json"
 }
