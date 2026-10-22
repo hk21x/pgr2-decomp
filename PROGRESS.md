@@ -31,6 +31,18 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - micro-stutter since the wheel support: DirectInput off the game's threads
+
+Harry: trees, DLC setting, DLC cars, boats and system link work on Windows; no flicker; but the game micro-stutters
+badly since the 2026-10-21 changes. Of those, only the wheel support put new work on a path the game waits on:
+controller 1's read (input::Poll, from the game's thread) called WheelRead, which with no wheel plugged in ran
+DirectInput's EnumDevices every two seconds (tens to hundreds of milliseconds on a PC with many USB devices), and with
+one re-acquired it and set its forces over USB (up to 60 calls a second). The point sprites only add constants (no new
+pipelines). sdk 7c0bccd: a wheel thread does every DirectInput call (looking for a wheel, reading it every 2 ms,
+forces); the game's read copies the last state. Also new: a release log line every 10 seconds that had slow frames
+(over 1.5 frame periods), "frames: N of M in the last 10 s over X ms ..., the longest Y ms", to measure stutter.
+wincheck OK, smoke OK (the harness has no wheel code). Next: Harry to rebuild and send pgr2.log after a race.
+
 ### 2026-10-21 - the title update's 16 cars, as a disc car pack
 
 The disc game loads car packs (category 1, 0x157180: cars.ini, CarColours, Classes, Manufacturers from the pack).
