@@ -34,6 +34,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - launcher, first run on Windows: the kit works, two SDK header installers were missing
+
+Harry's run: every tool downloaded, verified and unpacked, the SDK's 8 installers extracted, the source cloned,
+CMake configured with the portable clang (19.1.7, the MSVC 14.44 libraries, SDK 10.0.26100), and the build ran to
+step 153 of 425 before SDL's hidapi wanted devpropdef.h (and SDL's checks had not found d3d11.h, dinput.h, dsound.h).
+The SDK's architecture neutral headers are in the "x86" installers (Desktop Headers x86: dinput.h, dsound.h; OnecoreUap
+Headers x86: devpropdef.h; found by searching each installer's tables for the names), the x64 ones hold only the few
+x64 specific files. Added both to toolchain.json (fetched by the launcher each build); the SDK's stamp now names its
+installers, and the launcher rebuilds CMake's cache when the toolchain changes (SDL's failed header checks were
+cached). Libraries were complete (Store Apps Libs: kernel32, d3d12, dxgi, xaudio2 ...; Desktop Libs x64: dinput8 ...).
+
 ### 2026-10-22 - a launcher for players: choose the disc, Build, Play
 
 Harry asked for one exe a non-technical player runs: choose their ISO, it does the rest (portable tools, source from
