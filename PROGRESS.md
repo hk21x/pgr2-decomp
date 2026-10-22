@@ -29,9 +29,34 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 - Stutter (2026-10-22): wheel scan and the visibility report fence stalls fixed; slow frames 0-3 per 10 s on
   Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
+- Launcher (PGR2Launcher.exe, launcher.bat): written 2026-10-22, its steps tested on Linux; Windows to try
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-22 - a launcher for players: choose the disc, Build, Play
+
+Harry asked for one exe a non-technical player runs: choose their ISO, it does the rest (portable tools, source from
+GitHub). sdk launcher/ (generic, a game supplies launcher/game.json and toolchain.json; PGR2's are here):
+- Tools into PGR2\tools beside the exe, nothing installed, no admin: LLVM 19.1.7's Windows release (tar.xz, the same
+  clang as Visual Studio 17.14's; xz-embedded decodes it as it streams, only the compiler, linker and their DLLs kept,
+  about 680 MB), CMake 3.31.12, Ninja 1.13.2, MinGit 2.56.0, Microsoft's C++ libraries 14.44 (four vsix packages from
+  the Visual Studio manifest) and the Windows SDK 10.0.26100 (eight .msi files and the .cab files they name,
+  extracted with msiexec /a). Every file checked by SHA-256 (pinned, or the manifest's). About 1.4 GB to download.
+- The game: an .iso (read with the runtime's own disc reader) or a folder, accepted by the xbe's SHA-1 (PAL or US;
+  the two differ only in the xbe header's first 0x370 bytes, the code is the same). play\assets is a junction to the
+  folder or a hard link to the image (a copy across drives); the xbe goes into source\assets for the build.
+- Source: git clone (MinGit) of this repo's main with the sdk; Update when origin moves on.
+- Build: the developer prompt's INCLUDE/LIB/PATH set by hand, cmake --preset release -DCMAKE_LINKER_TYPE=LLD, ninja's
+  [n/m] as the progress bar; the exe and DLLs copied to play\. "Remove the build files" deletes source\out.
+- Window: Dear ImGui on Direct3D 11 (WARP without a GPU driver), three steps (game, build, play), a details log.
+  Microsoft's license (Build Tools) must be accepted before the first build.
+Tested on Linux with launcher_cli: the plan resolves from the live manifests (6 tools), ninja/cmake/git/msvc/llvm
+download, verify and unpack (llvm 806 MB in 76 s, the MSVC libraries complete: msvcrt/libcmt/msvcprt/libcpmt), both
+ISOs and the assets folder are recognised and linked, the source clones with the sdk and the xbe is put in place.
+Windows sources syntax-checked against mingw headers. Not tested: anything only Windows runs (msiexec, WinHTTP, the
+window, the compile with the portable kit). launcher.bat builds PGR2Launcher.exe with Visual Studio.
+Next: Harry builds it with launcher.bat and runs it from an empty folder; launcher.log back.
 
 ### 2026-10-22 - "damaged content package" with DLC off
 

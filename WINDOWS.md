@@ -120,6 +120,19 @@ Logitech G920/G923 (G29 and others should work through the settings). Logitech w
 To check: the wheel is found, steering and pedals respond (the Wheel tab's bars), the defaults' axes and buttons are
 right for the G920/G923, the forces feel right and stop in menus, nothing doubles up with a pad plugged in too.
 
+## The launcher (for players without Visual Studio)
+
+`PGR2Launcher.exe` builds and plays the game for someone with no tools: choose the disc image or folder, accept
+Microsoft's license for its C++ libraries, press Build, then Play. It downloads portable build tools (about 1.4 GB:
+Clang, CMake, Ninja, MinGit, Microsoft's C++ libraries and Windows SDK) into a `PGR2` folder beside itself, installs
+nothing in Windows and needs no admin rights. The first build takes 30 to 90 minutes and about 15 GB; "Remove the
+build files" frees most of it afterwards. Later it offers Update when this repository's main branch moves on.
+
+Make it: run `launcher.bat` (it needs what build.bat needs); it leaves `PGR2Launcher.exe` here. The exe holds no game
+code, so it can be shared. To try it as a player would: copy it into an empty folder (ideally on a PC or account
+without Visual Studio) and run it. Send `PGR2\launcher.log` with any report. The Linux side tested each step but
+the build itself (`msiexec` for the SDK, then the compile) only runs on Windows.
+
 ## Xbox Live DLC cities and cars (experimental)
 
 Paris and Long Beach from the PGR2 booster packs, on the disc's game. Confirmed on Windows (2026-10-21): both race,
