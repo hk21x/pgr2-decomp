@@ -220,6 +220,8 @@ bool On() {
 // (0x157180: those four lists from the pack, each new car's record keeping the pack's folder): they are copied into one,
 // T:\$C\4d53004b0000FF01, the models converted, every car free in the showroom; its ContentMeta.xbx is a city pack's with
 // the offer and category changed (the signature checks are passed over). A stamp file keeps it from being made twice.
+constexpr uint32_t kBuiltCategory = 0x20;  // the built car pack's content category (BuildCarPack)
+
 void BuildCarPack() {
     namespace fs = std::filesystem;
     std::error_code ec;
@@ -246,7 +248,7 @@ void BuildCarPack() {
         return;
     }
     fs::path dest = packs / "4d53004b0000FF01";
-    std::string stamp = "pgr2 car pack 3 from " + source.filename().string();
+    std::string stamp = "pgr2 car pack 4 from " + source.filename().string();
     {
         std::ifstream in(dest / "pgr2_built.txt");
         std::string have((std::istreambuf_iterator<char>(in)), {});
@@ -302,9 +304,20 @@ void BuildCarPack() {
     std::ifstream min(meta, std::ios::binary);
     std::vector<uint8_t> m((std::istreambuf_iterator<char>(min)), {});
     if (m.size() >= 0x34) {
-        uint32_t offer = 0xFF01, category = 1;  // ContentMeta.xbx: offer id's low dword +0x28, category +0x30
+        // ContentMeta.xbx: offer id's low dword +0x28, category +0x30. Not 1, the car packs' own: the disc game lists
+        // those whatever the setting, and with DLC off would check this one's signature and call it damaged. With DLC
+        // on the car pack listing (mask 1) takes kBuiltCategory too.
+        uint32_t offer = 0xFF01, category = kBuiltCategory;
         std::memcpy(&m[0x28], &offer, 4);
         std::memcpy(&m[0x30], &category, 4);
+    }
+    // its name in every language section (the city pack's it was taken from), same length
+    const std::pair<std::u16string, std::u16string> renames[] = {{u"Long Beach Booster Pack", u"DLC Cars (title update)"},
+                                                               {u"Paris Booster Pack", u"DLC Cars (TU pack)"}};
+    for (const auto& [from, to] : renames) {
+        size_t len = from.size() * 2;
+        for (size_t i = 0; i + len <= m.size(); i++)
+            if (std::memcmp(&m[i], from.data(), len) == 0) std::memcpy(&m[i], to.data(), len);
     }
     std::ofstream(dest / "ContentMeta.xbx", std::ios::binary).write(reinterpret_cast<const char*>(m.data()), std::streamsize(m.size()));
     std::ofstream(dest / "Content.txt", std::ios::binary) << content;
@@ -315,7 +328,7 @@ void BuildCarPack() {
 }
 
 // XAPI's XFindFirstContent (0x192134: path, category mask, find data): the city pack listing (mask 2, 0x1574F0) also
-// takes the booster packs' category 0x10
+// takes the booster packs' category 0x10, and the car pack listing (mask 1) the built car pack's
 X86_EXTERN_FUNC(__imp__sub_00192134);
 X86_FUNC(sub_00192134) {
     if (On()) {
@@ -323,6 +336,7 @@ X86_FUNC(sub_00192134) {
         (void)built;
     }
     if (On() && kernel::R32(ctx.esp + 8) == 2) kernel::W32(ctx.esp + 8, 2 | 0x10);
+    if (On() && kernel::R32(ctx.esp + 8) == 1) kernel::W32(ctx.esp + 8, 1 | kBuiltCategory);  // the built car pack
     __imp__sub_00192134(ctx, base);
 }
 

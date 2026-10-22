@@ -33,6 +33,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-22 - "damaged content package" with DLC off
+
+Harry: "The following additional content package(s) are damaged ... PGR2 Long Beach Booster Pack". The built car pack
+(T:\$C\4d53004b0000FF01) had category 1 and a ContentMeta.xbx taken from the Long Beach pack (its name too). The
+disc game lists category 1 packs whatever the setting, so with DLC off it checked the pack's signature (not
+bypassed then) and called it damaged. Reproduced headless (category 1, DLC off, START: the screen); fixed: the pack
+is category 0x20, which the car pack listing takes only with DLC on (mask 1 | 0x20), and is named "PGR2 DLC Cars
+(title update)". The stamp changed, so the pack is made again at the next start with DLC on. Headless: DLC on, the
+pack loads; DLC off, straight to the title menu. Smoke OK.
+
 ### 2026-10-22 - stutter, second pass: the fence after a report no longer waits
 
 Harry's log with the last-count answer: slow frames down from 75-272 to 1-7 per 10 s, but the title still waited
