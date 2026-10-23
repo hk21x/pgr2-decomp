@@ -30,10 +30,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
 - Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
 - Launcher (PGR2Launcher.exe, launcher.bat): builds and launches the game on Windows (2026-10-22)
-- Release 1.0 (2026-10-22): the launcher built by .github/workflows/release.yml on a tag v*; 1.0.1 the same day
+- Release 1.0 (2026-10-22): the launcher built by .github/workflows/release.yml on a tag v*; 1.0.1 the same day; 1.0.2 on 2026-10-23 (radio, replays)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-23 - release 1.0.2
+
+Harry confirmed on Windows: the radio plays in races, and replays (the depth of field) are right. Since 1.0.1: the
+radio, the real replay fix (1.0.1's never reached the GPU renderers), the PGR1 session's wheel review fixes. Notes in
+docs/releases/v1.0.2.md, tag v1.0.2.
 
 ### 2026-10-23 - the radio was silent in races: sent to an effect alone
 
