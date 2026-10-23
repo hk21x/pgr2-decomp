@@ -35,6 +35,13 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-23 - pedals on Z, Rz and a slider bind
+
+Harry's Leo Bodnar BU0836-LC pedals report 3 axes, Z (clutch), Rz (gas) and a slider (brake) (joy.cpl), but only the
+clutch moved in F1 > Wheel: Detect and Raw input looked at the first N of the eight axes (X Y Z for N = 3). sdk 9825bb8:
+each device's axes are found by type (EnumObjects), Detect and Raw input look at those, and the log names them
+(`3 axes (Z Rz slider 1)`). Smoke OK. Next: Harry binds the pedals; the mirror in 32:9 hood view.
+
 ### 2026-10-23 - release 1.0.2
 
 Harry confirmed on Windows: the radio plays in races, and replays (the depth of field) are right. Since 1.0.1: the

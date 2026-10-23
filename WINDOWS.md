@@ -110,8 +110,9 @@ or one), except Xbox pads, which stay with the controller support. They play tog
 keyboard and any pad. Each control is bound to one device: in F1 > **Wheel**, click a control, then turn, press or move
 it on whichever device it is on.
 - **Devices**: every device found, with its axes, buttons, hats and whether it offers force feedback ("in use": the
-  forces go there). The log lists them at start: `wheel: <name> (USB vid:pid, type), N axes, N buttons, N hats, force
-  feedback offered/none`.
+  forces go there). The log lists them at start: `wheel: <name> (USB vid:pid, type), N axes (their names), N buttons, N
+  hats, force feedback offered/none`. Any of a device's axes binds (X Y Z Rx Ry Rz and two sliders), wherever they are:
+  a pedal box on Z, Rz and a slider is fine.
 - **Steering**: click, then turn the wheel to the right (it finds the device and the axis, and the direction). Wheel
   rotation as set in the wheel's own software (Simucube True Drive, G HUB ...; up to 2880), steering lock (degrees of
   wheel for the game's full lock, 360 by default), dead zone.
