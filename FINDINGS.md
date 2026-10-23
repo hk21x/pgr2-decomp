@@ -110,6 +110,13 @@ Each item is marked:
   gives its bytes (kTexDepthBytes).
 - **Widescreen.** PGR2 reads XGetVideoFlags: widescreen renders anamorphic 16:9 into 640x480, with a wider field of
   view and the HUD moved out. It has no HD mode. More pixels come from the runtime's render scale.
+- **Cameras and the rear view mirror.** Every camera is set up by 0x1857F0 (thiscall: its box x, y, w, h on the 640
+  wide screen; box at +0x28..+0x34, applied by 0x185640), aspect at +0x38 = 0x2790F8 (16:9; 0x2790FC 4:3 without the
+  widescreen flag 0x48614C) times the box's shape. The mirror of the bumper and hood views is a camera with the box
+  220,38 200x70 drawn on the frame itself. Ultrawide (src/game/hooks.cpp): 0x2790F8 is the frame's shape, and a box
+  touching neither side is narrowed about the centre by 16:9 / that shape with its 16:9 aspect, as the HUD is
+  squeezed. Controller layouts: 0x34CC1C, 0xFC each, two button ids per action from +8 (action names 0x28A1F8, button
+  names 0x28F960); the default has CAMERA_NEXT on Black, CAMERA_PREV on White.
 
 ## The gearbox
 

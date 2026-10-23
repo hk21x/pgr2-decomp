@@ -28,12 +28,24 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
   headless; 34 of their 48 own colours (the table holds 600); confirmed on Windows (2026-10-22), DLC off clean
 - Stutter (2026-10-22): wheel scan and the visibility report fence stalls fixed; slow frames 0-3 per 10 s on
   Harry's PC (was up to 272); render thread 10-14 ms a frame of 16.7
-- Steering wheel (DirectInput, force feedback, F1 > Wheel): built 2026-10-21, Windows to confirm with Harry's G920/G923
+- Steering wheel (DirectInput, force feedback, F1 > Wheel): Harry's rig (Simucube, BU0836 pedals, shifter, button box)
+  detected and bound on Windows (2026-10-22); pedals on Z/Rz/slider fixed 2026-10-23, to confirm
+- Ultrawide: menus, HUD, replays confirmed on 32:9; the rear view mirror narrowed (2026-10-23), to confirm
 - Launcher (PGR2Launcher.exe, launcher.bat): builds and launches the game on Windows (2026-10-22)
 - Release 1.0 (2026-10-22): the launcher built by .github/workflows/release.yml on a tag v*; 1.0.1 the same day; 1.0.2 on 2026-10-23 (radio, replays)
 - Upstream: draft PR description in .local/upstream-pr.md, not sent
 
 ## Log
+
+### 2026-10-23 - the rear view mirror in ultrawide
+
+Harry, 32:9: the mirror (hood and bumper views) stretched past its frame into the HUD. Headless with
+FRAME_ASPECT_X100=356, Black (CAMERA_NEXT, from the controller layouts at 0x34CC1C) to the hood view, CAP draw lists
+(the harness now lists each draw's viewport, sdk 6e84311): about 1000 draws in the viewport 220,38 200x70 on the frame,
+their projection made for that box stretched to 32:9 (y/x 7.63), so the picture was right but the box too wide, while
+the frame around it (2D) is squeezed. The box comes from the camera setup 0x1857F0, which src/game now narrows about the
+centre for a box touching neither side, with the 16:9 aspect: 270,38 100x70, x scale 1.134 (2 x 0.566), clear of the
+HUD in the capture. Smoke OK. Next: Harry checks the mirror and the pedals; release 1.0.3.
 
 ### 2026-10-23 - pedals on Z, Rz and a slider bind
 

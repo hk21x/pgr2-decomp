@@ -236,6 +236,33 @@ void ApplyAspect() {
     LOGR("pgr2: widescreen 3D views at %.3f:1", want);
 }
 
+// ultrawide: a camera (0x1857F0, thiscall: x, y, w, h of its box on the 640 wide screen, ..., an aspect or 0 at +0x1C)
+// keeps the box at +0x28..+0x34 and its aspect, 0x2790F8 times the box's shape, at +0x38. The rear view mirror in the
+// bumper and hood views is one, 220,38 200x70: on a frame wider than 16:9 its box stretched with the screen and ran into
+// the HUD. A box touching neither side is narrowed about the centre by 16:9 / the aspect used, as the HUD is
+// (gpu::HudSqueeze), and given the aspect it has at 16:9: the box and its picture as at 16:9. Full width and split
+// screen views reach a side and keep theirs.
+X86_EXTERN_FUNC(__imp__sub_001857F0);
+X86_FUNC(sub_001857F0) {
+    uint32_t cam = ctx.ecx;
+    int32_t x = int32_t(kernel::R32(ctx.esp + 4)), w = int32_t(kernel::R32(ctx.esp + 12));
+    uint32_t given = kernel::R32(ctx.esp + 0x1C);
+    __imp__sub_001857F0(ctx, base);
+    float aspect;
+    std::memcpy(&aspect, &kernel::G<uint32_t>(0x2790F8), 4);
+    if (!kernel::G<uint8_t>(0x48614C) || given || aspect <= 16.0f / 9.0f + 1e-3f || x <= 0 || x + w >= 640) return;
+    float k = 16.0f / 9.0f / aspect, own;
+    int32_t nx = int32_t(std::lround(320 + (x - 320) * k)), nw = std::max(1, int32_t(std::lround(w * k)));
+    kernel::W32(cam + 0x28, uint32_t(nx));
+    kernel::W32(cam + 0x30, uint32_t(nw));
+    std::memcpy(&own, &kernel::G<uint32_t>(cam + 0x38), 4);
+    own *= k;
+    std::memcpy(&kernel::G<uint32_t>(cam + 0x38), &own, 4);
+    static int said = 0;
+    if (said++ < 8) LOGR("pgr2: camera box %d,%u %dx%u narrowed to %d wide at %d for the %.3f:1 frame", x,
+                         kernel::R32(cam + 0x2C), w, kernel::R32(cam + 0x34), nw, nx, aspect);
+}
+
 // hide_hud: HideOverlays (a Frontend.ini switch, the byte 0x291A24), which the HUD code (0xDA000-0xE8000) reads each
 // frame, set before every frame step (0xD90F0) so the option applies at once
 X86_EXTERN_FUNC(__imp__sub_000D90F0);
