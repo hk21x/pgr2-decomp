@@ -37,6 +37,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-23 - a media patched disc image
+
+Harry's /home/harry/pgr2-variant.iso: a rebuilt XISO (volume at sector 0) of the PAL disc. Read in place (a read-only
+XDVDFS lister, no extract): the same 11233 files, all byte for byte the same as the PAL disc's except the seven .xbe
+files, each changed in one byte, 7D to EB: the jge after XapiVerifyMediaInDrive (0x193964 in default.xbe) became a
+jmp, the usual media patch for running from a modded console's hard disk. The signature was not redone, so its SHA-1
+differs (acd77633...), and the launcher refused it as unsupported. The patched code is XAPI start-up the host
+replaces: both media patched default.xbe files (PAL, and NTSC computed with the same byte) are now in
+GameInfo::same_code, launcher/game.json and the README. `GAME=/home/harry/pgr2-variant.iso scripts/smoke.sh`: SMOKE OK.
+The released launcher (1.0.2) takes it from the next release.
+
 ### 2026-10-23 - the rear view mirror in ultrawide
 
 Harry, 32:9: the mirror (hood and bumper views) stretched past its frame into the HUD. Headless with

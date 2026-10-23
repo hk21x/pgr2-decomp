@@ -69,7 +69,10 @@ const app::GameInfo app::kGame = {
     .rumble = nullptr,                    // changes a rumble before it is set
     .achievements = pgr2::AchievementSet(),  // conditions on guest memory, checked each frame
     // the North American release (region NA+Japan, version 5): its default.xbe differs from the PAL one (version 2)
-    // only in the signature and certificate, every section byte for byte the same
-    .same_code = {"ec6e902fc167de349f1dc1838a7441dfff932c62"},
+    // only in the signature and certificate, every section byte for byte the same. Media patched copies of either (run
+    // from a modded console's hard disk): one byte, 0x193964 jge to jmp after XapiVerifyMediaInDrive in the XAPI start,
+    // code the host replaces
+    .same_code = {"ec6e902fc167de349f1dc1838a7441dfff932c62", "acd776330a9b903fd567b544cf7ece0f612f6c7d",
+                  "702b79fd3bc844a413cbc26404718b1bf7e44e87"},
     .wheel = pgr2::WheelFeel,  // a steering wheel's force feedback follows the player's car
 };

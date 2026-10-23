@@ -19,10 +19,13 @@ The European (PAL) and North American (NTSC) Xbox releases of Project Gotham Rac
 | --- | --- |
 | Europe (PAL), version 2 | `676895b86f01938804c5f1cdcad8b44044295cb4` |
 | North America (NTSC), version 5 | `ec6e902fc167de349f1dc1838a7441dfff932c62` |
+| Europe (PAL), media patched | `acd776330a9b903fd567b544cf7ece0f612f6c7d` |
+| North America (NTSC), media patched | `702b79fd3bc844a413cbc26404718b1bf7e44e87` |
 
 The executable is recompiled from the PAL file. The North American `default.xbe` differs from it only in its signature
 and certificate (region, version, signing keys); every byte of code and data is the same, so the same executable runs
-it. The log (`logs\pgr2.log`) names the SHA-1 of the `default.xbe` it found. Any other release (the Japanese one, for
+it. A media patched copy (made to run from a modded console's hard disk) changes one byte of start-up code that the
+port replaces anyway, so it runs too. The log (`logs\pgr2.log`) names the SHA-1 of the `default.xbe` it found. Any other release (the Japanese one, for
 example) has not been checked and the game asks before starting it.
 
 ## Getting Started

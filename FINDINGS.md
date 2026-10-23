@@ -12,6 +12,11 @@ Each item is marked:
   and the certificate (time stamp, region, ratings, version, signing keys). Every section is byte for byte the same,
   so every address in this project holds for both; the NTSC disc runs the smoke test unchanged. The signing keys
   differ, so a save signed by one release may not be accepted by the other.
+- **[PGR2]** Media patched copies (pgr2-variant.iso, 2026-10-23: a rebuilt XISO of the PAL disc): every data file the
+  same, all seven .xbe files (default, update, dashupdate, downloader, three demos) changed in one byte, the jge after
+  XapiVerifyMediaInDrive (default.xbe 0x193964, file 0x183964) made a jmp, signature not redone: the patch that lets a
+  modded console run the game from its hard disk. That code is XAPI start-up the host replaces, so the PAL and NTSC
+  patched files (SHA-1 acd77633..., 702b79fd...; the NTSC one computed, the same byte) are listed as the same code.
 - **[PGR2]** XDK 1.0.5659 for every library (XAPILIB, D3D8, D3DX8, XGRAPHC, DSOUND, XBOXKRNL, XMV, XONLINES, XVOICE,
   LIBCMT, LIBCPMT). XNet is linked inside XONLINES. The movies are XMV (42 files); there is no Bink.
 - **[PGR2]** Push buffers: there is no CreatePushBuffer or RunPushBuffer, and the XPR bundles hold only textures.
