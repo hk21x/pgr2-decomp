@@ -169,6 +169,11 @@ Each item is marked:
 - **[console]** The software mixer plays everything PGR2 uses: streams, ADPCM, the engine via SetFrequency, and
   the music fades.
 - Not modelled (accepted, no effect): the DSP effects image, I3DL2 reverb, filters and Doppler. Sound is dry.
+- **[PGR2]** The in-race radio (WMA from `data\audio\Radio\tracks`, decoded by the game's own WMADEC code into two
+  44.1 kHz stereo PCM streams) goes to the effects send FXSEND 14 (mix bin 24) alone, every speaker bin at -10000: the
+  DSP image plays it into the speakers (the in-car sound). With the effects not modelled it was silent in every build
+  (Harry, 2026-10-23). A voice with no audible speaker bin now plays its effect sends into the speakers (dry, stereo
+  kept); `XBE_DSOUND_LOG=2` lists every stream holding packets with its bins.
 
 ## Lessons on working
 

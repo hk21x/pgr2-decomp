@@ -35,6 +35,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-23 - the radio was silent in races: sent to an effect alone
+
+Harry: no radio while driving, in every build. Headless (XBE_DSOUND_LOG=2, new: every stream with packets): the radio
+track opens (Radio\tracks\DJPerpetrator.wma) and its decoded PCM plays on stream B006E4F0 (2 ch, 44.1 kHz, packets
+queued), mix bins 0 1 4 5 3 10 at -10000 and 24 (FXSEND 14) at 0: the DSP effects image is what plays it into the
+speakers. The mixer dropped effect sends whenever a voice listed a speaker bin, audible or not: gain 0. sdk 6eb3947:
+speaker bins count only when audible; with none, the sends play into the speakers (stereo kept). Now gain 0.50 per
+side, as the menu music; voices with an audible speaker route (engine, ambience) unchanged. SMOKE OK. Windows to
+confirm: the radio plays in races (dry: no in-car filtering, the effects still not modelled).
+
 ### 2026-10-22 - the replay depth of field fix never ran on Windows (corrected)
 
 The PGR1 session's review of 48aa102: both renderers find a sampled texture's target by the read format's depth flag,
