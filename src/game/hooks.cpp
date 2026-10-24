@@ -263,6 +263,23 @@ X86_FUNC(sub_001857F0) {
                          kernel::R32(cam + 0x2C), w, kernel::R32(cam + 0x34), nw, nx, aspect);
 }
 
+// profiles from a real console: the profile loader (0xA87B0) compares Profile.Sav's first 20 bytes with the roamable
+// signature (XCalculateSignatureBegin 0x18BBB4 with 0, End 0x18BC16) of the rest, keyed with the title's signature key,
+// which a real kernel takes from the disc's certificate and the host leaves at zero: a profile saved on an Xbox (an
+// Action Replay copy) failed with 0x3EE, "damaged". The comparison is given the stored signature, so the loader's own
+// checks decide: the version (5) and every section's length. Saving again signs it as this install's.
+X86_EXTERN_FUNC(__imp__sub_0018BC16);
+X86_FUNC(sub_0018BC16) {
+    uint32_t ret = kernel::R32(ctx.esp), out = kernel::R32(ctx.esp + 8);
+    __imp__sub_0018BC16(ctx, base);
+    if (ret != 0xA8967) return;  // the profile loader's call; its stored signature 0x14 bytes before the digest
+    uint8_t* digest = &kernel::G<uint8_t>(out);
+    const uint8_t* stored = &kernel::G<uint8_t>(out - 0x14);
+    if (std::memcmp(digest, stored, 20) == 0) return;
+    std::memcpy(digest, stored, 20);
+    LOGR("pgr2: a profile signed by another console (an Xbox's save): signature accepted, the profile's own checks follow");
+}
+
 // hide_hud: HideOverlays (a Frontend.ini switch, the byte 0x291A24), which the HUD code (0xDA000-0xE8000) reads each
 // frame, set before every frame step (0xD90F0) so the option applies at once
 X86_EXTERN_FUNC(__imp__sub_000D90F0);

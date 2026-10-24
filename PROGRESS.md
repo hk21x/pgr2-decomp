@@ -37,6 +37,17 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-24 - profiles from a real Xbox load
+
+Report: an Action Replay profile (Jay "FNG") copied into hdd\E\UDATA\4d53004b was "damaged". The loader (0xA87B0)
+compares the file's signature with one keyed by the title signature key, which the host leaves at zero (a real kernel
+derives it from the certificate; Microsoft's keys are not shipped), so no real console's profile can match. An override
+of XCalculateSignatureEnd (0x18BC16), for the loader's call alone (return 0xA8967), gives the comparison the stored
+signature when it differs; the version and section-length checks still run. Headless: a profile with its signature
+changed loads (log line "signature accepted"), Game Options show its KM/H. Smoke OK.
+Also reported, next: Paris (DLC) stops on the game's fatal error "m_CompressionStream.msg" (a compressed file failed
+to unpack); an Xbox controller adapter (XGUNNER, USB 1209:0001, a DirectInput gamepad) is not seen by SDL.
+
 ### 2026-10-23 - a media patched disc image
 
 Harry's /home/harry/pgr2-variant.iso: a rebuilt XISO (volume at sector 0) of the PAL disc. Read in place (a read-only

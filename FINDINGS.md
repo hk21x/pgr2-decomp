@@ -42,6 +42,11 @@ Each item is marked:
 - **[PGR2]** Profiles are at `E:\UDATA\4d53004b\<id>\Profile.Sav` (30100 bytes, a 20-byte signature first). They
   are saved on creation, on leaving Options and on quitting a race. Byte 0x844 holds MPH/KM/H.
   `scripts/savetest.sh` checks this.
+- **[PGR2]** The profile loader (0xA87B0) checks Profile.Sav's 20-byte signature as a roamable XCalculateSignature
+  (Begin 0x18BBB4 with 0, End 0x18BC16) over the rest, keyed with the title signature key a real kernel takes from
+  the certificate (XboxSignatureKey, zero on the host), then the version (5) and each section's length; a mismatch
+  is 0x3EE, "damaged". A profile from a real Xbox (an Action Replay copy) can never match, so src/game hands the
+  loader its stored signature and its own checks decide; saving signs it as this install's.
 
 ## Frame pacing and speed
 
