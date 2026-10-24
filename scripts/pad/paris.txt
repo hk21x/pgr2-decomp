@@ -1,0 +1,28 @@
+# Paris Time Attack (Le Circuit Complet, MINI) from a normal boot with a profile and the DLC packs (PGR2_DLC=1,
+# PGR2_SKIP_INTRO=1): title, Start Player's Game, Single Player, Time Attack, Circuit Challenge, Paris
+2700 START 20
+2850 START 20
+3150 A 10
+3450 A 10
+3690 RIGHT 10
+3810 RIGHT 10
+3960 A 10
+4200 A 10
+4440 UP 8
+4500 UP 8
+4560 UP 8
+4620 UP 8
+4680 UP 8
+4740 UP 8
+4800 UP 8
+4860 UP 8
+4920 UP 8
+4980 UP 8
+5040 UP 8
+5100 A 10
+5340 A 10
+5580 A 10
+5820 A 10
+6060 A 10
+6300 A 10
+8100 RT 3600

@@ -159,6 +159,11 @@ Each item is marked:
   Long Beach's); a console's install re-signs them (0x155510, XCalculateSignature), so those cannot be checked off the
   console. With DLC on, the log says whether each pack's files match, and names any that do not. A damaged pak makes
   the city stop on PGR2's fatal error "m_CompressionStream.msg" (zlib 1.1.4 inflate failing in 0x136E70).
+- **[PGR2]** Paris draws some of its garbage meshes with stream strides like 0xFFFFFFFC: their vertices lie gigabytes
+  outside the guest's memory. The GPU renderers copied them and faulted in memcpy (the Windows crash a second after
+  Paris loads); the SDK now leaves out any draw whose vertices lie outside committed guest memory (logged
+  `gpu: a draw reads vertices outside the guest's memory`). The DLC cities and their routes are registered in the
+  menus, after boot: route indexes past 145 are empty until then, and PGR2_ROUTE on one loads Edinburgh against it.
 - **[PGR2]** What the disc build cannot take from the booster packs (title update data): object paks in the newer layout
   (a zlib compressed WMSH chunk first, where the disc's open with an INDX index: read as garbage meshes), materials
   whose bucket is past the city draw list's 106 (0x11B210, table 0x457188: a null write), and night or overcast sets

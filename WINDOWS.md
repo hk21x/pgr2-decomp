@@ -168,9 +168,9 @@ to confirm.
 What differs from the console: night and overcast races use the daytime scenery (the packs hold the day set only);
 the river boats and the cars' models are converted from the title update's file layout; objects with title update
 materials are left out (PGR2 would draw them magenta). The disc game holds 600 paint colours and has 566, so the DLC
-cars keep 34 of their own 48 (each car keeps some; colours shared with disc cars are all kept). `PGR2_ROUTE=147`
-(Paris) or `155` (Long Beach) forces every race onto that route, and `PGR2_CAR=102` to `117` puts player 1 in that DLC
-car, for testing.
+cars keep 34 of their own 48 (each car keeps some; colours shared with disc cars are all kept). `PGR2_CAR=102` to `117`
+puts player 1 in that DLC car, for testing. Headless, `scripts/pad/paris.txt` drives a Paris Time Attack from a normal
+boot (the DLC cities get their route numbers in the menus, so `PGR2_ROUTE` cannot pick them).
 
 ## System link
 

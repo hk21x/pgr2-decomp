@@ -37,6 +37,19 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-24 - Paris crash: draws with garbage strides left out; an uncompiled menu callback
+
+Harry's log (Paris, draw distance 200%): every DLC file matches, and the game stops 1.3 s after Paris loads, with no
+fatal error. Correction to the entry below: PGR2_ROUTE=147 is not Paris any more (the DLC cities get their routes in
+the menus; 147 was empty, so Edinburgh loaded against it, and at 200% its stream read went to a garbage offset:
+"BizFile::ReadDecompress"). scripts/pad/paris.txt now drives a Paris Time Attack headless. With the reference renderer
+on, Paris draws a few meshes whose stream stride is garbage (about 0xFFFFFFFC): their vertices lie gigabytes outside
+the guest's memory, and the GPU renderers' copy of them is the memcpy access violation in VCRUNTIME140 that Windows
+reports. sdk: such draws are left out and logged; headless the guard fires in Paris 2 s after it loads and never in a
+base game race (REF=60). XBE_FILES_LOG=1 also logs short reads. The SDK merge brought the recompiler's list of code
+addresses never made functions: 0x7F9F0, a menu item's callback (0x80F70), is now in [functions]; the other three are
+data. Smoke OK. Open: the other player's "m_CompressionStream.msg" (100% draw distance), not reproduced.
+
 ### 2026-10-24 - DLC packs' files checked against their ContentMeta.xbx
 
 Report (Windows, a player's own DLC copy): Long Beach and the Paris cars work, Paris tracks stop: before drawing, at the

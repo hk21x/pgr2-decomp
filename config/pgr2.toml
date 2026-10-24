@@ -7,3 +7,5 @@ includes = ["game.toml"]
 # named functions; also gives --sign a name to anchor data on
 [functions]
 0x1EDE60 = "CDirectSoundStream_Constructor"  # stores both stream vtables (0x1EDE72, 0x1EDE79); --sign anchors the vtables on it
+0x7F9F0 = "FrontendCallback_7F9F0"  # a menu item's callback (pushed by 0x80FD2 in 0x80F70); after int3 padding, but a guessed decode
+                                    # overlapped it, so it was never made a function: an indirect call to it trapped
