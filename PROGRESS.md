@@ -37,6 +37,16 @@ Newest first. Each entry: date, what changed, what was learned, what's next.
 
 ## Log
 
+### 2026-10-24 - DLC packs' files checked against their ContentMeta.xbx
+
+Report (Windows, a player's own DLC copy): Long Beach and the Paris cars work, Paris tracks stop: before drawing, at the
+start, or with "dirty disc" and broken graphics; the log ends on PGR2's fatal error "m_CompressionStream.msg" (0x136E70:
+zlib 1.1.4 inflate of a compressed chunk failed), Event Viewer an access violation in memcpy. Headless with Harry's DLC
+copy, route 147 (Paris), three runs: no fault. A downloaded pack's ContentMeta.xbx holds each file's plain SHA-1 (every
+Paris and Long Beach file matches), so with DLC on each pack's files are now hashed once at start and the log names
+any that do not match ("... does not match its ContentMeta.xbx: a damaged or incomplete copy"); tested with one byte
+of Paris.pak_stream changed. Smoke OK. Next: the player's log with this build, to know if their copy is damaged.
+
 ### 2026-10-24 - profiles from a real Xbox load
 
 Report: an Action Replay profile (Jay "FNG") copied into hdd\E\UDATA\4d53004b was "damaged". The loader (0xA87B0)

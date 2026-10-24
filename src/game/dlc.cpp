@@ -2,6 +2,7 @@
 // packs (T:\$C\4d53004b0000000N) are category 0x10, made for the title update; the disc game lists category 1 (car)
 // and 2 (city) packs only. On a console the packs are signed when installed; the copies here are not, so with the
 // switch on the content signature checks are passed over.
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -15,6 +16,7 @@
 #include <set>
 
 #include "core/log.h"
+#include "kernel/crypto.h"
 #include "kernel/kernel.h"
 #include "xdk/hle.h"
 
@@ -354,13 +356,63 @@ X86_FUNC(sub_00191366) {
     ctx.esp += 20;  // ret 16
 }
 
-// PGR2: each file of a pack against its signature in ContentMeta.xbx (0x156F00: metadata, folder; cdecl): passed
+// A pack as downloaded (not installed by a console) lists each file's plain SHA-1 in ContentMeta.xbx; a console's install
+// re-signs them with its own keys. Each file's SHA-1 is looked for there, once a pack, and the log names any that are
+// not: a damaged or incomplete copy (a city loading one stops on "m_CompressionStream.msg" or crashes). None matching
+// at all is a console's install, which cannot be checked here.
+void CheckPackFiles(const std::string& folder) {
+    namespace fs = std::filesystem;
+    static std::set<std::string> done;
+    if (!done.insert(folder).second || folder.find("0000FF01") != std::string::npos) return;  // the pack built here
+    std::error_code ec;
+    fs::path dir = kernel::ResolvePath(folder, 0);
+    std::vector<uint8_t> meta;
+    for (const auto& e : fs::directory_iterator(dir, ec)) {
+        std::string lower = e.path().filename().string();
+        for (char& c : lower) c = char(std::tolower(static_cast<unsigned char>(c)));
+        if (lower != "contentmeta.xbx") continue;
+        std::ifstream in(e.path(), std::ios::binary);
+        meta.assign(std::istreambuf_iterator<char>(in), {});
+    }
+    if (meta.empty()) return;
+    std::vector<std::string> bad;
+    int good = 0;
+    std::vector<char> buf(1 << 20);
+    for (const auto& e : fs::directory_iterator(dir, ec)) {
+        std::string name = e.path().filename().string(), lower = name;
+        for (char& c : lower) c = char(std::tolower(static_cast<unsigned char>(c)));
+        if (!e.is_regular_file(ec) || lower == "contentmeta.xbx") continue;
+        alignas(8) uint8_t sha[128];
+        uint8_t digest[20];
+        crypto::ShaInit(sha);
+        std::ifstream in(e.path(), std::ios::binary);
+        while (in.read(buf.data(), std::streamsize(buf.size())) || in.gcount() > 0)
+            crypto::ShaUpdate(sha, reinterpret_cast<const uint8_t*>(buf.data()), size_t(in.gcount()));
+        crypto::ShaFinal(sha, digest);
+        bool found = std::search(meta.begin(), meta.end(), digest, digest + 20) != meta.end();
+        if (found) good++;
+        else bad.push_back(name);
+    }
+    if (bad.empty()) LOGR("pgr2: content pack %s: all %d files match its ContentMeta.xbx", folder.c_str(), good);
+    else if (!good) LOGR("pgr2: content pack %s: its files carry a console's signatures, not checked", folder.c_str());
+    else
+        for (const std::string& name : bad)
+            LOGW("pgr2: content pack %s: %s does not match its ContentMeta.xbx: a damaged or incomplete copy, copy it "
+                 "again from the download", folder.c_str(), name.c_str());
+}
+
+// PGR2: each file of a pack against its signature in ContentMeta.xbx (0x156F00: metadata, folder; cdecl): passed, the
+// files checked by CheckPackFiles instead
 X86_EXTERN_FUNC(__imp__sub_00156F00);
 X86_FUNC(sub_00156F00) {
     if (!On()) {
         __imp__sub_00156F00(ctx, base);
         return;
     }
+    std::string folder;
+    for (uint32_t p = kernel::R32(ctx.esp + 8); p && kernel::G<uint8_t>(p) && folder.size() < 260; p++)
+        folder += char(kernel::G<uint8_t>(p));
+    if (!folder.empty()) CheckPackFiles(folder);
     ctx.eax = 1;
     ctx.esp += 4;  // ret
 }

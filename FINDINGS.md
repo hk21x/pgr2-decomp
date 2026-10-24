@@ -155,6 +155,10 @@ Each item is marked:
   (0x19144B / 0x191366) and each file's against the metadata's table (0x156F00); community copies are unsigned
   until a console installs them. PGR2_DLC=1 lists them, passes the checks and puts the pack's object paks, audio
   files and ambience lines where the disc build reads them (src/game/dlc.cpp).
+- **[PGR2]** A pack as downloaded lists each file's plain SHA-1 in its ContentMeta.xbx (all 20 of Paris's, all 18 of
+  Long Beach's); a console's install re-signs them (0x155510, XCalculateSignature), so those cannot be checked off the
+  console. With DLC on, the log says whether each pack's files match, and names any that do not. A damaged pak makes
+  the city stop on PGR2's fatal error "m_CompressionStream.msg" (zlib 1.1.4 inflate failing in 0x136E70).
 - **[PGR2]** What the disc build cannot take from the booster packs (title update data): object paks in the newer layout
   (a zlib compressed WMSH chunk first, where the disc's open with an INDX index: read as garbage meshes), materials
   whose bucket is past the city draw list's 106 (0x11B210, table 0x457188: a null write), and night or overcast sets

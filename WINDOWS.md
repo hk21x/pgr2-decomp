@@ -160,6 +160,8 @@ to confirm.
    folder, so that `hdd\E\TDATA\4d53004b\$C\uPAL\cars.ini` exists. The first start with DLC on makes a car pack
    from it, `$C\4d53004b0000FF01` (the models converted, every DLC car free); the log says
    `the title update's cars from ... made into the car pack` and then `car pack T:\$C\4d53004b0000FF01 loaded`.
+   With DLC on, the log checks each pack's files against the pack's own list: `content pack ...: all N files match`,
+   or a line naming each damaged file (copy that pack again).
 2. F1 > Game > **Xbox Live DLC cities**, then restart (or `dlc = true` in `pgr2.toml`; `PGR2_DLC=1` also works).
 3. Paris and Long Beach are in the city lists (Time Attack, Instant Action, race setup); the DLC cars are in the
    classes "Paris Cars" and "Long Beach Cars".
